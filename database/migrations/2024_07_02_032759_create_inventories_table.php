@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id');
-            $table->integer('quantity');
+            $table->string('name');
             $table->string('location');
             $table->timestamps();
-            $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

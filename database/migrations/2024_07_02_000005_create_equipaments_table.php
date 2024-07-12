@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('equipament_package', function (Blueprint $table) {
-            $table->unsignedBigInteger('equipament_id');
-            $table->unsignedBigInteger('package_id');
-            $table->integer('quantity');
+        Schema::create('equipaments', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('description');
+            $table->string('unit');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('equipament_package');
+        Schema::dropIfExists('equipaments');
     }
 };

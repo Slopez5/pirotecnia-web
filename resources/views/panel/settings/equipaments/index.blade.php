@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Productos</h1>
+                    <h1 class="m-0">Equipo</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active">Productos</li>
+                        <li class="breadcrumb-item active">Equipo</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -41,9 +41,9 @@
             <div class="row">
                 <!-- Left col -->
                 <section class="col-lg-12 connectedSortable">
-                    <x-card title="Productos" icon="fas fa-box">
+                    <x-card title="Equipo" icon="fas fa-box">
                         <x-slot:tools>
-                            <a href="{{ route('packages.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('equipaments.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
@@ -53,25 +53,24 @@
                                     <tr>
                                         <th class="col-2">Nombre</th>
                                         <th class="col-6">Descripción</th>
-                                        <th class="col-2">Precio</th>
                                         <th class="col-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($products as $product)
+                                    @foreach ($equipaments as $equipament)
                                         <tr>
-                                            <td>{{ $product->name }}</td>
-                                            <td>{{ $product->description }}</td>
-                                            <td>{{ $product->price }}</td>
+                                            <td>{{ $equipament->name }}</td>
+                                            <td>{{ $equipament->description }}</td>
                                             <td>
-                                                <a href="{{ route('packages.edit', $product->id) }}" class="btn btn-warning btn-sm">
+                                                <a href="{{ route('equipaments.edit', $equipament) }}"
+                                                    class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('packages.destroy', $product->id) }}" method="POST"
+                                                <form action="{{ route('equipaments.destroy', $equipament) }}" method="POST"
                                                     style="display: inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="submit">
+                                                    <button class="btn btn-danger btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

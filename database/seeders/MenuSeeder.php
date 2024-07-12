@@ -93,6 +93,26 @@ class MenuSeeder extends Seeder
                 "icon" => "fas fa-cube",
                 "active" => false,
                 "order" => 2
+            ],
+            [
+                "menu_id" => 1,
+                "parent_id" => 4,
+                "menu_open" => false,
+                "title" => "Equipo",
+                "url" => "settings.equipaments.index",
+                "icon" => "fas fa-tools",
+                "active" => false,
+                "order" => 3
+            ],
+            [
+                "menu_id" => 1,
+                "parent_id" => 4,
+                "menu_open" => false,
+                "title" => "productos (modo cliente)",
+                "url" => "settings.productgroups.index",
+                "icon" => "fas fa-cubes",
+                "active" => false,
+                "order" => 4
             ]
         ];
 

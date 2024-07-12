@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('equipament', function (Blueprint $table) {
-            $table->id();
+        Schema::create('paymentable', function (Blueprint $table) {
+            $table->unsignedBigInteger('payment_id');
+            $table->morphs('paymentable');
             $table->timestamps();
         });
     }
@@ -22,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('equipament');
+        Schema::dropIfExists('paymentable');
     }
 };

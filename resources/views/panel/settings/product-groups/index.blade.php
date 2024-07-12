@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Productos</h1>
+                    <h1 class="m-0">Productos(Modo cliente)</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active">Productos</li>
+                        <li class="breadcrumb-item active">Productos(modo cliente)</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -41,9 +41,9 @@
             <div class="row">
                 <!-- Left col -->
                 <section class="col-lg-12 connectedSortable">
-                    <x-card title="Productos" icon="fas fa-box">
+                    <x-card title="Productos (Modo cliente)" icon="fas fa-box">
                         <x-slot:tools>
-                            <a href="{{ route('packages.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('product-groups.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
@@ -53,25 +53,26 @@
                                     <tr>
                                         <th class="col-2">Nombre</th>
                                         <th class="col-6">Descripción</th>
-                                        <th class="col-2">Precio</th>
+                                        <th class="col-2">Unidad</th>
                                         <th class="col-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($products as $product)
+                                    @foreach ($productGroups as $productGroup)
                                         <tr>
-                                            <td>{{ $product->name }}</td>
-                                            <td>{{ $product->description }}</td>
-                                            <td>{{ $product->price }}</td>
+                                            <td>{{ $productGroup->name }}</td>
+                                            <td>{{ $productGroup->description }}</td>
+                                            <td>{{ $productGroup->unit }}</td>
                                             <td>
-                                                <a href="{{ route('packages.edit', $product->id) }}" class="btn btn-warning btn-sm">
+                                                <a href="{{ route('product-groups.edit', $productGroup) }}"
+                                                    class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('packages.destroy', $product->id) }}" method="POST"
-                                                    style="display: inline">
+                                                <form action="{{ route('product-groups.destroy', $productGroup) }}"
+                                                    method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="submit">
+                                                    <button type="submit" class="btn btn-danger btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
