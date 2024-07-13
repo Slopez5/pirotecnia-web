@@ -17,7 +17,7 @@ class ProductsTable extends Component
     public $product_id_selected;
     public $description;
     public $quantity;
-    public $unit;
+    public $isMultiple;
 
     public function mount($package)
     {
@@ -39,13 +39,13 @@ class ProductsTable extends Component
             $this->product_id_selected = null;
             $this->description = null;
             $this->quantity = null;
-            $this->unit = null;
+     
         } else {
             $this->product_id_selected = $id;
             $productAux = $this->package->materials()->where('id',$id)->first();
             $this->description = $productAux->name;
             $this->quantity = $productAux->pivot->quantity;
-            $this->unit = $productAux->unit;
+            
             
         }
         $this->isEditMode = !$this->isEditMode;
@@ -58,7 +58,7 @@ class ProductsTable extends Component
 
     public function addProduct()
     {
-        $this->isAddProduct = !$this->isAddProduct;
+       $this->dispatch('openModal');
     }
 
     public function saveProduct()
@@ -68,7 +68,7 @@ class ProductsTable extends Component
         $this->product_id = null;
         $this->description = null;
         $this->quantity = null;
-        $this->unit = null;
+       
     }
 
     public function removeProduct($id)
@@ -81,7 +81,6 @@ class ProductsTable extends Component
         $this->product_id = null;
         $this->description = null;
         $this->quantity = null;
-        $this->unit = null;
         $this->isAddProduct = !$this->isAddProduct;
     }
 

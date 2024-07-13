@@ -111,8 +111,8 @@
     <script src="{{ asset('adminlte/dist/js/adminlte.js') }}"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{ asset('adminlte/dist/js/pages/dashboard.js') }}"></script>
-    @yield('extra-script')
     @livewireScripts
+    @yield('extra-script')
 </body>
 
 </html>

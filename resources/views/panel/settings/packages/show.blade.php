@@ -56,4 +56,21 @@
             </div>
         </div>
     </section>
+
+    <x-modal title="Agregar producto" id="addProductModal">
+    </x-modal>
+
+    
+@endsection
+
+@section('extra-script')
+    <script>
+        document.addEventListener('livewire:init', () => {
+            //open modal with livewire
+            console.log('init');
+            Livewire.on('openModal', () => {
+                $('#addProductModal').modal('show');
+            });
+        });
+    </script>
 @endsection

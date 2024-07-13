@@ -65,7 +65,11 @@
                             <input type="text" wire:model="quantity" class="form-control">
                         </td>
                         <td>
-                            <input type="text" wire:model="unit" class="form-control">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" wire:model='isMultiple'>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                </label>
+                            </div>
                         </td>
                         <td>
                             <button class="btn btn-success btn-sm" wire:click="saveProduct">
