@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Package;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -18,7 +19,8 @@ class EventController extends Controller
 
     public function create()
     {
-        return view('panel.events.create');
+        $packages = Package::all();
+        return view('panel.events.create', compact('packages'));
     }
 
     public function store(Request $request)
