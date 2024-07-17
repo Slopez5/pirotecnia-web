@@ -27,17 +27,21 @@ class PackageController extends Controller
             'name' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image' => 'required',
         ]);
 
         $package = new Package();
         $package->name = $request->name;
         $package->description = $request->description;
         $package->price = $request->price;
-        $package->image = $request->image;
+        if ($request->duration) {
+            $package->duration = $request->duration;
+        }
+        if ($request->video_url) {
+            $package->video_url = $request->video_url;
+        }
         $package->save();
 
-        return redirect()->route('settings.packages.index');
+        return redirect()->route('packages.show',['id' => $package->id]);
     }
 
     public function edit($id)
@@ -51,18 +55,22 @@ class PackageController extends Controller
         $request->validate([
             'name' => 'required',
             'description' => 'required',
-            'price' => 'required',
-            'image' => 'required',
+            'price' => 'required'
         ]);
 
         $package = Package::find($id);
         $package->name = $request->name;
         $package->description = $request->description;
         $package->price = $request->price;
-        $package->image = $request->image;
+        if ($request->duration) {
+            $package->duration = $request->duration;
+        }
+        if ($request->video_url) {
+            $package->video_url = $request->video_url;
+        }
         $package->save();
 
-        return redirect()->route('settings.packages.index');
+        return redirect()->route('packages.show',['id' => $package->id]);
     }
 
 
@@ -77,17 +85,6 @@ class PackageController extends Controller
     {
         $package = Package::find($id);
         return view('panel.settings.packages.show', compact('package'));
-    }
-
-    public function updateProduct(Request $request, $id)
-    {
-        $package = Package::find($id);
-        $package->productGroups()->updateExistingPivot($request->product_id, [
-            'quantity' => $request->quantity,
-            'unit' => $request->unit,
-            'description' => $request->description,
-            'price' => $request->price,
-        ]);
     }
     
 }

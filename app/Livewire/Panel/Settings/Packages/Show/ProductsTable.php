@@ -10,19 +10,23 @@ class ProductsTable extends Component
 
 
     public $package;
-    public $products;
+    public $materials;
+
+    public $isAddMaterial = false;
+    public $isAddNewMaterial = false;
     public $isEditMode = false;
-    public $isAddProduct = false;
-    public $product_id;
-    public $product_id_selected;
-    public $description;
+
+    //form data
+    public $materialId;
+    public $material;
     public $quantity;
-    public $isMultiple;
+    public $price;
+    public $unit;
 
     public function mount($package)
     {
         $this->package = $package;
-        $this->products = Product::where('product_role_id','!=',3)->get();
+        $this->materials = Product::where('product_role_id','!=',3)->get();
     }
 
     public function render()
@@ -30,59 +34,105 @@ class ProductsTable extends Component
         return view('livewire.panel.settings.packages.show.products-table');
     }
 
-    public function editProduct($id)
+    //switch to add product mode
+    public function switchToAddMaterialMode()
     {
-        if ($this->isEditMode) {
-            $this->package->materials()->updateExistingPivot($id, [
-                'quantity' => $this->quantity,
-            ]);
-            $this->product_id_selected = null;
-            $this->description = null;
-            $this->quantity = null;
-     
+        $this->isAddMaterial = !$this->isAddMaterial;
+    }
+
+    //switch to add new product mode
+    public function switchToAddNewMaterialMode($value = true)
+    {
+        if (!$value) {
+            $this->isAddNewMaterial = $value;
         } else {
-            $this->product_id_selected = $id;
-            $productAux = $this->package->materials()->where('id',$id)->first();
-            $this->description = $productAux->name;
-            $this->quantity = $productAux->pivot->quantity;
-            
-            
+            $this->isAddNewMaterial = !$this->isAddNewMaterial;
         }
+    }
+
+    //switch to edit mode
+    public function switchToEditMode($materialId)
+    {
+        $this->materialId = $materialId;
+        $this->quantity = $this->package->materials()->where('id', $materialId)->first()->pivot->quantity;
         $this->isEditMode = !$this->isEditMode;
     }
 
-    public function cancelEdit()
+    //add product to package
+    public function addMaterialToPackage()
+    {
+        if ($this->isAddNewMaterial) {
+            $this->addNewMaterialToPackage();
+            return;
+        }
+        $this->package->materials()->attach($this->materialId, [
+            'quantity' => $this->quantity,
+        ]);
+
+        $this->isAddMaterial = false;
+
+        $this->clearNewMaterialForm();
+    }
+
+    //remove product from package
+    public function removeMaterialFromPackage($materialId)
+    {
+        $this->package->materials()->detach($materialId);
+    }
+
+    //edit product in package
+    public function editMaterialInPackage($materialId)
+    {
+        $this->package->materials()->updateExistingPivot($materialId, [
+            'quantity' => $this->quantity,
+        ]);
+
+        $this->isEditMode = false;
+        $this->clearNewMaterialForm();
+    }
+
+    //add new product to package
+    public function addNewMaterialToPackage()
+    {
+        $material = new Product();
+        $material->name = $this->product;
+        $material->description = $this->product;
+        $material->product_role_id = 3;
+        $material->unit = 'pz';
+        $material->save();
+
+        $this->materials = Product::all();
+        $this->package->materials()->attach($material->id, [
+            'quantity' => $this->quantity,
+        ]);
+
+        $this->isAddNewMaterial = false;
+        $this->clearNewMaterialForm();
+    }
+
+    //cancel add product
+    public function cancelAddMaterial()
+    {
+        $this->isAddMaterial = false;
+        $this->isAddNewMaterial = false;
+        $this->clearNewMaterialForm();
+    }
+
+    //cancel edit product
+    public function cancelEditMaterial()
     {
         $this->isEditMode = false;
+        $this->clearNewMaterialForm();
     }
 
-    public function addProduct()
+    //clear new product form
+    public function clearNewMaterialForm()
     {
-       $this->dispatch('openModal');
+        $this->materialId = '';
+        $this->material = '';
+        $this->quantity = '';
+        $this->price = '';
+        $this->unit = '';
     }
-
-    public function saveProduct()
-    {
-        logger("agregare $this->product_id");
-        $this->package->materials()->attach($this->product_id, ['quantity' => $this->quantity]);
-        $this->product_id = null;
-        $this->description = null;
-        $this->quantity = null;
-       
-    }
-
-    public function removeProduct($id)
-    {
-        $this->package->materials()->detach($id);
-    }
-
-    public function cancelAddProduct()
-    {
-        $this->product_id = null;
-        $this->description = null;
-        $this->quantity = null;
-        $this->isAddProduct = !$this->isAddProduct;
-    }
-
 
 }

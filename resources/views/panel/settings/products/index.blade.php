@@ -43,7 +43,7 @@
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Productos" icon="fas fa-box">
                         <x-slot:tools>
-                            <a href="{{ route('packages.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
@@ -53,7 +53,7 @@
                                     <tr>
                                         <th class="col-2">Nombre</th>
                                         <th class="col-6">Descripción</th>
-                                        <th class="col-2">Precio</th>
+                                        <th class="col-2">Unidad</th>
                                         <th class="col-2">Acciones</th>
                                     </tr>
                                 </thead>
@@ -62,8 +62,12 @@
                                         <tr>
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->description }}</td>
-                                            <td>{{ $product->price }}</td>
+                                            <td>{{ $product->unit }}</td>
                                             <td>
+                                                <a href="{{ route('products.show', $product->id) }}"
+                                                    class="btn btn-info btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
                                                 <a href="{{ route('packages.edit', $product->id) }}" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>

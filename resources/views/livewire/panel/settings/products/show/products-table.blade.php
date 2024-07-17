@@ -1,6 +1,6 @@
-<x-card title="Materiales" icon="fas fa-box">
+<x-card title="Productos" icon="fas fa-box">
     <x-slot:tools>
-        <button class="btn btn-primary btn-sm" wire:click='switchToAddMaterialMode'>
+        <button class="btn btn-primary btn-sm" wire:click='switchToAddProductMode'>
             <i class="fas fa-plus"></i>
         </button>
     </x-slot>
@@ -16,36 +16,34 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($package->materials as $idnex => $material)
-                    <tr wire:key="{{ $material->id }}">
+                {{logger($product)}}
+                @foreach ($product->products as $idnex => $productAux)
+                    <tr wire:key="{{ $productAux->id }}">
                         <td>
-                            {{ $material->name }}
+                            {{ $productAux->name }}
 
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->materialId == $material->id)
+                            @if ($this->isEditMode && $this->productId == $productAux->id)
                                 <input type="text" wire:model="quantity" class="form-control">
                             @else
-                                {{ $material->pivot->quantity }}
+                                {{ $productAux->pivot->quantity }}
                             @endif
                         </td>
                         <td>
-                            {{ $material->unit }}
+                            {{ $productAux->unit }}
 
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->materialId == $material->id)
-                                <button class="btn btn-success btn-sm" wire:click="editMaterialInPackage({{ $material->id }})">
+                            @if ($this->isEditMode && $this->productId == $productAux->id)
+                                <button class="btn btn-success btn-sm" wire:click="editMaterialInPackage({{ $productAux->id }})">
                                     <i class="fas fa-save"></i>
                                 </button>
                                 <button class="btn btn-danger btn-sm" wire:click="cancelEditMaterial">
                                     <i class="fas fa-window-close"></i>
                                 </button>
                             @else
-                                <button class="btn btn-primary btn-sm" wire:click="switchToEditMode({{ $material->id }})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <form wire:submit='removeMaterialFromPackage({{ $material->id }})' class="d-inline">
+                                <form wire:submit='removeMaterialFromPackage({{ $productAux->id }})' class="d-inline">
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -54,7 +52,7 @@
                         </td>
                     </tr>
                 @endforeach
-                @if ($this->isAddMaterial)
+                @if ($this->isAddProduct)
                     <tr>
                         <td>
                             <select wire:model.live="materialId" class="form-control">
@@ -66,13 +64,13 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" wire:model="quantity" class="form-control">
+                            
                         </td>
                         <td>
 
                         </td>
                         <td>
-                            <button class="btn btn-success btn-sm" wire:click="addMaterialToPackage">
+                            <button class="btn btn-success btn-sm" wire:click="addMaterialToProduct">
                                 <i class="fas fa-save"></i>
                             </button>
                             <button class="btn btn-danger btn-sm" wire:click="cancelAddMaterial">

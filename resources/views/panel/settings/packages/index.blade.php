@@ -43,9 +43,30 @@
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Paquetes" icon="fas fa-box">
                         <x-slot:tools>
-                            <a href="{{ route('packages.create') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus"></i>
-                            </a>
+                            {{-- Search --}}
+                            <div class="row">
+                                <div class="col">
+
+                                    <form action="{{ route('settings.packages.index') }}" method="GET"
+                                        class="form-inline">
+                                        <div class="input-group input-group-sm">
+                                            <input class="form-control form-control-navbar" type="search" name="search"
+                                                placeholder="Buscar" aria-label="Search">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-navbar" type="submit">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col">
+
+                                    <a href="{{ route('packages.create') }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </x-slot>
                         <x-slot:body class="table-responsive">
                             <table class="table table-bordered table-hover">
@@ -64,10 +85,12 @@
                                             <td>{{ $package->description }}</td>
                                             <td>{{ $package->price }}</td>
                                             <td>
-                                                <a href="{{ route('packages.show', $package) }}" class="btn btn-info btn-sm">
+                                                <a href="{{ route('packages.show', $package) }}"
+                                                    class="btn btn-info btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('packages.edit', $package) }}" class="btn btn-warning btn-sm">
+                                                <a href="{{ route('packages.edit', $package) }}"
+                                                    class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="{{ route('packages.destroy', $package) }}" method="POST"

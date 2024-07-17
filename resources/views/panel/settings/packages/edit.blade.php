@@ -43,6 +43,14 @@
                                     <label for="price">Precio</label>
                                     <input type="number" name="price" id="price" class="form-control" value="{{ $package->price }}">
                                 </div>
+                                <div class="form-group">
+                                    <label for="duration">Duración</label>
+                                    <input type="number" name="duration" id="duration" class="form-control" value="{{ $package->duration }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="video_url">URL del video</label>
+                                    <input type="text" name="video_url" id="video_url" class="form-control" value="{{ $package->video_url }}">
+                                </div>
                                 <button type="submit" class="btn btn-primary">Guardar</button>
                             </form>
                         </x-slot:body>

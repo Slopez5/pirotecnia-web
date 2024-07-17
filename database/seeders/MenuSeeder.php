@@ -38,9 +38,9 @@ class MenuSeeder extends Seeder
                 "menu_id" => 1,
                 "parent_id" => null,
                 "menu_open" => false,
-                "title" => "Eventos",
-                "url" => "events.index",
-                "icon" => "fas fa-calendar-alt",
+                "title" => "Usuarios",
+                "url" => "users.index",
+                "icon" => "fas fa-users",
                 "active" => false,
                 "order" => 1
             ],
@@ -48,11 +48,43 @@ class MenuSeeder extends Seeder
                 "menu_id" => 1,
                 "parent_id" => null,
                 "menu_open" => false,
-                "title" => "Inventario",
-                "url" => "inventory.index",
-                "icon" => "fas fa-boxes",
+                "title" => "Eventos",
+                "url" => "events.index",
+                "icon" => "fas fa-calendar-alt",
                 "active" => false,
                 "order" => 2
+            ],
+            [
+                "menu_id" => 1,
+                "parent_id" => null,
+                "menu_open" => false,
+                "title" => "Inventario",
+                "url" => "inventories.index",
+                "icon" => "fas fa-boxes",
+                "active" => false,
+                "order" => 3
+            ],
+            //Purchases
+            [
+                "menu_id" => 1,
+                "parent_id" => null,
+                "menu_open" => false,
+                "title" => "Compras",
+                "url" => "purchases.index",
+                "icon" => "fas fa-shopping-cart",
+                "active" => false,
+                "order" => 4
+            ],
+            //Sales
+            [
+                "menu_id" => 1,
+                "parent_id" => null,
+                "menu_open" => false,
+                "title" => "Ventas",
+                "url" => "sales.index",
+                "icon" => "fas fa-cash-register",
+                "active" => false,
+                "order" => 5
             ],
             [
                 "menu_id" => 1,
@@ -62,11 +94,11 @@ class MenuSeeder extends Seeder
                 "url" => null,
                 "icon" => "fas fa-th",
                 "active" => false,
-                "order" => 3
+                "order" => 6
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 4,
+                "parent_id" => 7,
                 "menu_open" => false,
                 "title" => "Menu",
                 "url" => "settings.menu.index",
@@ -76,7 +108,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 4,
+                "parent_id" => 7,
                 "menu_open" => false,
                 "title" => "Paquetes",
                 "url" => "settings.packages.index",
@@ -86,7 +118,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 4,
+                "parent_id" => 7,
                 "menu_open" => false,
                 "title" => "Productos",
                 "url" => "settings.products.index",
@@ -96,7 +128,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 4,
+                "parent_id" => 7,
                 "menu_open" => false,
                 "title" => "Equipo",
                 "url" => "settings.equipaments.index",
@@ -106,7 +138,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 4,
+                "parent_id" => 7,
                 "menu_open" => false,
                 "title" => "productos (modo cliente)",
                 "url" => "settings.productgroups.index",

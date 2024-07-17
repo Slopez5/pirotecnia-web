@@ -1,6 +1,6 @@
 <x-card title="Productos" icon="fas fa-box">
     <x-slot:tools>
-        <button class="btn btn-primary btn-sm" wire:click='addProduct'>
+        <button class="btn btn-primary btn-sm" wire:click='switchToAddProductMode'>
             <i class="fas fa-plus"></i>
         </button>
     </x-slot>
@@ -23,7 +23,7 @@
 
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->product_id_selected == $product->id)
+                            @if ($this->isEditMode && $this->productId == $product->id)
                                 <input type="text" wire:model="quantity" class="form-control">
                             @else
                                 {{ $product->pivot->quantity }}
@@ -34,18 +34,18 @@
 
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->product_id_selected == $product->id)
-                                <button class="btn btn-success btn-sm" wire:click="editProduct({{ $product->id }})">
+                            @if ($this->isEditMode && $this->productId == $product->id)
+                                <button class="btn btn-success btn-sm" wire:click="editProductInPackage({{ $product->id }})">
                                     <i class="fas fa-save"></i>
                                 </button>
-                                <button class="btn btn-danger btn-sm" wire:click="cancelEdit">
+                                <button class="btn btn-danger btn-sm" wire:click="cancelEditProduct">
                                     <i class="fas fa-window-close"></i>
                                 </button>
                             @else
-                                <button class="btn btn-primary btn-sm" wire:click="editProduct({{ $product->id }})">
+                                <button class="btn btn-primary btn-sm" wire:click="switchToEditMode({{ $product->id }})">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <form wire:submit='deleteProduct({{ $product->id }})' class="d-inline">
+                                <form wire:submit='removeProductFromPackage({{ $product->id }})' class="d-inline">
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -57,12 +57,16 @@
                 @if ($this->isAddProduct)
                     <tr>
                         <td>
-                            <select wire:model="product_id" class="form-control">
+                            <select wire:model.live="productId" class="form-control">
                                 <option value="">Selecciona un producto</option>
                                 @foreach ($products as $product)
                                     <option value="{{ $product->id }}">{{ $product->name }}</option>
                                 @endforeach
+                                <option value="0">Otro</option>
                             </select>
+                            @if ($this->isAddNewProduct)
+                                <input type="text" wire:model="product" class="form-control">
+                            @endif
                         </td>
                         <td>
                             <input type="text" wire:model="quantity" class="form-control">
@@ -71,7 +75,7 @@
 
                         </td>
                         <td>
-                            <button class="btn btn-success btn-sm" wire:click="saveProduct">
+                            <button class="btn btn-success btn-sm" wire:click="addProductToPackage">
                                 <i class="fas fa-save"></i>
                             </button>
                             <button class="btn btn-danger btn-sm" wire:click="cancelAddProduct">
