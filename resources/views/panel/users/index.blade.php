@@ -5,19 +5,18 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Inventario</h1>
+                    <h1 class="m-0 text-dark">Usuarios</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active">Inventario</li>
+                        <li class="breadcrumb-item active">Usuarios</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
     </div>
 @endsection
-
 
 @section('content')
     <section class="content">
@@ -42,9 +41,9 @@
             <div class="row">
                 <!-- Left col -->
                 <section class="col-lg-12 connectedSortable">
-                    <x-card title="Inventario" icon="fas fa-boxes">
+                    <x-card title="Usuarios" icon="fas fa-users">
                         <x-slot:tools>
-                            <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
@@ -53,27 +52,24 @@
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Stock</th>
+                                        <th>Email</th>
+                                        <th>Roles</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($products as $item)
+                                    @foreach ($users as $user)
                                         <tr>
-                                            <td>{{ $item->name }}</td>
-                                            <td>{{ $item->pivot->quantity }}</td>
+                                            <td>{{ $user->name }}</td>
+                                            <td>{{ $user->email }}</td>
+                                            <td>{{ $user->roles->pluck('name')->implode(', ') }}</td>
                                             <td>
-                                                <a href="{{ route('inventory.edit', $item) }}" class="btn btn-warning btn-sm">
+                                                <a href="{{ route('users.edit', $user) }}" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('inventory.destroy', $item) }}" method="POST"
-                                                    style="display: inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <button class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach

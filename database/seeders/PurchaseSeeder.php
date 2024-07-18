@@ -20,37 +20,37 @@ class PurchaseSeeder extends Seeder
                 "date" => "2024-07-01",
                 "products" => [
                     [
-                        "product_id" => 1,
+                        "product_id" => 46,
                         "quantity" => 80,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 2,
+                        "product_id" => 47,
                         "quantity" => 200,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 3,
+                        "product_id" => 48,
                         "quantity" => 200,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 4,
+                        "product_id" => 49,
                         "quantity" => 200,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 5,
+                        "product_id" => 50,
                         "quantity" => 40,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 6,
+                        "product_id" => 51,
                         "quantity" => 8,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 7,
+                        "product_id" => 52,
                         "quantity" => 8,
                         "price" => 0
                     ],
@@ -60,92 +60,92 @@ class PurchaseSeeder extends Seeder
                         "price" => 0
                     ],
                     [
-                        "product_id" => 9,
+                        "product_id" => 53,
                         "quantity" => 12,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 10,
+                        "product_id" => 54,
                         "quantity" => 12,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 11,
+                        "product_id" => 55,
                         "quantity" => 6,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 12,
+                        "product_id" => 56,
                         "quantity" => 6,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 13,
+                        "product_id" => 57,
                         "quantity" => 2,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 14,
+                        "product_id" => 58,
                         "quantity" => 10,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 15,
+                        "product_id" => 59,
                         "quantity" => 8,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 16,
+                        "product_id" => 60,
                         "quantity" => 10,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 17,
+                        "product_id" => 61,
                         "quantity" => 6,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 18,
+                        "product_id" => 62,
                         "quantity" => 22,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 19,
+                        "product_id" => 63,
                         "quantity" => 12,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 20,
+                        "product_id" => 64,
                         "quantity" => 8,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 21,
+                        "product_id" => 65,
                         "quantity" => 4,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 22,
+                        "product_id" => 66,
                         "quantity" => 2,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 23,
+                        "product_id" => 67,
                         "quantity" => 2,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 24,
+                        "product_id" => 68,
                         "quantity" => 4,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 25,
+                        "product_id" => 69,
                         "quantity" => 36,
                         "price" => 0
                     ],
                     [
-                        "product_id" => 26,
+                        "product_id" => 70,
                         "quantity" => 40,
                         "price" => 0
                     ]

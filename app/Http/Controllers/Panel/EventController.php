@@ -46,11 +46,13 @@ class EventController extends Controller
         $event->event_type = $request->event_type;
         $event->package()->associate($request->package_id);
         $event->save();
-        logger($event->package->materials);
         foreach ($event->package->materials as $product) {
             if ($product->product_role_id == 2) {
-                $productAux = $product->products->first();
-                $event->products()->attach($productAux->id, ['quantity' => 1, 'price' => 0]);
+                $quantity = $product->pivot->quantity;
+                for ($i = 0; $i < $quantity; $i++) {
+                    $product_id = $request->products_id[$i];
+                    $event->products()->attach($product_id->id, ['quantity' => 1, 'price' => 0]);
+                }
             } else {
                 $event->products()->attach($product->id, ['quantity' => 1, 'price' => 0]);
             }
