@@ -54,7 +54,7 @@ class ProductsTable extends Component
         }
         // Verify if products is empty
         if ($this->product->products->isEmpty()) {
-            $this->product->product_role_id = 3;
+            $this->product->product_role_id = 2;
             $this->product->save();
         }
         $this->product->products()->attach($this->materialId, ['quantity' => 1, 'price' => 0]);

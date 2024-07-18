@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Package extends Model
@@ -38,6 +39,10 @@ class Package extends Model
     public function equipaments(): BelongsToMany
     {
         return $this->belongsToMany(Equipament::class)->withPivot(['quantity'])->withTimestamps();
+    }
+
+    public function events(): HasMany {
+        return $this->hasMany(Event::class);
     }
     
 }

@@ -67,11 +67,14 @@
                                             <td>{{ $event->package->name }}</td>
                                             <td>{{ $event->date }}</td>
                                             <td>{{ $event->phone }}</td>
-                                            <td>{{ $event->client }}</td>
-                                            <td>{{ $event->address }}</td>
+                                            <td>{{ $event->client_name }}</td>
+                                            <td>{{ $event->client_address }}</td>
                                             <td>{{ $event->event_address }}</td>
                                             <td>{{ $event->event_date }}</td>
                                             <td>
+                                                <a href="{{ route('events.show', $event) }}" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
                                                 <a href="{{ route('events.edit', $event) }}" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
