@@ -72,7 +72,12 @@ class EventForm extends Component
     public function mount($packages)
     {
         $this->packages = $packages;
-        $this->package_id = $packages->first()->id;
+        if ($packages->count() > 0) {
+
+            $this->package_id = $packages->first()->id;
+        } else {
+            redirect()->route('packages.create');
+        }
     }
 
     public function render()
