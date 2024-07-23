@@ -12,6 +12,15 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($event) {
+            $event->products()->detach();
+        });
+    }
+
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);

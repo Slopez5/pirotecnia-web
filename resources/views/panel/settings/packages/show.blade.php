@@ -47,6 +47,7 @@
             </div>
             <div class="row">
                 <div class="col-6">
+                    {{logger($package)}}
                     <livewire:panel.settings.packages.show.product-groups-table :package="$package" />
                     <livewire:panel.settings.packages.show.products-table :package="$package" />
                 </div>

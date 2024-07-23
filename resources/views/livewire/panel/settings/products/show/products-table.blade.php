@@ -16,7 +16,6 @@
                 </tr>
             </thead>
             <tbody>
-                {{logger($product)}}
                 @foreach ($product->products as $idnex => $productAux)
                     <tr wire:key="{{ $productAux->id }}">
                         <td>

@@ -100,21 +100,11 @@ class MenuSeeder extends Seeder
                 "menu_id" => 1,
                 "parent_id" => 7,
                 "menu_open" => false,
-                "title" => "Menu",
-                "url" => "settings.menu.index",
-                "icon" => "fas fa-bars",
-                "active" => true,
-                "order" => 0
-            ],
-            [
-                "menu_id" => 1,
-                "parent_id" => 7,
-                "menu_open" => false,
                 "title" => "Paquetes",
                 "url" => "settings.packages.index",
                 "icon" => "fas fa-box",
                 "active" => false,
-                "order" => 1
+                "order" => 0
             ],
             [
                 "menu_id" => 1,
@@ -124,7 +114,7 @@ class MenuSeeder extends Seeder
                 "url" => "settings.products.index",
                 "icon" => "fas fa-cube",
                 "active" => false,
-                "order" => 2
+                "order" => 1
             ],
             [
                 "menu_id" => 1,
@@ -134,7 +124,7 @@ class MenuSeeder extends Seeder
                 "url" => "settings.equipaments.index",
                 "icon" => "fas fa-tools",
                 "active" => false,
-                "order" => 3
+                "order" => 2
             ],
             [
                 "menu_id" => 1,
@@ -144,7 +134,7 @@ class MenuSeeder extends Seeder
                 "url" => "settings.productgroups.index",
                 "icon" => "fas fa-cubes",
                 "active" => false,
-                "order" => 4
+                "order" => 3
             ]
         ];
 

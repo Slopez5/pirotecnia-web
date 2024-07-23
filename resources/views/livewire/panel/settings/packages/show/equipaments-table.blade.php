@@ -1,6 +1,6 @@
 <x-card title="Equipo" icon="fas fa-box">
     <x-slot:tools>
-        <button class="btn btn-primary btn-sm" wire:click='addEquipament'>
+        <button class="btn btn-primary btn-sm" wire:click='switchToAddEquipamentMode'>
             <i class="fas fa-plus"></i>
         </button>
     </x-slot>
@@ -21,8 +21,11 @@
                             {{ $equipament->name }}
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->equipament_id_selected == $equipament->id)
+                            @if ($this->isEditMode && $this->equipamentId == $equipament->id)
                                 <input type="text" wire:model="quantity" class="form-control">
+                                <div>
+                                    @error('quantity') <small class="text-danger">{{ $message }}</small> @enderror
+                                </div>
                             @else
                                 {{ $equipament->pivot->quantity }}
                             @endif
@@ -31,18 +34,18 @@
                             {{ $equipament->unit }}
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->equipament_id_selected == $equipament->id)
-                                <button class="btn btn-success btn-sm" wire:click="editEquipament({{ $equipament->id }})">
+                            @if ($this->isEditMode && $this->equipamentId == $equipament->id)
+                                <button class="btn btn-success btn-sm" wire:click="editEquipamentInPackage({{ $equipament->id }})">
                                     <i class="fas fa-save"></i>
                                 </button>
                                 <button class="btn btn-danger btn-sm" wire:click="cancelEdit">
                                     <i class="fas fa-window-close"></i>
                                 </button>
                             @else
-                                <button class="btn btn-primary btn-sm" wire:click="editEquipament({{ $equipament->id }})">
+                                <button class="btn btn-primary btn-sm" wire:click="switchToEditMode({{ $equipament->id }})">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <form wire:submit='deleteEquipament({{ $equipament->id }})' class="d-inline">
+                                <form wire:submit='removeEquipamentFromPackage({{ $equipament->id }})' class="d-inline">
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -54,21 +57,30 @@
                 @if ($this->isAddEquipament)
                     <tr>
                         <td>
-                            <select wire:model="equipament_id" class="form-control">
+                            <select wire:model="equipamentId" class="form-control">
                                 <option value="">Seleccione un equipo</option>
                                 @foreach ($equipaments as $equipament)
                                     <option value="{{ $equipament->id }}">{{ $equipament->name }}</option>
                                 @endforeach
                             </select>
+                            <div>
+                                @error('equipamentId') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
                         </td>
                         <td>
                             <input type="text" wire:model="quantity" class="form-control">
+                            <div>
+                                @error('quantity') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
                         </td>
                         <td>
                             <input type="text" wire:model="unit" class="form-control">
+                            <div>
+                                @error('unit') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
                         </td>
                         <td>
-                            <button class="btn btn-success btn-sm" wire:click="saveEquipament">
+                            <button class="btn btn-success btn-sm" wire:click="addEquipamentToPackage">
                                 <i class="fas fa-save"></i>
                             </button>
                             <button class="btn btn-danger btn-sm" wire:click="cancelAddEquipament">

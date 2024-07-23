@@ -6,22 +6,77 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Package;
 use Illuminate\Http\Request;
+use DateTime;
+use DateTimeZone;
 
 class EventController extends Controller
 {
     //
 
+    /// Description of the function
+    /// This function is used to get all the events that are going to happen in the future and show them in the view
+    /// ## Returns
+    /// - View: The view with the events that are going to happen in the future
     public function index()
     {
-        $events = Event::all();
+        $utcDateTime = new DateTime('now', new DateTimeZone('UTC'));
+        $utcDateTime->setTimezone(new DateTimeZone('America/Mexico_City'));
+        $dateLocal = $utcDateTime->format('Y-m-d H:i:s');
+        // separes the products of the package in materials and products
+        $events = Event::with(['package', 'products', 'package.products', 'package.products.products'])
+            ->where('event_date', '>', $dateLocal)
+            ->get()
+            ->map(function ($event) {
+                $productPackages = $event->package->products;
+                unset($event->package->products);
+                $event->package->products = $productPackages->filter(function ($product) {
+                    return $product->product_role_id == 3;
+                })->values();
+                $event->package->materials = $productPackages->filter(function ($product) {
+                    return $product->product_role_id == 2 || $product->product_role_id == 1;
+                })->values();
+
+
+                return $event;
+            });
         return view('panel.events.index', compact('events'));
     }
 
+    /// Description of the function
+    /// This function is used to show the form to create a new event
+    /// ## Returns
+    /// - View: The view with the form to create a new event
     public function create()
     {
         $packages = Package::all();
         return view('panel.events.create', compact('packages'));
     }
+
+    /// Description of the function
+    /// This function is used to store the new event in the database and associate the products of the package to the event
+    /// The function validates the data of the request and then creates the event and associates the products of the package to the event
+    /// The function redirects to the index of the events
+    /// ## Parameters
+    /// - Request: The request with the data of the new event
+    /// - $request->date: The date of the event
+    /// - $request->phone: The phone of the client
+    /// - $request->client_name: The name of the client
+    /// - $request->client_address: The address of the client
+    /// - $request->event_address: The address of the event
+    /// - $request->event_datetime: The date and time of the event
+    /// - $request->event_type: The type of the event
+    /// - $request->package_id: The id of the package of the event
+    /// ## Validation
+    /// - date: Required
+    /// - phone: Required
+    /// - client_name: Required
+    /// - client_address: Required
+    /// - event_address: Required
+    /// - event_datetime: Required
+    /// - event_type: Required
+    /// - package_id: Required
+    /// ## Returns
+    /// - Redirect: Redirect to the index of the events
 
     public function store(Request $request)
     {
@@ -46,17 +101,7 @@ class EventController extends Controller
         $event->event_type = $request->event_type;
         $event->package()->associate($request->package_id);
         $event->save();
-        foreach ($event->package->materials as $product) {
-            if ($product->product_role_id == 2) {
-                $quantity = $product->pivot->quantity;
-                for ($i = 0; $i < $quantity; $i++) {
-                    $product_id = $request->products_id[$i];
-                    $event->products()->attach($product_id->id, ['quantity' => 1, 'price' => 0]);
-                }
-            } else {
-                $event->products()->attach($product->id, ['quantity' => 1, 'price' => 0]);
-            }
-        }
+
 
         return redirect()->route('events.index');
     }
@@ -107,6 +152,14 @@ class EventController extends Controller
     public function show($id)
     {
         $event = Event::find($id);
+        $productPackages = $event->package->products;
+        unset($event->package->products);
+        $event->package->products = $productPackages->filter(function ($product) {
+            return $product->product_role_id == 3;
+        })->values();
+        $event->package->materials = $productPackages->filter(function ($product) {
+            return $product->product_role_id == 2 || $product->product_role_id == 1;
+        })->values();
         return view('panel.events.show', compact('event'));
     }
 }

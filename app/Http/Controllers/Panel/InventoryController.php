@@ -11,7 +11,11 @@ class InventoryController extends Controller
     //
     public function index()
     {
-        $products = Inventory::find(1)->products;
+        $inventory = Inventory::find(1);
+        $products = [];
+        if ($inventory) {
+            $products = $inventory->products;
+        }
         return view('panel.inventory.index', compact('products'));
     }
 

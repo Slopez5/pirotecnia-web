@@ -35,14 +35,16 @@
                         </td>
                         <td>
                             @if ($this->isEditMode && $this->materialId == $material->id)
-                                <button class="btn btn-success btn-sm" wire:click="editMaterialInPackage({{ $material->id }})">
+                                <button class="btn btn-success btn-sm"
+                                    wire:click="editMaterialInPackage({{ $material->id }})">
                                     <i class="fas fa-save"></i>
                                 </button>
                                 <button class="btn btn-danger btn-sm" wire:click="cancelEditMaterial">
                                     <i class="fas fa-window-close"></i>
                                 </button>
                             @else
-                                <button class="btn btn-primary btn-sm" wire:click="switchToEditMode({{ $material->id }})">
+                                <button class="btn btn-primary btn-sm"
+                                    wire:click="switchToEditMode({{ $material->id }})">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form wire:submit='removeMaterialFromPackage({{ $material->id }})' class="d-inline">
@@ -62,11 +64,21 @@
                                 @foreach ($materials as $material)
                                     <option value="{{ $material->id }}">{{ $material->name }}</option>
                                 @endforeach
-                                
+
                             </select>
+                            <div>
+                                @error('materialId')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </td>
                         <td>
                             <input type="text" wire:model="quantity" class="form-control">
+                            <div>
+                                @error('quantity')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </td>
                         <td>
 

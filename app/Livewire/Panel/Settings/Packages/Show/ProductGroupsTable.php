@@ -23,9 +23,14 @@ class ProductGroupsTable extends Component
     public $price;
     public $unit;
 
+    protected $rules = [
+        'productId' => 'required|integer',
+        'quantity' => 'required|integer|min:1',
+        'product' => 'required_if:isAddNewProduct,true|string',
+    ];
+
     public function updatedProductId()
     {
-        logger('updatedProductId');
         if ($this->productId == 0) {
             $this->switchToAddNewProductMode();
         } else {
@@ -47,14 +52,12 @@ class ProductGroupsTable extends Component
     //switch to add product mode
     public function switchToAddProductMode()
     {
-        logger('switchToAddProductMode');
         $this->isAddProduct = !$this->isAddProduct;
     }
 
     //switch to add new product mode
     public function switchToAddNewProductMode($value = true)
     {
-        logger('switchToAddNewProductMode');
         if (!$value) {
             $this->isAddNewProduct = $value;
         } else {
@@ -65,16 +68,16 @@ class ProductGroupsTable extends Component
     //switch to edit mode
     public function switchToEditMode($productId)
     {
-        logger('switchToEditMode');
         $this->productId = $productId;
-        $this->quantity = $this->package->productGroups()->where('id', $productId)->first()->pivot->quantity;
+        $this->quantity = $this->package->productGroups->where('id', $productId)->first()->pivot->quantity;
         $this->isEditMode = !$this->isEditMode;
     }
 
     //add product to package
     public function addProductToPackage()
     {
-        logger('addProductToPackage');
+        $this->validate();
+        
         if ($this->isAddNewProduct) {
             $this->addNewProductToPackage();
             return;
@@ -91,14 +94,12 @@ class ProductGroupsTable extends Component
     //remove product from package
     public function removeProductFromPackage($productId)
     {
-        logger($productId);
         $this->package->productGroups()->detach($productId);
     }
 
     //edit product in package
     public function editProductInPackage($productId)
     {
-        logger($productId);
         $this->package->productGroups()->updateExistingPivot($productId, [
             'quantity' => $this->quantity,
         ]);
@@ -110,7 +111,6 @@ class ProductGroupsTable extends Component
     //add new product to package
     public function addNewProductToPackage()
     {
-        logger($this->product);
         $product = new Product();
         $product->name = $this->product;
         $product->description = $this->product;
@@ -145,7 +145,6 @@ class ProductGroupsTable extends Component
     //clear new product form
     public function clearNewProductForm()
     {
-        logger('clearNewProductForm');
         $this->productId = '';
         $this->product = '';
         $this->quantity = '';

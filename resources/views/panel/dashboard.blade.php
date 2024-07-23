@@ -68,8 +68,8 @@
                                             <td>{{ $event->package->name }}</td>
                                             <td>{{ $event->date }}</td>
                                             <td>{{ $event->phone }}</td>
-                                            <td>{{ $event->client->name }}</td>
-                                            <td>{{ $event->client->address }}</td>
+                                            <td>{{ $event->client_name }}</td>
+                                            <td>{{ $event->client_address }}</td>
                                             <td>{{ $event->event_address }}</td>
                                             <td>{{ $event->event_date }}</td>
                                             <td>{{ $event->event_type }}</td>

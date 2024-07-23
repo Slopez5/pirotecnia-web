@@ -37,6 +37,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/products', [ProductController::class, 'index'])->name('settings.products.index');
     Route::get('/settings/equipaments', [EquipamentController::class, 'index'])->name('settings.equipaments.index');
 
+    //Users
+    Route::get('panel/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('panel/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('panel/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('panel/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('panel/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('panel/users/{id}', [UserController::class, 'show'])->name('users.show');
+
     //Events
     Route::get('panel/events/create', [EventController::class, 'create'])->name('events.create');
     Route::post('panel/events', [EventController::class, 'store'])->name('events.store');
@@ -53,6 +61,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('panel/inventory/{id}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
     Route::get('panel/inventory/{id}', [InventoryController::class, 'show'])->name('inventory.show');
 
+    //Purchases
+    Route::get('panel/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
+    Route::post('panel/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+    Route::get('panel/purchases/{id}/edit', [PurchaseController::class, 'edit'])->name('purchases.edit');
+    Route::put('panel/purchases/{id}', [PurchaseController::class, 'update'])->name('purchases.update');
+    Route::delete('panel/purchases/{id}', [PurchaseController::class, 'destroy'])->name('purchases.destroy');
+    Route::get('panel/purchases/{id}', [PurchaseController::class, 'show'])->name('purchases.show');
+
+    //Sales
+    Route::get('panel/sales/create', [SaleController::class, 'create'])->name('sales.create');
+    Route::post('panel/sales', [SaleController::class, 'store'])->name('sales.store');
+    Route::get('panel/sales/{id}/edit', [SaleController::class, 'edit'])->name('sales.edit');
+    Route::put('panel/sales/{id}', [SaleController::class, 'update'])->name('sales.update');
+    Route::delete('panel/sales/{id}', [SaleController::class, 'destroy'])->name('sales.destroy');
+    Route::get('panel/sales/{id}', [SaleController::class, 'show'])->name('sales.show');
 
     //Menu
     Route::get('settings/menu/create', [MenuController::class, 'create'])->name('menu.create');

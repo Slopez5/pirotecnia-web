@@ -12,20 +12,34 @@ class Package extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($package) {
+            $package->products()->detach();
+            $package->materials()->detach();
+            $package->productGroups()->detach();
+            $package->equipaments()->detach();
+        });
+    }
+
     public function productGroups(): MorphToMany
     {
         return $this->morphToMany(Product::class, 'productable')
         ->withPivot(['quantity','price'])
         ->withTimestamps()
-        ->where('product_role_id',3);
+        ->where('product_role_id', 3);
     }
 
     public function materials(): MorphToMany {
         return $this->morphToMany(Product::class, 'productable')
         ->withPivot(['quantity','price'])
         ->withTimestamps()
-        ->where('product_role_id',1)
-        ->orWhere('product_role_id',2);
+        ->where(function($query){
+            $query->where('product_role_id', 1)
+            ->orWhere('product_role_id', 2);
+        });
     }
 
     public function products(): MorphToMany
@@ -33,12 +47,14 @@ class Package extends Model
         return $this->morphToMany(Product::class, 'productable')
         ->withPivot(['quantity','price'])
         ->withTimestamps()
-        ->where('product_role_id',1);
+        ->where('product_role_id', 1);
     }
 
     public function equipaments(): BelongsToMany
     {
-        return $this->belongsToMany(Equipament::class)->withPivot(['quantity'])->withTimestamps();
+        return $this->belongsToMany(Equipament::class)
+        ->withPivot(['quantity'])
+        ->withTimestamps();
     }
 
     public function events(): HasMany {

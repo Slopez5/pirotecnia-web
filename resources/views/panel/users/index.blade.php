@@ -62,7 +62,7 @@
                                         <tr>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
-                                            <td>{{ $user->roles->pluck('name')->implode(', ') }}</td>
+                                            <td>{{ $user->role->name }}</td>
                                             <td>
                                                 <a href="{{ route('users.edit', $user) }}" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>

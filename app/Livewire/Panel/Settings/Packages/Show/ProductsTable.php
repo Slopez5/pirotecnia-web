@@ -23,6 +23,12 @@ class ProductsTable extends Component
     public $price;
     public $unit;
 
+    protected $rules = [
+        'materialId' => 'required|integer',
+        'quantity' => 'required|integer|min:1',
+        'material' => 'required_if:isAddNewProduct,true|string',
+    ];
+
     public function mount($package)
     {
         $this->package = $package;
@@ -61,8 +67,17 @@ class ProductsTable extends Component
     //add product to package
     public function addMaterialToPackage()
     {
+        $this->validate();
+
         if ($this->isAddNewMaterial) {
             $this->addNewMaterialToPackage();
+            return;
+        }
+        //Verify if the product is already in the package
+        $material = $this->package->materials()->where('id', $this->materialId)->first();
+        if ($material) {
+            $this->quantity += $material->pivot->quantity;
+            $this->editMaterialInPackage($this->materialId);
             return;
         }
         $this->package->materials()->attach($this->materialId, [

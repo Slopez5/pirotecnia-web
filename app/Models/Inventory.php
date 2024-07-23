@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Inventory extends Model
 {
+     const MAX_STOCK = 1000;
+     const MIN_STOCK = 10;
     use HasFactory;
 
     public function products() : MorphToMany {

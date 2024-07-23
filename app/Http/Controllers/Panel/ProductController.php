@@ -11,7 +11,7 @@ class ProductController extends Controller
     //
     public function index()
     {
-        $products = Product::all();
+        $products = Product::where('product_role_id','!=',3)->get();
         return view('panel.settings.products.index', compact('products'));
     }
 

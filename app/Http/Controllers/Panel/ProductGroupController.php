@@ -32,10 +32,11 @@ class ProductGroupController extends Controller
         $productGroup->product_role_id = 3;
         $productGroup->name = $request->name;
         $productGroup->description = $request->description;
+        $productGroup->unit = 'pz';
         $productGroup->save();
 
 
-        return redirect()->route('settings.product-groups.index');
+        return redirect()->route('settings.productgroups.index');
     }
 
     public function show($id)
@@ -48,7 +49,8 @@ class ProductGroupController extends Controller
     public function edit($id)
     {
         //
-        return view('panel.settings.product-groups.edit');
+        $productGroup = Product::find($id);
+        return view('panel.settings.product-groups.edit', compact('productGroup'));
     }
 
     public function update(Request $request, $id)
@@ -64,7 +66,7 @@ class ProductGroupController extends Controller
         $productGroup->description = $request->description;
         $productGroup->save();
 
-        return redirect()->route('settings.product-groups.index');
+        return redirect()->route('settings.productgroups.index');
     }
 
     public function destroy($id)
@@ -75,6 +77,6 @@ class ProductGroupController extends Controller
 
         $productGroup->delete();
 
-        return redirect()->route('settings.product-groups.index');
+        return redirect()->route('settings.productgroups.index');
     }
 }

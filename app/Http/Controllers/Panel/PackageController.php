@@ -13,6 +13,8 @@ class PackageController extends Controller
     public function index()
     {
         $packages = Package::all();
+
+
         return view('panel.settings.packages.index', compact('packages'));
     }
 
@@ -41,7 +43,7 @@ class PackageController extends Controller
         }
         $package->save();
 
-        return redirect()->route('packages.show',['id' => $package->id]);
+        return redirect()->route('packages.show', ['id' => $package->id]);
     }
 
     public function edit($id)
@@ -70,7 +72,7 @@ class PackageController extends Controller
         }
         $package->save();
 
-        return redirect()->route('packages.show',['id' => $package->id]);
+        return redirect()->route('packages.show', ['id' => $package->id]);
     }
 
 
@@ -86,5 +88,4 @@ class PackageController extends Controller
         $package = Package::find($id);
         return view('panel.settings.packages.show', compact('package'));
     }
-    
 }

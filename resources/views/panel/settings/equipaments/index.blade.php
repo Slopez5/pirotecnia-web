@@ -66,7 +66,7 @@
                                                     class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('equipaments.destroy', $equipament) }}" method="POST"
+                                                <form action="{{ route('equipaments.destroy', $equipament->id) }}" method="POST"
                                                     style="display: inline">
                                                     @csrf
                                                     @method('DELETE')

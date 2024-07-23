@@ -25,21 +25,14 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed',
-        ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
+            'role_id' => 2,
             'password' => bcrypt($request->password),
         ]);
-
-        auth()->login($user);
-
-        return redirect()->route('dashboard');
+        return redirect()->route('users.index');
     }
 
     public function edit($id)

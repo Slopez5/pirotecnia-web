@@ -16,6 +16,7 @@
                 </tr>
             </thead>
             <tbody>
+                {{-- {{ dd($package->products) }} --}}
                 @foreach ($package->productGroups as $idnex => $product)
                     <tr wire:key="{{ $product->id }}">
                         <td>
@@ -64,12 +65,27 @@
                                 @endforeach
                                 <option value="0">Otro</option>
                             </select>
+                            <div>
+                                @error('productId')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                             @if ($this->isAddNewProduct)
                                 <input type="text" wire:model="product" class="form-control">
+                                <div>
+                                    @error('product')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
                             @endif
                         </td>
                         <td>
                             <input type="text" wire:model="quantity" class="form-control">
+                            <div>
+                                @error('quantity')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </td>
                         <td>
 
