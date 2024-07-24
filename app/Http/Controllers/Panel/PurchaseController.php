@@ -12,7 +12,8 @@ class PurchaseController extends Controller
 
     public function index()
     {
-        return view('panel.purchases.index');
+        $purchases = Purchase::all();
+        return view('panel.purchases.index',compact('purchases'));
     }
 
     public function create()

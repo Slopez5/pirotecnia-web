@@ -34,7 +34,10 @@ class PackageController extends Controller
         $package = new Package();
         $package->name = $request->name;
         $package->description = $request->description;
-        $package->price = $request->price;
+        $amount = $request->price;
+        $amount = preg_replace('/[^\d.]/', '', $amount);
+        $amountDouble = (double) $amount;
+        $package->price = $amountDouble;
         if ($request->duration) {
             $package->duration = $request->duration;
         }

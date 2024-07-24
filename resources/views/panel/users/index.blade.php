@@ -82,3 +82,20 @@
         </div>
     </section>
 @endsection
+
+@section('control-sidebar')
+    {{-- Filtro de usuario --}}
+    <div class="p-3">
+        <h5>Filtro</h5>
+        <div class="form-group">
+            <label for="name">Nombre</label>
+            <input type="text" class="form-control" id="name" placeholder="Nombre">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Email">
+        </div>
+        
+        <button class="btn btn-primary">Filtrar</button>
+    </div>
+@endsection

@@ -99,3 +99,44 @@
         </div><!-- /.container-fluid -->
     </section>
 @endsection
+
+@section('control-sidebar')
+    {{-- Filtro de eventos --}}
+    <div class="p-3">
+        <h5>Filtro</h5>
+        <div class="form-group">
+            <label for="package">Paquete</label>
+            <select class="form-control" id="package">
+                <option value="">Seleccione un paquete</option>
+                @foreach ($packages as $package)
+                    <option value="{{ $package->id }}">{{ $package->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="date">Fecha</label>
+            <input type="date" class="form-control" id="date" placeholder="Fecha">
+        </div>
+        <div class="form-group">
+            <label for="phone">Teléfono</label>
+            <input type="text" class="form-control" id="phone" placeholder="Teléfono">
+        </div>
+        <div class="form-group">
+            <label for="client_name">Cliente</label>
+            <input type="text" class="form-control" id="client_name" placeholder="Cliente">
+        </div>
+        <div class="form-group">
+            <label for="client_address">Dirección</label>
+            <input type="text" class="form-control" id="client_address" placeholder="Dirección">
+        </div>
+        <div class="form-group">
+            <label for="event_address">Dirección del evento</label>
+            <input type="text" class="form-control" id="event_address" placeholder="Dirección del evento">
+        </div>
+        <div class="form-group">
+            <label for="event_date">Fecha del evento</label>
+            <input type="date" class="form-control" id="event_date" value="{{ date('Y-m-d') }}" placeholder="Fecha del evento">
+        </div>
+        <button class="btn btn-primary">Filtrar</button>
+    </div>
+@endsection

@@ -113,3 +113,24 @@
         </div>
     </section>
 @endsection
+
+
+@section('control-sidebar')
+    {{-- Filtro de paquetes --}}
+    <div class="p-3">
+        <h5>Filtro</h5>
+        <div class="form-group">
+            <label for="name">Nombre</label>
+            <input type="text" class="form-control" id="name" placeholder="Nombre">
+        </div>
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <input type="text" class="form-control" id="description" placeholder="Descripción">
+        </div>
+        <div class="form-group">
+            <label for="price">Precio</label>
+            <input type="number" class="form-control" id="price" placeholder="Precio">
+        </div>
+        <button class="btn btn-primary">Filtrar</button>
+    </div>
+@endsection

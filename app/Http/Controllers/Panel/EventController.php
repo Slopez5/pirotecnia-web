@@ -22,6 +22,7 @@ class EventController extends Controller
         $utcDateTime = new DateTime('now', new DateTimeZone('UTC'));
         $utcDateTime->setTimezone(new DateTimeZone('America/Mexico_City'));
         $dateLocal = $utcDateTime->format('Y-m-d H:i:s');
+        $packages = Package::all();
         // separes the products of the package in materials and products
         $events = Event::with(['package', 'products', 'package.products', 'package.products.products'])
             ->where('event_date', '>', $dateLocal)
@@ -39,7 +40,7 @@ class EventController extends Controller
 
                 return $event;
             });
-        return view('panel.events.index', compact('events'));
+        return view('panel.events.index', compact('events', 'packages'));
     }
 
     /// Description of the function

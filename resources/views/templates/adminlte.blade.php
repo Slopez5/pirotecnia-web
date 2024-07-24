@@ -73,7 +73,7 @@
 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
+            @yield('control-sidebar')
         </aside>
         <!-- /.control-sidebar -->
     </div>
