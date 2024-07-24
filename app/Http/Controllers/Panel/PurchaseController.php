@@ -13,7 +13,8 @@ class PurchaseController extends Controller
     public function index()
     {
         $purchases = Purchase::all();
-        return view('panel.purchases.index',compact('purchases'));
+        $itemActive = 5;
+        return view('panel.purchases.index',compact('purchases','itemActive'));
     }
 
     public function create()

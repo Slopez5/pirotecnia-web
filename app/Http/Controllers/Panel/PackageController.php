@@ -14,8 +14,9 @@ class PackageController extends Controller
     {
         $packages = Package::all();
 
-
-        return view('panel.settings.packages.index', compact('packages'));
+        $parentItemActive = 7;
+        $itemActive = 0;
+        return view('panel.settings.packages.index', compact('packages', 'parentItemActive', 'itemActive'));
     }
 
     public function create()

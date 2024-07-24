@@ -40,7 +40,6 @@ class EventForm extends Component
 
     public function updatedRadioSelected()
     {
-        logger($this->radioSelected);
         $package = Package::with(['materials', 'materials.inventories', 'materials.products.inventories'])->where('id', $this->package_id)->first();
         $selectedProducts = collect($this->radioSelected);
         $products = Product::with('inventories')->whereIn('id', $selectedProducts)->get();
@@ -166,7 +165,6 @@ class EventForm extends Component
         //Verificar existencia de productos en inventario
         if (!$this->validateStock()) {
             //show alert
-            logger('No hay stock suficiente');
             $this->showAlert = true;
             $this->enableSave = false;
             return;

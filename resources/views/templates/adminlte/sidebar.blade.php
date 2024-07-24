@@ -20,9 +20,8 @@
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-            
-                <x-menu/>
-           
+            {{-- <x-menu> with required itemActive and optional parentItemActive --}}
+            <x-menu :itemActive="$itemActive ?? null" :parentItemActive="$parentItemActive ?? null" />
         </nav>
         <!-- /.sidebar-menu -->
     </div>

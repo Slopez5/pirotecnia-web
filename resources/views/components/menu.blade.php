@@ -1,7 +1,7 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     @foreach ($items as $item)
-        <li class="nav-item {{ $item->menu_open ? 'menu-open' : '' }}">
-            <a href="{{ isset($item->url) ? route($item->url) : '#' }}" class="nav-link {{ $item->active ? 'active' : '' }}">
+        <li class="nav-item {{ ($parentItemActive == $item->id) ? 'menu-open' : '' }}">
+            <a href="{{ isset($item->url) ? route($item->url) : '#' }}" class="nav-link {{ ($itemActive == $item->id && $parentItemActive == null) ? 'active' : '' }}">
                 <i class="nav-icon {{ $item->icon }}"></i>
                 <p>
                     {{ $item->title }}
@@ -14,7 +14,7 @@
                 <ul class="nav nav-treeview">
                     @foreach ($item->menuItems as $sub_item)
                         <li class="nav-item">
-                            <a href="{{ isset($sub_item->url) ? route($sub_item->url) : '#' }}" class="nav-link {{ $sub_item->active ? 'active' : '' }}">
+                            <a href="{{ isset($sub_item->url) ? route($sub_item->url) : '#' }}" class="nav-link {{($parentItemActive == $sub_item->parent_id && $itemActive == $sub_item->order) ? 'active' : '' }}">
                                 <i class="nav-icon {{$sub_item->icon}} "></i>
                                 <p>{{ $sub_item->title }}</p>
                             </a>

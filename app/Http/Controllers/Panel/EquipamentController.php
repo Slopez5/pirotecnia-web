@@ -12,7 +12,9 @@ class EquipamentController extends Controller
     public function index()
     {
         $equipaments = Equipament::all();
-        return view('panel.settings.equipaments.index', compact('equipaments'));
+        $parentItemActive = 7;
+        $itemActive = 2;
+        return view('panel.settings.equipaments.index', compact('equipaments', 'itemActive', 'parentItemActive'));
     }
 
     public function create()

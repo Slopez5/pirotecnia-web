@@ -12,7 +12,9 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::where('product_role_id','!=',3)->get();
-        return view('panel.settings.products.index', compact('products'));
+        $parentItemActive = 7;
+        $itemActive = 1;
+        return view('panel.settings.products.index', compact('products', 'itemActive', 'parentItemActive'));
     }
 
     public function create()

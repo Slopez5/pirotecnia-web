@@ -13,6 +13,7 @@ class DashboardController extends Controller
     public function index()
     {
         $events = Event::all();
-        return view('panel.dashboard', compact('events'));
+        $itemActive = 1;
+        return view('panel.dashboard', compact('events', 'itemActive'));
     }
 }

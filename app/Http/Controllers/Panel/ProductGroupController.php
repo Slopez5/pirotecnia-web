@@ -13,7 +13,9 @@ class ProductGroupController extends Controller
     public function index()
     {
         $productGroups = Product::where('product_role_id',3)->get();
-        return view('panel.settings.product-groups.index', compact('productGroups'));
+        $parentItemActive = 7;
+        $itemActive = 3;
+        return view('panel.settings.product-groups.index', compact('productGroups', 'itemActive', 'parentItemActive'));
     }
 
     public function create()

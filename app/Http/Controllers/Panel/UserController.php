@@ -15,7 +15,8 @@ class UserController extends Controller
         $users = User::where('role_id', 2)
         ->where('id', '!=', auth()->user()->id)
         ->get();
-        return view('panel.users.index', compact('users'));
+        $itemActive = 2;
+        return view('panel.users.index', compact('users', 'itemActive'));
     }
 
     public function create()

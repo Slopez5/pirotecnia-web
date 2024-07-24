@@ -43,24 +43,9 @@
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Compras" icon="fas fa-shopping-cart">
                         <x-slot:tools>
-                            {{-- Search --}}
-                            <div class="row">
-                                <div class="col">
-
-                                    <form action="{{ route('purchases.index') }}" method="GET"
-                                        class="form-inline">
-                                        <div class="input-group input-group-sm">
-                                            <input class="form-control form-control-navbar" type="search" name="search"
-                                                placeholder="Buscar" aria-label="Search">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-navbar" type="submit">
-                                                    <i class="fas fa-search"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                            <a href="{{ route('purchases.create') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                            </a>
                         </x-slot>
                         <x-slot:body class="card-body table-responsive p-0">
                             <table class="table table-bordered table-hover text-nowrap">

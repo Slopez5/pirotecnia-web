@@ -44,9 +44,11 @@
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Inventario" icon="fas fa-boxes">
                         <x-slot:tools>
+
                             <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
+
                         </x-slot>
                         <x-slot:body class="card-body table-responsive p-0">
                             <table class="table table-bordered table-hover text-nowrap">
@@ -63,7 +65,8 @@
                                             <td>{{ $item->name }}</td>
                                             <td>{{ $item->pivot->quantity }}</td>
                                             <td>
-                                                <a href="{{ route('inventory.edit', $item) }}" class="btn btn-warning btn-sm">
+                                                <a href="{{ route('inventory.edit', $item) }}"
+                                                    class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="{{ route('inventory.destroy', $item) }}" method="POST"

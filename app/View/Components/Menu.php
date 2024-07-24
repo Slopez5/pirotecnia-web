@@ -10,11 +10,15 @@ use Illuminate\View\Component;
 class Menu extends Component
 {
     public $items;
+    public $itemActive;
+    public $parentItemActive = null;
     /**
      * Create a new component instance.
      */
-    public function __construct()
+    public function __construct($itemActive = null, $parentItemActive = null)
     {
+        $this->itemActive = $itemActive;
+        $this->parentItemActive = $parentItemActive;
         $this->items = ModelsMenu::where('name','web')->first()->menuItems()->where('parent_id', null)->get();
     }
 

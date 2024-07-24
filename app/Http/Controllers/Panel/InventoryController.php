@@ -16,7 +16,8 @@ class InventoryController extends Controller
         if ($inventory) {
             $products = $inventory->products;
         }
-        return view('panel.inventory.index', compact('products'));
+        $itemActive = 4;
+        return view('panel.inventory.index', compact('products', 'itemActive'));
     }
 
     public function create()
