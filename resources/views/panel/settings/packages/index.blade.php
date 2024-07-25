@@ -43,30 +43,9 @@
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Paquetes" icon="fas fa-box">
                         <x-slot:tools>
-                            {{-- Search --}}
-                            <div class="row">
-                                <div class="col">
-
-                                    <form action="{{ route('settings.packages.index') }}" method="GET"
-                                        class="form-inline">
-                                        <div class="input-group input-group-sm">
-                                            <input class="form-control form-control-navbar" type="search" name="search"
-                                                placeholder="Buscar" aria-label="Search">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-navbar" type="submit">
-                                                    <i class="fas fa-search"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col">
-
-                                    <a href="{{ route('packages.create') }}" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                            </div>
+                            <a href="{{ route('packages.create') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                            </a>
                         </x-slot>
                         <x-slot:body class="table-responsive">
                             <table class="table table-bordered table-hover">
@@ -112,25 +91,4 @@
             </div>
         </div>
     </section>
-@endsection
-
-
-@section('control-sidebar')
-    {{-- Filtro de paquetes --}}
-    <div class="p-3">
-        <h5>Filtro</h5>
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <input type="text" class="form-control" id="name" placeholder="Nombre">
-        </div>
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <input type="text" class="form-control" id="description" placeholder="Descripción">
-        </div>
-        <div class="form-group">
-            <label for="price">Precio</label>
-            <input type="number" class="form-control" id="price" placeholder="Precio">
-        </div>
-        <button class="btn btn-primary">Filtrar</button>
-    </div>
 @endsection

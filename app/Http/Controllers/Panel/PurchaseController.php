@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,8 @@ class PurchaseController extends Controller
 
     public function create()
     {
-        return view('panel.purchases.create');
+        $products = Product::all();
+        return view('panel.purchases.create',compact('products'));
     }
 
     public function store(Request $request)

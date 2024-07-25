@@ -46,11 +46,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                <div class="col-md-6">
                     <livewire:panel.settings.packages.show.product-groups-table :package="$package" />
                     <livewire:panel.settings.packages.show.products-table :package="$package" />
                 </div>
-                <div class="col-6">
+                <div class="col-md-6">
                     <livewire:panel.settings.packages.show.equipaments-table :package="$package" />
                 </div>
             </div>
