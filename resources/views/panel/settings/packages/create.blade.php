@@ -1,5 +1,20 @@
 @extends('templates.adminlte')
 
+@section('extra-css')
+    <style>
+        #description {
+            overflow-y: auto;
+            /* Enable vertical scroll */
+            resize: none;
+            /* Disable manual resizing */
+            line-height: 1.5;
+            /* Adjust this to match your textarea line height */
+            max-height: calc(1.5em * 8);
+            /* Adjust 5 to the maximum number of lines */
+        }
+    </style>
+@endsection
+
 @section('content-header')
     <div class="content-header">
         <div class="container-fluid">
@@ -38,6 +53,7 @@
                                 <div class="form-group">
                                     <label for="description">Descripción</label>
                                     <textarea name="description" id="description" class="form-control"></textarea>
+                                    <small id="charCount" class="form-text text-muted">0/200 caracteres</small>
                                 </div>
                                 {{-- Price --}}
                                 <div class="form-group">
@@ -63,4 +79,46 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('extra-script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('description');
+            const charCount = document.getElementById('charCount');
+            const maxLines = 5;
+            const maxChars = 400; // Set your character limit here
+            const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight);
+            const maxHeight = lineHeight * maxLines;
+
+            textarea.addEventListener('input', function() {
+                // Truncate text if it exceeds the character limit
+                if (this.value.length > maxChars) {
+                    this.value = this.value.substring(0, maxChars);
+                }
+                // Adjust height
+                this.style.height = 'auto';
+                if (this.scrollHeight > maxHeight) {
+                    this.style.height = maxHeight + 'px';
+                } else {
+                    this.style.height = (this.scrollHeight) + 'px';
+                }
+
+                // Update character count
+                const currentLength = this.value.length;
+                charCount.textContent = `${currentLength}/${maxChars} caracteres`;
+            });
+
+            // Initial adjustment for pre-existing content, if any
+            if (textarea.scrollHeight > maxHeight) {
+                textarea.style.height = maxHeight + 'px';
+            } else {
+                textarea.style.height = 'auto';
+                textarea.style.height = (textarea.scrollHeight) + 'px';
+            }
+
+            // Initial character count update
+            charCount.textContent = `${textarea.value.length}/${maxChars} caracteres`;
+        });
+    </script>
 @endsection

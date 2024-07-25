@@ -22,7 +22,6 @@ class EquipamentsTable extends Component
     protected $rules = [
         'equipamentId' => 'required|integer',
         'quantity' => 'required|integer|min:1',
-        'equipament' => 'required_if:isAddNewEquipament,true|string',
     ];
 
     public function mount($package)
@@ -41,6 +40,8 @@ class EquipamentsTable extends Component
     public function switchToAddEquipamentMode()
     {
         $this->isAddEquipament = !$this->isAddEquipament;
+        $this->isEditMode = false;
+        $this->clearNewEquipamentForm();
     }
 
     //switch to add new product mode
@@ -56,6 +57,7 @@ class EquipamentsTable extends Component
     //switch to edit mode
     public function switchToEditMode($equipamentId)
     {
+        $this->isAddEquipament = false;
         $this->equipamentId = $equipamentId;
         $this->quantity = $this->package->equipaments()->where('id', $equipamentId)->first()->pivot->quantity;
         $this->isEditMode = !$this->isEditMode;
@@ -64,40 +66,37 @@ class EquipamentsTable extends Component
     //add product to package
     public function addEquipamentToPackage()
     {
+        logger("addEquipamentToPackage");
         $this->validate();
 
-        if ($this->isAddNewMaterial) {
-            $this->addNewEquipamentToPackage();
-            return;
-        }
         //Verify if the product is already in the package
-        $material = $this->package->equipaments()->where('id', $this->materialId)->first();
-        if ($material) {
-            $this->quantity += $material->pivot->quantity;
-            $this->editEquipamentInPackage($this->materialId);
+        $equipament = $this->package->equipaments()->where('id', $this->equipamentId)->first();
+        if ($equipament) {
+            $this->quantity += $equipament->pivot->quantity;
+            $this->editEquipamentInPackage($this->equipamentId);
             return;
         }
-        $this->package->equipaments()->attach($this->materialId, [
+        $this->package->equipaments()->attach($this->equipamentId, [
             'quantity' => $this->quantity,
         ]);
 
         $this->isAddEquipament = false;
 
-        $this->clearNewMaterialForm();
+        $this->clearNewEquipamentForm();
     }
 
     //remove product from package
-    public function removeEquipamentFromPackage($materialId)
+    public function removeEquipamentFromPackage($equipamentId)
     {
-        $this->package->equipaments()->detach($materialId);
+        $this->package->equipaments()->detach($equipamentId);
     }
 
     //edit product in package
-    public function editEquipamentInPackage($materialId)
+    public function editEquipamentInPackage($equipamentId)
     {
         $this->validate();
         
-        $this->package->equipaments()->updateExistingPivot($materialId, [
+        $this->package->equipaments()->updateExistingPivot($equipamentId, [
             'quantity' => $this->quantity,
         ]);
 

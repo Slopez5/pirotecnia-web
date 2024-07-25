@@ -38,7 +38,7 @@
                                 <button class="btn btn-success btn-sm" wire:click="editEquipamentInPackage({{ $equipament->id }})">
                                     <i class="fas fa-save"></i>
                                 </button>
-                                <button class="btn btn-danger btn-sm" wire:click="cancelEdit">
+                                <button class="btn btn-danger btn-sm" wire:click="cancelEditEquipament">
                                     <i class="fas fa-window-close"></i>
                                 </button>
                             @else
