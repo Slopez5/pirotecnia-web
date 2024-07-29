@@ -4,10 +4,7 @@
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0">{{ $package->name }}</h1>
-                </div><!-- /.col -->
-                <div class="col-sm-6">
+                <div class="col align-self-end">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
                         <li class="breadcrumb-item active">{{ $package->name }}</li>
@@ -22,35 +19,81 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-6">
-                    <x-card title="{{ $package->name }}" icon="fas fa-box">
-                        <x-slot:tools>
-                            <a href="{{ route('packages.edit', $package) }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </x-slot>
-                        <x-slot:footer>
-                            <a href="{{ route('settings.packages.index') }}" class="btn btn-primary">Regresar</a>
-                        </x-slot>
-                        <x-slot:body>
-
-                            <div class="row">
-                                <div class="col-12">
-                                    <p><strong>Nombre:</strong> {{ $package->name }}</p>
-                                    <p><strong>Descripción:</strong> {{ $package->description }}</p>
-                                    <p><strong>Precio:</strong> {{ $package->price }}</p>
-                                </div>
-                            </div>
-                        </x-slot>
-                    </x-card>
+                <div class="col-12">
+                    <div class="text-center">
+                        <h1>{{ $package->name }}</h1>
+                    </div>
                 </div>
             </div>
+
+            {{--  Carousel with $package->video_url example:https://photos.app.goo.gl/Y5A15bTHg e55fodG7 --}}
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center">
+
+                        <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    {{-- Video_url --}}
+                                    <iframe src="https://drive.google.com/file/d/1Ka5yYa3gC1eiDqfvuWhJTT1f7vRiU8Ca/preview"
+                                        width="640" height="480" allow="autoplay"></iframe>
+                                </div>
+                            </div>
+                            {{-- <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Anterior</span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Siguiente</span>
+                            </a> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Nombre --}}
             <div class="row">
                 <div class="col-md-6">
-                    <livewire:panel.settings.packages.show.products-table :package="$package" />
+                    <p>
+                        <strong>Nombre:</strong> {{ $package->name }}
+                    </p>
                 </div>
+            </div>
+
+            {{-- Descripción --}}
+            <div class="row">
                 <div class="col-md-6">
-                    <livewire:panel.settings.packages.show.equipaments-table :package="$package" />
+                    <p>
+                        <strong>Descripción:</strong> {{ $package->description }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- Precio --}}
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Precio:</strong> {{ $package->price }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- Duración --}}
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Duración:</strong> {{ $package->duration }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg">
+                    <x-panel.settings.packages.show.materials-table :materials="$package->materials" />
+                </div>
+                <div class="col-lg">
+                    <x-panel.settings.packages.show.equipament-table :equipaments="$package->equipaments" />
                 </div>
             </div>
         </div>

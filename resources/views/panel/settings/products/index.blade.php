@@ -71,11 +71,11 @@
                                                 <a href="{{ route('packages.edit', $product->id) }}" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('packages.destroy', $product->id) }}" method="POST"
+                                                <form id="deleteForm-{{ $product->id }}" action="{{ route('products.destroy', $product->id) }}" method="POST"
                                                     style="display: inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="submit">
+                                                    <button class="btn btn-danger btn-sm" type="button" onclick="confirmDelete({{ $product->id }})">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -90,4 +90,25 @@
             </div>
         </div>
     </section>
+@endsection
+
+
+@section('extra-script')
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm-' + id).submit();
+                }
+            })
+        }
+    </script>
 @endsection

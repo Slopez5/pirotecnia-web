@@ -12,6 +12,13 @@ class Package extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'price',
+        'duration',
+        'description',
+    ];
+
     protected static function boot()
     {
         parent::boot();

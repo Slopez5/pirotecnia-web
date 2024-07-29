@@ -78,11 +78,11 @@
                                                 <a href="{{ route('events.edit', $event) }}" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('events.destroy', $event) }}" method="POST"
+                                                <form id="deleteForm-{{$event->id}}" action="{{ route('events.destroy', $event) }}" method="POST"
                                                     style="display: inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="submit">
+                                                    <button class="btn btn-danger btn-sm" type="button" onclick="confirmDelete({{ $event->id }})">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -139,4 +139,25 @@
         </div>
         <button class="btn btn-primary">Filtrar</button>
     </div>
+@endsection
+
+
+@section('extra-script')
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, bórralo!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm-' + id).submit();
+                }
+            })
+        }
+    </script>
 @endsection

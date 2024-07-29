@@ -1,20 +1,21 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Panel\Settings\Packages\Show;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Table extends Component
+class EquipamentTable extends Component
 {
-    
+
+    public $equipaments;
     /**
      * Create a new component instance.
      */
-    public function __construct()
+    public function __construct($equipaments)
     {
-        
+        $this->equipaments = $equipaments;
     }
 
     /**
@@ -22,6 +23,6 @@ class Table extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.table');
+        return view('components.panel.settings.packages.show.equipament-table');
     }
 }

@@ -1,20 +1,5 @@
 @extends('templates.adminlte')
 
-@section('extra-css')
-    <style>
-        #description {
-            overflow-y: auto;
-            /* Enable vertical scroll */
-            resize: none;
-            /* Disable manual resizing */
-            line-height: 1.5;
-            /* Adjust this to match your textarea line height */
-            max-height: calc(1.5em * 8);
-            /* Adjust 5 to the maximum number of lines */
-        }
-    </style>
-@endsection
-
 @section('content-header')
     <div class="content-header">
         <div class="container-fluid">
@@ -39,41 +24,45 @@
             <!-- Main row -->
             <div class="row">
                 <!-- Left col -->
-                <section class="col-lg-12 connectedSortable">
-                    <x-card title="Crear Paquete" icon="fas fa-box">
+                <section class="col-lg-12">
+                    <x-card class="card-tabs">
+                        <x-slot:header>
+                            <ul class="nav nav-tabs" id="custom-tabs-two-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="packages-tab" data-toggle="pill" href="#packages"
+                                        role="tab" aria-controls="packages" aria-selected="true"
+                                        onclick="setActiveTab('packages')">Paquete</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link disabled" id="materials-tab" data-toggle="pill" href="#materials"
+                                        role="tab" aria-controls="materials" aria-selected="false"
+                                        onclick="setActiveTab('materials')">Materiales</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link disabled" id="equipaments-tab" data-toggle="pill" href="#equipaments"
+                                        role="tab" aria-controls="equipaments" aria-selected="false"
+                                        onclick="setActiveTab('equipaments')">Equipo</a>
+                                </li>
+                            </ul>
+                        </x-slot:header>
                         <x-slot:body class="table-responsive">
-                            <form action="{{ route('packages.store') }}" method="POST">
-                                @csrf
-                                {{-- Name --}}
-                                <div class="form-group">
-                                    <label for="name">Nombre</label>
-                                    <input type="text" name="name" id="name" class="form-control">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="packages" role="tabpanel"
+                                    aria-labelledby="packages-tab">
+                                    {{-- Form to edit package --}}
+                                    <livewire:panel.settings.packages.package-form>
                                 </div>
-                                {{-- Description --}}
-                                <div class="form-group">
-                                    <label for="description">Descripción</label>
-                                    <textarea name="description" id="description" class="form-control"></textarea>
-                                    <small id="charCount" class="form-text text-muted">0/200 caracteres</small>
+                                <div class="tab-pane fade" id="materials" role="tabpanel" aria-labelledby="materials-tab">
+                                    {{-- Form to add materials to package --}}
+                                    <livewire:panel.settings.packages.material-in-package-form>
                                 </div>
-                                {{-- Price --}}
-                                <div class="form-group">
-                                    <label for="price">Precio</label>
-                                    <input type="text" name="price" id="price" class="form-control">
+                                <div class="tab-pane fade" id="equipaments" role="tabpanel"
+                                    aria-labelledby="equipaments-tab">
+                                    {{-- Form to add equipaments to package --}}
+                                    <livewire:panel.settings.packages.equipament-in-package-form>
                                 </div>
-                                {{-- Duración --}}
-                                <div class="form-group">
-                                    <label for="duration">Duración</label>
-                                    <input type="text" name="duration" id="duration" class="form-control">
-                                </div>
-                                {{-- Video Url --}}
-                                <div class="form-group">
-                                    <label for="video_url">URL del Video</label>
-                                    <input type="text" name="video_url" id="video_url" class="form-control">
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </form>
-                        </x-slot>
+                            </div>
+                        </x-slot:body>
                     </x-card>
                 </section>
             </div>
@@ -119,6 +108,19 @@
 
             // Initial character count update
             charCount.textContent = `${textarea.value.length}/${maxChars} caracteres`;
+        });
+
+
+        function setActiveTab(tab) {
+            localStorage.setItem('activeTab', tab);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var activeTab = localStorage.getItem('activeTab');
+            if (activeTab) {
+                $('#custom-tabs-two-tab a[href="#' + activeTab + '"]').tab('show');
+
+            }
         });
     </script>
 @endsection

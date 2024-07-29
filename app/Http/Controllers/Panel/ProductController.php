@@ -11,7 +11,7 @@ class ProductController extends Controller
     //
     public function index()
     {
-        $products = Product::where('product_role_id','!=',3)->get();
+        $products = Product::where('product_role_id', '!=', 3)->get();
         $parentItemActive = 7;
         $itemActive = 1;
         return view('panel.settings.products.index', compact('products', 'itemActive', 'parentItemActive'));
@@ -35,8 +35,14 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->unit = $request->unit;
         $product->save();
-
-        return redirect()->route('products.show',['id' => $product->id]);
+        $isMultiple = $request->multiple;
+        logger("isMultiple: $isMultiple");
+        if ($isMultiple == 'on') {
+            return redirect()->route('products.show', ['id' => $product->id]);
+        } else {
+            return redirect()->route('settings.products.index');
+           
+        }
     }
 
     public function edit($id)
@@ -58,7 +64,7 @@ class ProductController extends Controller
         $product->unit = $request->unit;
         $product->save();
 
-        return redirect()->route('products.show',['id' => $product->id]);
+        return redirect()->route('products.show', ['id' => $product->id]);
     }
 
     public function show($id)
@@ -71,6 +77,6 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $product->delete();
-        return redirect()->route('products.index');
+        return redirect()->route('settings.products.index');
     }
 }

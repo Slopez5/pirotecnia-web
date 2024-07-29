@@ -1,12 +1,21 @@
 <!-- resources/views/components/card.blade.php -->
 <div {{ $attributes->merge(['class' => 'card']) }}>
     <div class="card-header {{ $isBorder ? 'border-0' : '' }}">
-        <h3 class="card-title">
-            @isset($icon)
-                <i class="{{ $icon }} mr-1"></i>
-            @endisset
-            {{ $title }}
-        </h3>
+
+        @isset($header)
+            {{ $header }}
+        @endisset
+
+
+        @isset($title)
+            <h3 class="card-title">
+                @isset($icon)
+                    <i class="{{ $icon }} mr-1"></i>
+                @endisset
+                {{ $title }}
+            </h3>
+        @endisset
+
         @isset($tools)
             <div class="card-tools">
                 {{ $tools }}

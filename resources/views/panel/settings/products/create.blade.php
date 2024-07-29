@@ -43,6 +43,14 @@
                                     <label for="unit">Unidad</label>
                                     <input type="text" name="unit" id="unit" class="form-control">
                                 </div>
+                                {{-- switch multiples productos --}}
+                                <div class="form-group">
+                                    <label for="multiple">Multiples productos</label>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="multiple" name="multiple">
+                                        <label class="custom-control-label" for="multiple"></label>
+                                    </div>
+                                </div>
                                 {{-- Button --}}
                                 <button type="submit" class="btn btn-primary">Guardar</button>
                             </form>

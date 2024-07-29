@@ -12,6 +12,7 @@ use App\Http\Controllers\Panel\ProductGroupController;
 use App\Http\Controllers\Panel\PurchaseController;
 use App\Http\Controllers\Panel\SaleController;
 use App\Http\Controllers\Panel\UserController;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
 //Auth
@@ -19,6 +20,8 @@ Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'loginSubmit'])->name('login.submit');
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/register', [AuthController::class, 'registerSubmit'])->name('register.submit');
+
+Route::post('/print-ticket', [TicketController::class, 'printReceipt'])->name('print-ticket');
 
 
 Route::middleware('auth')->group(function () {
@@ -33,7 +36,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/panel/sales', [SaleController::class, 'index'])->name('sales.index');
     Route::get('/settings/menu', [MenuController::class, 'index'])->name('settings.menu.index');
     Route::get('/settings/packages', [PackageController::class, 'index'])->name('settings.packages.index');
-    Route::get('/settings/productgroups', [ProductGroupController::class, 'index'])->name('settings.productgroups.index');
     Route::get('/settings/products', [ProductController::class, 'index'])->name('settings.products.index');
     Route::get('/settings/equipaments', [EquipamentController::class, 'index'])->name('settings.equipaments.index');
 
@@ -92,14 +94,6 @@ Route::middleware('auth')->group(function () {
     Route::put('settings/packages/{id}', [PackageController::class, 'update'])->name('packages.update');
     Route::delete('settings/packages/{id}', [PackageController::class, 'destroy'])->name('packages.destroy');
     Route::get('settings/packages/{id}', [PackageController::class, 'show'])->name('packages.show');
-
-    //ProductGroups
-    Route::get('settings/productgroups/create', [ProductGroupController::class, 'create'])->name('product-groups.create');
-    Route::post('settings/productgroups', [ProductGroupController::class, 'store'])->name('product-groups.store');
-    Route::get('settings/productgroups/{id}/edit', [ProductGroupController::class, 'edit'])->name('product-groups.edit');
-    Route::put('settings/productgroups/{id}', [ProductGroupController::class, 'update'])->name('product-groups.update');
-    Route::delete('settings/productgroups/{id}', [ProductGroupController::class, 'destroy'])->name('product-groups.destroy');
-    Route::get('settings/productgroups/{id}', [ProductGroupController::class, 'show'])->name('product-groups.show');
 
     //Products
     Route::get('settings/products/create', [ProductController::class, 'create'])->name('products.create');
