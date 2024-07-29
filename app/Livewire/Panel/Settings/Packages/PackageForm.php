@@ -19,9 +19,9 @@ class PackageForm extends Component
     public function mount($package = null)
     {
         if ($package == null) {
-            
+
             return;
-        } 
+        }
         $this->package = $package;
         $this->name = $package->name;
         $this->price = $package->price;
@@ -35,8 +35,9 @@ class PackageForm extends Component
         return view('livewire.panel.settings.packages.package-form');
     }
 
-    public function save() {
-        
+    public function save()
+    {
+
         $this->validate([
             'name' => 'required',
             'price' => 'required',
@@ -44,10 +45,14 @@ class PackageForm extends Component
             'description' => 'required',
         ]);
 
+        $amount = $this->price;
+        $amount = preg_replace('/[^\d.]/', '', $amount);
+        $amountDouble = (float) $amount;
+
         if ($this->package == null) {
             $this->package = Package::create([
                 'name' => $this->name,
-                'price' => $this->price,
+                'price' => $amountDouble,
                 'duration' => $this->duration,
                 'description' => $this->description,
             ]);
@@ -58,14 +63,15 @@ class PackageForm extends Component
 
         $this->package->update([
             'name' => $this->name,
-            'price' => $this->price,
+            'price' => $amountDouble,
             'duration' => $this->duration,
             'description' => $this->description,
         ]);
         $this->dispatch('packageUpdated');
     }
 
-    public function nextTab() {
+    public function nextTab()
+    {
         $this->dispatch('nextToMaterials');
     }
 }
