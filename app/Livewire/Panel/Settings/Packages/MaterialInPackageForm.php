@@ -22,7 +22,7 @@ class MaterialInPackageForm extends Component
 
     public function mount($package = null)
     {
-        $this->materials = Product::where('product_role_id', 1)->orderBy('name', 'ASC')->get();
+        $this->materials = Product::where('product_role_id','!=' , 3)->orderBy('name', 'ASC')->get();
         $this->package = $package;
     }
 
