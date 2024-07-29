@@ -15,16 +15,8 @@
                             {{ $equipament->name }}
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->equipamentId == $equipament->id)
-                                <input type="text" wire:model="quantity" class="form-control">
-                                <div>
-                                    @error('quantity')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            @else
                                 {{ $equipament->pivot->quantity }}
-                            @endif
+                          
                         </td>
                         <td>
                             {{ $equipament->unit }}

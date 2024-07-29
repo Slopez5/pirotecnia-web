@@ -17,11 +17,9 @@
 
                         </td>
                         <td>
-                            @if ($this->isEditMode && $this->materialId == $material->id)
-                                <input type="text" wire:model="quantity" class="form-control">
-                            @else
+                         
                                 {{ $material->pivot->quantity }}
-                            @endif
+                            
                         </td>
                         <td>
                             {{ $material->unit }}

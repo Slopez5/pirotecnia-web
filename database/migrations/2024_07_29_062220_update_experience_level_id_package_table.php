@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clients', function (Blueprint $table) {
-            $table->id();
-           
-            $table->timestamps();
+        Schema::table('packages', function (Blueprint $table) {
+            //
+            $table->unsignedBigInteger('experience_level_id')->nullable();
+
+            $table->foreign('experience_level_id')->references('id')->on('experience_levels');
         });
     }
 
@@ -23,6 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clients');
+        Schema::table('packages', function (Blueprint $table) {
+            //
+        });
     }
 };

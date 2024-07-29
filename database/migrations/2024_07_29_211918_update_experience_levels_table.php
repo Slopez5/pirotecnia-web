@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clients', function (Blueprint $table) {
-            $table->id();
-           
-            $table->timestamps();
+        Schema::table('experience_levels', function (Blueprint $table) {
+            //
+            $table->string('name');
+            $table->string('description');
+            
         });
     }
 
@@ -23,6 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clients');
+        Schema::table('experience_levels', function (Blueprint $table) {
+            //
+        });
     }
 };
