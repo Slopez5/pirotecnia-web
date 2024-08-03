@@ -23,7 +23,7 @@ Route::post('/login', [AuthController::class, 'loginSubmit'])->name('login.submi
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/register', [AuthController::class, 'registerSubmit'])->name('register.submit');
 
-
+Route::get('event/{id}', [EventController::class, 'showByWhatsapp']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -67,7 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::put('panel/events/{id}', [EventController::class, 'update'])->name('events.update');
     Route::delete('panel/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::get('panel/events/{id}', [EventController::class, 'show'])->name('events.show');
-    Route::get('event/{id}', [EventController::class, 'show'])->name('event.show');
     // Send reminder
     Route::post('panel/events/{id}/reminder', [EventController::class, 'reminder'])->name('events.send-reminder');
 

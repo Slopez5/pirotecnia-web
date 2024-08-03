@@ -266,4 +266,8 @@ class EventController extends Controller
         logger($responseWhatsApp);
         return redirect()->route('events.show', 2);
     }
+
+    public function showByWhatsapp($id) {
+        return "test";
+    }
 }
