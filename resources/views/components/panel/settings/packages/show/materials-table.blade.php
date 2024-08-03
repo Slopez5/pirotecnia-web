@@ -17,9 +17,9 @@
 
                         </td>
                         <td>
-                         
-                                {{ $material->pivot->quantity }}
-                            
+
+                            {{ $material->pivot->quantity }}
+
                         </td>
                         <td>
                             {{ $material->unit }}

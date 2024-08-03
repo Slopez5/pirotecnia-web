@@ -10,9 +10,9 @@
                     @endif
                 </p>
             </a>
-            @if ($item->menuItems->isNotEmpty())
+            @if ($item->menuItems->where('active',1)->isNotEmpty())
                 <ul class="nav nav-treeview">
-                    @foreach ($item->menuItems as $sub_item)
+                    @foreach ($item->menuItems->where('active',1) as $sub_item)
                         <li class="nav-item">
                             <a href="{{ isset($sub_item->url) ? route($sub_item->url) : '#' }}" class="nav-link {{($parentItemActive == $sub_item->parent_id && $itemActive == $sub_item->order) ? 'active' : '' }}">
                                 <i class="nav-icon {{$sub_item->icon}} "></i>

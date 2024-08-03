@@ -40,6 +40,18 @@
                                     <textarea name="description" id="description" class="form-control"></textarea>
                                 </div>
                                 <div class="form-group">
+                                    <label for="duration">Duración</label>
+                                    <input type="text" name="duration" id="duration" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="shots">Disparos</label>
+                                    <input type="text" name="shots" id="shots" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="caliber">Calibre</label>
+                                    <input type="text" name="caliber" id="caliber" class="form-control">
+                                </div>
+                                <div class="form-group">
                                     <label for="unit">Unidad</label>
                                     <input type="text" name="unit" id="unit" class="form-control">
                                 </div>

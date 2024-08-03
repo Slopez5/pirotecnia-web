@@ -51,20 +51,31 @@
 
                         </x-slot>
                         <x-slot:body class="card-body table-responsive p-0">
-                            <table class="table table-bordered table-hover text-nowrap">
+                            <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Nombre</th>
-                                        <th>Stock</th>
-                                        <th>Acciones</th>
+                                        <th class="col-4">Nombre</th>
+                                        <th class="col-1">Stock</th>
+                                        <th class="col-1">Price</th>
+                                        @foreach ($clientTypes as $clientType)
+                                            <th class="col-1">{{ $clientType->name }}</th>
+                                        @endforeach
+                                        <th class="col-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($products as $item)
                                         <tr>
-                                            <td>{{ $item->name }}</td>
+                                            <td>{{ $item->name }} {{ $item->caliber != '' ? $item->caliber . "''" : '' }}{{ $item->caliber != '' && $item->shots != '' ? 'x' : '' }}{{ $item->shots != '' ? "$item->shots" : '' }} {{ $item->shape}}
+                                            </td>
                                             <td>{{ $item->pivot->quantity }}</td>
-                                            <td>
+                                            <td>${{ number_format($item->pivot->price, 2) }}</td>
+                                            @foreach ($clientTypes as $clientType)
+                                                {{-- Format price $x,xxx.xx --}}
+                                                <td>${{ number_format($item->pivot->price * $clientType->percentage_price, 2) }}
+                                                </td>
+                                            @endforeach
+                                            <td class="col-2">
                                                 <a href="{{ route('inventory.edit', $item) }}"
                                                     class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>

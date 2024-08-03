@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Panel\Settings\Packages;
 
+use App\Models\ExperienceLevel;
 use App\Models\Package;
 use Livewire\Component;
 
 class PackageForm extends Component
 {
+    public $experienceLevels;
+    public $experience_id;
     public $name;
     public $price;
     public $duration;
@@ -18,8 +21,8 @@ class PackageForm extends Component
 
     public function mount($package = null)
     {
+        $this->experienceLevels = ExperienceLevel::all();
         if ($package == null) {
-
             return;
         }
         $this->package = $package;
@@ -27,6 +30,7 @@ class PackageForm extends Component
         $this->price = $package->price;
         $this->duration = $package->duration;
         $this->description = $package->description;
+        $this->experience_id = $package->experience_level_id;
     }
 
 
@@ -50,12 +54,15 @@ class PackageForm extends Component
         $amountDouble = (float) $amount;
 
         if ($this->package == null) {
-            $this->package = Package::create([
+            $this->package = new Package([
                 'name' => $this->name,
                 'price' => $amountDouble,
                 'duration' => $this->duration,
                 'description' => $this->description,
             ]);
+            $experience = ExperienceLevel::find($this->experience_id);
+            $this->package->experienceLevel()->associate($experience);
+            $this->package->save();
             $this->dispatch('packageCreated', $this->package);
             $this->enableNextTab = true;
             return;
@@ -67,6 +74,9 @@ class PackageForm extends Component
             'duration' => $this->duration,
             'description' => $this->description,
         ]);
+        $experience = ExperienceLevel::find($this->experience_id);
+        $this->package->experienceLevel()->associate($experience);
+        $this->package->save();
         $this->dispatch('packageUpdated');
     }
 

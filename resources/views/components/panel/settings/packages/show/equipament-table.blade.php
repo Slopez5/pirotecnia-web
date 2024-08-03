@@ -15,8 +15,8 @@
                             {{ $equipament->name }}
                         </td>
                         <td>
-                                {{ $equipament->pivot->quantity }}
-                          
+                            {{ $equipament->pivot->quantity }}
+
                         </td>
                         <td>
                             {{ $equipament->unit }}

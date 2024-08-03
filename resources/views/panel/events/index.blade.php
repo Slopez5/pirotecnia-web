@@ -39,9 +39,17 @@
             <!-- /.row -->
             <!-- Main row -->
             <div class="row">
-                <!-- Left col -->
-                <section class="col-lg-12 connectedSortable">
-                    <x-card title="Eventos" icon="fas fa-calendar-alt">
+                <section class="col-lg-5">
+                    <x-card title="Calendario" icon="fas fa-calendar-alt">
+                        <x-slot:body>
+                            <div id="calendar"></div>
+                        </x-slot>
+                    </x-card>
+
+
+                </section>
+                <section class="col-lg-7">
+                    {{-- <x-card title="Eventos" icon="fas fa-calendar-alt">
                         <x-slot:tools>
                             <a href="{{ route('events.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
@@ -78,11 +86,13 @@
                                                 <a href="{{ route('events.edit', $event) }}" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form id="deleteForm-{{$event->id}}" action="{{ route('events.destroy', $event) }}" method="POST"
+                                                <form id="deleteForm-{{ $event->id }}"
+                                                    action="{{ route('events.destroy', $event) }}" method="POST"
                                                     style="display: inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="button" onclick="confirmDelete({{ $event->id }})">
+                                                    <button class="btn btn-danger btn-sm" type="button"
+                                                        onclick="confirmDelete({{ $event->id }})">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -92,7 +102,7 @@
                                 </tbody>
                             </table>
                         </x-slot>
-                    </x-card>
+                    </x-card> --}}
                 </section>
             </div>
             <!-- /.row (main row) -->
@@ -135,7 +145,8 @@
         </div>
         <div class="form-group">
             <label for="event_date">Fecha del evento</label>
-            <input type="date" class="form-control" id="event_date" value="{{ date('Y-m-d') }}" placeholder="Fecha del evento">
+            <input type="date" class="form-control" id="event_date" value="{{ date('Y-m-d') }}"
+                placeholder="Fecha del evento">
         </div>
         <button class="btn btn-primary">Filtrar</button>
     </div>
@@ -144,6 +155,28 @@
 
 @section('extra-script')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                events: [
+                    @foreach ($events as $event)
+                        {
+                            id: '{{ $event->id }}',
+                            title: '{{ $event->package->name }} - {{ $event->event_address }}',
+                            start: '{{ $event->event_date }}',
+                            url: '{{ route('events.show', $event) }}'
+                        },
+                    @endforeach
+                ],
+                dateClick: function(info) {
+                   console.log(info);
+                }
+            });
+            calendar.render();
+        });
+
         function confirmDelete(id) {
             Swal.fire({
                 title: '¿Estás seguro?',

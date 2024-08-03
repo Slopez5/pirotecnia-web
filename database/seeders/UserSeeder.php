@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
             ],
             [
                 "name" => "Rafael Alejandro Lopez Ceballos",
-                "email" => "ackteck1993@gmail.com",
+                "email" => "acteck1993@gmail.com",
                 "phone" => "9611234567",
                 "password" => bcrypt("123456"),
                 "role_id" => 2,

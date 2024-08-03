@@ -69,7 +69,7 @@
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <a href="{{ route('packages.edit', $package) }}"
-                                                    class="btn btn-warning btn-sm">
+                                                    class="btn btn-warning btn-sm" onclick="editPackage()">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form id="deleteForm-{{ $package->id }}"
@@ -97,6 +97,10 @@
 
 @section('extra-script')
     <script>
+        function editPackage() {
+            localStorage.removeItem('activeTab');
+        }
+
         function confirmDelete(id) {
             Swal.fire({
                 title: '¿Estás seguro?',

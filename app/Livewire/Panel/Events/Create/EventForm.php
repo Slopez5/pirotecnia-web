@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Panel\Events\Create;
 
+use App\Jobs\SendReminder;
 use App\Models\Event;
 use App\Models\Inventory;
 use App\Models\Package;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Date;
 use Livewire\Component;
 
 class EventForm extends Component
@@ -51,10 +54,15 @@ class EventForm extends Component
                     $productCount = $selectedProducts->filter(function ($selectedProduct) use ($product) {
                         return $product->id == $selectedProduct;
                     })->count();
-                    $product->inventories->first()->pivot->quantity -=  $productCount;
+                    if ($product->inventories->first()) {
+                        $product->inventories->first()->pivot->quantity -=  $productCount;
+                    }
                 }
             } else {
-                $material->inventories->first()->pivot->quantity -= $material->pivot->quantity;
+                logger($material);
+                if ($material->inventories->first()) {
+                    $material->inventories->first()->pivot->quantity -= $material->pivot->quantity;
+                }
             }
         }
         $this->products = $package->materials->where('product_role_id', 2) ?? [];
@@ -70,6 +78,8 @@ class EventForm extends Component
 
     public function mount($packages)
     {
+        // date now in format Y-m-d to utc
+        $this->date = Carbon::now()->setTimezone('America/Mexico_City')->format('Y-m-d');
         $this->packages = $packages;
         if ($packages->count() > 0) {
 
@@ -97,10 +107,14 @@ class EventForm extends Component
                     $productCount = $selectedProducts->filter(function ($selectedProduct) use ($product) {
                         return $product->id == $selectedProduct;
                     })->count();
-                    $product->inventories->first()->pivot->quantity -=  $productCount;
+                    if ($material->inventories->first()) {
+                        $product->inventories->first()->pivot->quantity -=  $productCount;
+                    }
                 }
             } else {
-                $material->inventories->first()->pivot->quantity -= $material->pivot->quantity;
+                if ($material->inventories->first()) {
+                    $material->inventories->first()->pivot->quantity -= $material->pivot->quantity;
+                }
             }
         }
         $materialsLowInventory = $package->materials->filter(function ($material) {
@@ -127,7 +141,7 @@ class EventForm extends Component
         $event->event_type = $this->event_type;
         $event->package()->associate($this->package_id);
         $event->save();
-
+        SendReminder::dispatch('whatsapp', $event)->delay(now()->addMinutes(1));
         return $event;
     }
 
@@ -141,18 +155,18 @@ class EventForm extends Component
                     //Verificar si el producto ya fue agregado
                     $existingProduct = $event->products()->where('product_id', $selectedProduct)->first();
                     if ($existingProduct) {
-                        $event->products()->updateExistingPivot($selectedProduct, ['quantity' => $existingProduct->pivot->quantity + 1]);
+                        $event->products()->updateExistingPivot($selectedProduct, ['quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity]);
                     } else {
-                        $event->products()->attach($selectedProduct, ['quantity' => 1, 'price' => 0]);
+                        $event->products()->attach($selectedProduct, ['quantity' => $product->pivot->quantity, 'price' => 0]);
                     }
                 }
             } else {
                 //Verificar si el producto ya fue agregado
                 $existingProduct = $event->products()->where('product_id', $product->id)->first();
                 if ($existingProduct) {
-                    $event->products()->updateExistingPivot($product->id, ['quantity' => $existingProduct->pivot->quantity + 1]);
+                    $event->products()->updateExistingPivot($product->id, ['quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity]);
                 } else {
-                    $event->products()->attach($product->id, ['quantity' => 1, 'price' => 0]);
+                    $event->products()->attach($product->id, ['quantity' => $product->pivot->quantity, 'price' => 0]);
                 }
             }
         }

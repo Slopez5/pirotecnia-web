@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             EventTypeSeeder::class,
             UserSeeder::class,
             MenuSeeder::class,
+            InventorySeeder::class,
         ]);
     }
 }

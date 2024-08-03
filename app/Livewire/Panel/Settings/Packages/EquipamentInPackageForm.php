@@ -17,7 +17,7 @@ class EquipamentInPackageForm extends Component
     public $equipaments;
     public $equipament_id;
     public $quantity = 1;
-    public $perPage = 2;
+    public $perPage = 10;
 
     public function mount($package = null)
     {

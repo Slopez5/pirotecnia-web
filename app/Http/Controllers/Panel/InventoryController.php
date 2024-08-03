@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClientType;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 
@@ -12,12 +13,13 @@ class InventoryController extends Controller
     public function index()
     {
         $inventory = Inventory::find(1);
+        $clientTypes = ClientType::all();
         $products = [];
         if ($inventory) {
-            $products = $inventory->products;
+            $products = $inventory->products->sortBy('name');
         }
         $itemActive = 4;
-        return view('panel.inventory.index', compact('products', 'itemActive'));
+        return view('panel.inventory.index', compact('products', 'itemActive', 'clientTypes'));
     }
 
     public function create()

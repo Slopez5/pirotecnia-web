@@ -5,7 +5,7 @@
             <select class="form-control" id="material_id" wire:model="material_id">
                 <option value="">Seleccione un material</option>
                 @foreach ($materials as $material)
-                    <option value="{{ $material->id }}">{{ $material->name }}</option>
+                    <option value="{{ $material->id }}">{{ $material->name }} {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }} {{ $material->shape}}</option>
                 @endforeach
             </select>
             @error('material_id')
@@ -48,7 +48,7 @@
                 <tbody>
                     @foreach ($materialsInPackage as $material)
                         <tr>
-                            <td>{{ $material->name }}</td>
+                            <td>{{ $material->name }} {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }} {{ $material->shape}}</td>
                             <td>{{ $material->pivot->quantity }}</td>
                             <td>
                                 {{-- icon trash --}}

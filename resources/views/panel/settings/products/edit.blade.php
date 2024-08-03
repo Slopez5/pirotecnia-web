@@ -22,10 +22,7 @@
 @section('content')
     <section class="content">
         <div class="container-fluid">
-
-            <!-- Main row -->
             <div class="row">
-                <!-- Left col -->
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Crear Producto" icon="fas fa-box">
                         <x-slot:body class="table-responsive">
@@ -40,6 +37,21 @@
                                 <div class="form-group">
                                     <label for="description">Descripción</label>
                                     <textarea name="description" id="description" class="form-control">{{ $product->description }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="duration">Duración</label>
+                                    <input type="text" name="duration" id="duration" class="form-control"
+                                        value="{{ $product->duration }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="shots">Disparos</label>
+                                    <input type="text" name="shots" id="shots" class="form-control"
+                                        value="{{ $product->shots }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="caliber">Calibre</label>
+                                    <input type="text" name="caliber" id="caliber" class="form-control"
+                                        value="{{ $product->caliber }}">
                                 </div>
                                 <div class="form-group">
                                     <label for="unit">Unidad</label>

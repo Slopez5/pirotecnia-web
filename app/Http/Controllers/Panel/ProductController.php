@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
+use App\Imports\ProductsImport;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
     //
     public function index()
     {
-        $products = Product::where('product_role_id', '!=', 3)->orderBy('name','ASC')->get();
+        $products = Product::with(['inventories'])->where('product_role_id', '!=', 3)->orderBy('name', 'ASC')->get();
         $parentItemActive = 7;
         $itemActive = 1;
         return view('panel.settings.products.index', compact('products', 'itemActive', 'parentItemActive'));
@@ -34,14 +36,15 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->description = $request->description;
         $product->unit = $request->unit;
+        $product->duration = $request->duration;
+        $product->shots = $request->shots;
+        $product->caliber = $request->caliber;
         $product->save();
         $isMultiple = $request->multiple;
-        logger("isMultiple: $isMultiple");
         if ($isMultiple == 'on') {
             return redirect()->route('products.show', ['id' => $product->id]);
         } else {
             return redirect()->route('settings.products.index');
-           
         }
     }
 
@@ -62,6 +65,9 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->description = $request->description;
         $product->unit = $request->unit;
+        $product->duration = $request->duration;
+        $product->shots = $request->shots;
+        $product->caliber = $request->caliber;
         $product->save();
 
         return redirect()->route('products.show', ['id' => $product->id]);
@@ -77,6 +83,24 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $product->delete();
+        return redirect()->route('settings.products.index');
+    }
+
+    public function import()
+    {
+        return view('panel.settings.products.import');
+    }
+
+    public function importSubmit(Request $request)
+    {
+        $request->validate([
+            'file' => 'required'
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->storeAs('public/uploads', 'updatedProducts.xlsx');
+        $fullPath = storage_path('app/' . $path);
+        Excel::import(new ProductsImport, $fullPath);
         return redirect()->route('settings.products.index');
     }
 }

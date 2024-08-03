@@ -30,6 +30,6 @@ class Product extends Model
     }
 
     public function inventories(): MorphToMany {
-        return $this->morphedByMany(Inventory::class,'productable')->withPivot(['quantity']);
+        return $this->morphedByMany(Inventory::class,'productable')->withPivot(['quantity','price']);
     }
 }

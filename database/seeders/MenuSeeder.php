@@ -41,7 +41,7 @@ class MenuSeeder extends Seeder
                 "title" => "Usuarios",
                 "url" => "users.index",
                 "icon" => "fas fa-users",
-                "active" => false,
+                "active" => true,
                 "order" => 1
             ],
             [
@@ -51,7 +51,7 @@ class MenuSeeder extends Seeder
                 "title" => "Eventos",
                 "url" => "events.index",
                 "icon" => "fas fa-calendar-alt",
-                "active" => false,
+                "active" => true,
                 "order" => 2
             ],
             [
@@ -61,7 +61,7 @@ class MenuSeeder extends Seeder
                 "title" => "Inventario",
                 "url" => "inventories.index",
                 "icon" => "fas fa-boxes",
-                "active" => false,
+                "active" => true,
                 "order" => 3
             ],
             //Purchases
@@ -72,7 +72,7 @@ class MenuSeeder extends Seeder
                 "title" => "Compras",
                 "url" => "purchases.index",
                 "icon" => "fas fa-shopping-cart",
-                "active" => false,
+                "active" => true,
                 "order" => 4
             ],
             //Sales
@@ -83,7 +83,7 @@ class MenuSeeder extends Seeder
                 "title" => "Ventas",
                 "url" => "sales.index",
                 "icon" => "fas fa-cash-register",
-                "active" => false,
+                "active" => true,
                 "order" => 5
             ],
             [
@@ -93,7 +93,7 @@ class MenuSeeder extends Seeder
                 "title" => "Configuración",
                 "url" => null,
                 "icon" => "fas fa-th",
-                "active" => false,
+                "active" => true,
                 "order" => 6
             ],
             [
@@ -103,7 +103,7 @@ class MenuSeeder extends Seeder
                 "title" => "Paquetes",
                 "url" => "settings.packages.index",
                 "icon" => "fas fa-box",
-                "active" => false,
+                "active" => true,
                 "order" => 0
             ],
             [
@@ -113,7 +113,7 @@ class MenuSeeder extends Seeder
                 "title" => "Productos",
                 "url" => "settings.products.index",
                 "icon" => "fas fa-cube",
-                "active" => false,
+                "active" => true,
                 "order" => 1
             ],
             [
@@ -123,18 +123,8 @@ class MenuSeeder extends Seeder
                 "title" => "Equipo",
                 "url" => "settings.equipaments.index",
                 "icon" => "fas fa-tools",
-                "active" => false,
+                "active" => true,
                 "order" => 2
-            ],
-            [
-                "menu_id" => 1,
-                "parent_id" => 7,
-                "menu_open" => false,
-                "title" => "productos (modo cliente)",
-                "url" => "settings.productgroups.index",
-                "icon" => "fas fa-cubes",
-                "active" => false,
-                "order" => 3
             ]
         ];
 

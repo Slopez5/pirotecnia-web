@@ -3,8 +3,8 @@
         @csrf
         {{-- Date --}}
         <div class="form-group">
-            <label for="date">Fecha</label>
-            <input type="date" class="form-control" wire:model="date">
+            {{-- <label for="date">Fecha</label> --}}
+            <input type="date" class="form-control" wire:model="date" hidden>
             <div>
                 @error('date')
                     <small class="text-danger">{{ $message }}</small>

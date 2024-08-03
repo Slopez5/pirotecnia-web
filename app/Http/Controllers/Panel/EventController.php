@@ -164,4 +164,106 @@ class EventController extends Controller
         })->values();
         return view('panel.events.show', compact('event'));
     }
+
+    function enviarMensajeWhatsApp($telefono, $typeEvent, $dateEvent, $timeEvent, $eventAddress, $coordinator, $comments)
+    {
+        $curl = curl_init();
+        // Fecha: 7 de septiembre de 2024
+        // Hora: 8:00pm
+        // Lugar: Campestre Calandria
+        // Responsable: Javier Lopez
+        // Detalles adicionales: Dirigirse con la encargada del evento
+        $postFields = json_encode([
+            "messaging_product" => "whatsapp",
+            "to" => $telefono,
+            "type" => "template",
+            "template" => [
+                "name" => "event_reminder",
+                "language" => [
+                    "code" => "es"
+                ],
+                "components" => [
+                    [
+                        "type" => "body",
+                        "parameters" => [
+                            [
+                                "type" => "text",
+                                "text" => $typeEvent
+                            ],
+                            [
+                                "type" => "text",
+                                "text" => $dateEvent
+                            ],
+                            [
+                                "type" => "text",
+                                "text" => $timeEvent
+                            ],
+                            [
+                                "type" => "text",
+                                "text" => $eventAddress
+                            ],
+                            [
+                                "type" => "text",
+                                "text" => $coordinator
+                            ],
+                            [
+                                "type" => "text",
+                                "text" => $comments
+                            ]
+                        ]
+                    ],
+                    [
+                        "type" => "button",
+                        "sub_type" => "url",
+                        "index" => "0",
+                        "parameters" => [
+                            [
+                                "type" => "text",
+                                "text" => "2"
+                            ]
+
+                        ]
+                    ]
+                ],
+            ]
+        ]);
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => 'https://graph.facebook.com/v20.0/103971779304849/messages',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $postFields,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer EAANlQyZC6xQMBOzmvQsTRSktBVaqU0KcBSkQ8ZCaf8kJFrSSJzXr9DyuPSpsknoRXSOjGUaQsB7j7q5iHs4vTY9JEZBSyZBkh32b2ON949TP1TkmmmN0ZClTZCOnxfHpZAmF1QRJVgS4yZCBkk1xUhTE0MJakh65TT6lvxZCrtbAEW8jyZCeeh3yHKMSq2piZCZAr0a8xLTtP9B1noE9NVq0aJkCGtFXbuJz9McJZBJCr',
+                'Content-Type: application/json'
+            ]
+        ]);
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        return $response;
+    }
+
+    public function reminder($id)
+    {
+        $event = Event::find($id);
+        $phone = "52$event->phone";
+        $eventType = $event->event_type;
+        //convert date to format 7 de septiembre de 2024
+        $eventDate = date('j \d\e F \d\e Y', strtotime($event->event_date));
+        //convert time to format 8:00pm
+        $eventTime = date('g:ia', strtotime($event->event_date));
+        $eventAddress = $event->event_address;
+        $eventCoordinator = "Javier Lopez";
+        $eventComments = "Dirigirse con la encargada del evento";
+        $responseWhatsApp = $this->enviarMensajeWhatsApp($phone, $eventType, $eventDate, $eventTime, $eventAddress, $eventCoordinator, $eventComments);
+        logger($responseWhatsApp);
+        return redirect()->route('events.show', 2);
+    }
 }

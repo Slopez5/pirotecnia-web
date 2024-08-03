@@ -29,6 +29,19 @@
                 <span class="error">{{ $message }}</span>
             @enderror
         </div>
+        <div class="form-group">
+            <label for="experience">Experiencia</label>
+            <select class="form-control" id="experience" wire:model="experience_id">
+                <option value="">Selecciona una experiencia</option>
+                @foreach ($experienceLevels as $experience)
+                    <option value="{{ $experience->id }}">{{ $experience->name }}</option>
+                @endforeach
+            </select>
+            @error('experience_id')
+                <span class="error">{{ $message }}</span>
+            @enderror
+        </div>
+                
         <div class="row justify-content-between">
             <div class="col">
                 <button type="submit" class="btn btn-primary">Guardar</button>
@@ -89,12 +102,15 @@
                 timer: 3000
             });
             Swal.fire(
-                'Paquete creado',
-                'El paquete ha sido creado correctamente',
+                'Paquete Actualizado',
+                'El paquete ha sido actualizado correctamente',
                 'success'
             )
             // change tab
             changeTab('materials');
+            localStorage.setItem('activeTab', 'materials');
+
+
         });
 
         Livewire.on('packageCreated', () => {
@@ -117,8 +133,8 @@
         });
 
         Livewire.on('nextToMaterials', () => {
-            console.log('nextToMaterials');
             changeTab('materials');
+            localStorage.setItem('activeTab', 'materials');
         });
 
         function changeTab(tabId) {

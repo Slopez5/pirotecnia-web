@@ -17,7 +17,7 @@ class MaterialInPackageForm extends Component
     public $materials;
     public $material_id;
     public $quantity = 1;
-    public $perPage = 2;
+    public $perPage = 10;
 
 
     public function mount($package = null)

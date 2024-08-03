@@ -19,7 +19,7 @@ class Menu extends Component
     {
         $this->itemActive = $itemActive;
         $this->parentItemActive = $parentItemActive;
-        $this->items = ModelsMenu::where('name','web')->first()->menuItems()->where('parent_id', null)->get();
+        $this->items = ModelsMenu::with('menuItems')->where('name','web')->first()->menuItems()->where('active',1)->where('parent_id', null)->get();
     }
 
     /**
