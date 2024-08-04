@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Panel;
 
+use App\Helper\Whatsapp;
+use App\Helper\WhatsappComponent;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Package;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use DateTime;
 use DateTimeZone;
@@ -154,100 +157,7 @@ class EventController extends Controller
     public function show($id)
     {
         $event = Event::find($id);
-        $productPackages = $event->package->products;
-        unset($event->package->products);
-        $event->package->products = $productPackages->filter(function ($product) {
-            return $product->product_role_id == 3;
-        })->values();
-        $event->package->materials = $productPackages->filter(function ($product) {
-            return $product->product_role_id == 2 || $product->product_role_id == 1;
-        })->values();
         return view('panel.events.show', compact('event'));
-    }
-
-    function enviarMensajeWhatsApp($telefono, $typeEvent, $dateEvent, $timeEvent, $eventAddress, $coordinator, $comments)
-    {
-        $curl = curl_init();
-        // Fecha: 7 de septiembre de 2024
-        // Hora: 8:00pm
-        // Lugar: Campestre Calandria
-        // Responsable: Javier Lopez
-        // Detalles adicionales: Dirigirse con la encargada del evento
-        $postFields = json_encode([
-            "messaging_product" => "whatsapp",
-            "to" => $telefono,
-            "type" => "template",
-            "template" => [
-                "name" => "event_reminder",
-                "language" => [
-                    "code" => "es"
-                ],
-                "components" => [
-                    [
-                        "type" => "body",
-                        "parameters" => [
-                            [
-                                "type" => "text",
-                                "text" => $typeEvent
-                            ],
-                            [
-                                "type" => "text",
-                                "text" => $dateEvent
-                            ],
-                            [
-                                "type" => "text",
-                                "text" => $timeEvent
-                            ],
-                            [
-                                "type" => "text",
-                                "text" => $eventAddress
-                            ],
-                            [
-                                "type" => "text",
-                                "text" => $coordinator
-                            ],
-                            [
-                                "type" => "text",
-                                "text" => $comments
-                            ]
-                        ]
-                    ],
-                    [
-                        "type" => "button",
-                        "sub_type" => "url",
-                        "index" => "0",
-                        "parameters" => [
-                            [
-                                "type" => "text",
-                                "text" => "2"
-                            ]
-
-                        ]
-                    ]
-                ],
-            ]
-        ]);
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => 'https://graph.facebook.com/v20.0/103971779304849/messages',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $postFields,
-            CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer EAANlQyZC6xQMBOzmvQsTRSktBVaqU0KcBSkQ8ZCaf8kJFrSSJzXr9DyuPSpsknoRXSOjGUaQsB7j7q5iHs4vTY9JEZBSyZBkh32b2ON949TP1TkmmmN0ZClTZCOnxfHpZAmF1QRJVgS4yZCBkk1xUhTE0MJakh65TT6lvxZCrtbAEW8jyZCeeh3yHKMSq2piZCZAr0a8xLTtP9B1noE9NVq0aJkCGtFXbuJz9McJZBJCr',
-                'Content-Type: application/json'
-            ]
-        ]);
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        return $response;
     }
 
     public function reminder($id)
@@ -255,19 +165,40 @@ class EventController extends Controller
         $event = Event::find($id);
         $phone = "52$event->phone";
         $eventType = $event->event_type;
-        //convert date to format 7 de septiembre de 2024
         $eventDate = date('j \d\e F \d\e Y', strtotime($event->event_date));
-        //convert time to format 8:00pm
         $eventTime = date('g:ia', strtotime($event->event_date));
         $eventAddress = $event->event_address;
         $eventCoordinator = "Javier Lopez";
         $eventComments = "Dirigirse con la encargada del evento";
-        $responseWhatsApp = $this->enviarMensajeWhatsApp($phone, $eventType, $eventDate, $eventTime, $eventAddress, $eventCoordinator, $eventComments);
-        logger($responseWhatsApp);
-        return redirect()->route('events.show', 2);
+
+        Whatsapp::templateMessage($phone)
+            ->setName("event_reminder")
+            ->setLanguage("es")
+            ->addComponent(WhatsappComponent::bodyComponent()
+                ->addParameter("text", $eventType, null)
+                ->addParameter("text", $eventDate, null)
+                ->addParameter("text", $eventTime, null)
+                ->addParameter("text", $eventAddress, null)
+                ->addParameter("text", $eventCoordinator, null)
+                ->addParameter("text", $eventComments, null))
+            ->addComponent(WhatsappComponent::buttonComponent()
+                ->setSubType("url")
+                ->setIndex("0")
+                ->addParameter("text", "$event->id", null))
+            ->send();
+
+        return redirect()->route('events.show', $id);
     }
 
-    public function showByWhatsapp($id) {
-        return "test";
+    public function showByWhatsapp($id)
+    {
+        $event = Event::find($id);
+        if ($event) {
+            $event->equipments = $event->package->equipaments;
+        }
+        // Build PDF
+        $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));
+        return $pdf->stream('event_details.pdf');
+        // return view('whatsapp.event_details_pdf_view', compact('event'));
     }
 }
