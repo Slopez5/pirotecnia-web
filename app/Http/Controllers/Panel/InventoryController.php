@@ -17,6 +17,12 @@ class InventoryController extends Controller
         $products = [];
         if ($inventory) {
             $products = $inventory->products->sortBy('name');
+        } else {
+            $inventory = new Inventory();
+            $inventory->name = 'Polvorin 1';
+            $inventory->location = 'Rancho el Tequeque';
+            $inventory->save();
+            
         }
         $itemActive = 4;
         return view('panel.inventory.index', compact('products', 'itemActive', 'clientTypes'));

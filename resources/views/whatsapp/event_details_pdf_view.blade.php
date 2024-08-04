@@ -74,6 +74,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad</th>
+                <th>Check</th>
             </tr>
         </thead>
         <tbody>
@@ -81,6 +82,7 @@
                 <tr>
                     <td>{{ $material->name }}</td>
                     <td>{{ $material->pivot->quantity }}</td>
+                    <td></td>
                 </tr>
             @endforeach
         </tbody>
@@ -93,6 +95,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad</th>
+                <th>check</th>
             </tr>
         </thead>
         <tbody>
@@ -100,10 +103,12 @@
                 <tr>
                     <td>{{ $equipment->name }}</td>
                     <td>{{ $equipment->pivot->quantity }}</td>
+                    <td></td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    
 
 </body>
 
