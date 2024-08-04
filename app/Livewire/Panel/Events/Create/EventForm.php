@@ -118,10 +118,14 @@ class EventForm extends Component
             }
         }
         $materialsLowInventory = $package->materials->filter(function ($material) {
-            return $material->product_role_id == 1 && ($material->inventories->first()->pivot->quantity <= Inventory::MIN_STOCK);
+            if ($material->inventories->first()) {
+                return $material->product_role_id == 1 && ($material->inventories->first()->pivot->quantity <= Inventory::MIN_STOCK);
+            }
         });
         $productsLowInventory = $products->filter(function ($product) {
-            return $product->inventories->first()->pivot->quantity <= Inventory::MIN_STOCK;
+            if ($product->inventories->first()) {
+                return $product->inventories->first()->pivot->quantity <= Inventory::MIN_STOCK;
+            }
         });
         if ($materialsLowInventory->count() > 0 || $productsLowInventory->count() > 0) {
             return false;
