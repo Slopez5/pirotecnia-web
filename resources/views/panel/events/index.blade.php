@@ -41,6 +41,11 @@
             <div class="row">
                 <section class="col-lg-5">
                     <x-card title="Calendario" icon="fas fa-calendar-alt">
+                        <x-slot:tools>
+                            <a href="{{ route('events.create') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </x-slot>
                         <x-slot:body>
                             <div id="calendar"></div>
                         </x-slot>
