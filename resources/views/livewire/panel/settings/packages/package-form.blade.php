@@ -10,7 +10,7 @@
         <div class="form-group">
             <label for="description">Descripción</label>
             <textarea class="form-control" id="description" wire:model="description"></textarea>
-            <span id="charCount" class="text-sm text-muted">0/400 caracteres</span>
+            <span id="charCount" class="text-sm text-muted">0/2000 caracteres</span>
             @error('description')
                 <span class="error">{{ $message }}</span>
             @enderror
