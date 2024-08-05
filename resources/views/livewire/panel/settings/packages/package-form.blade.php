@@ -59,7 +59,7 @@
             const textarea = document.getElementById('description');
             const charCount = document.getElementById('charCount');
             const maxLines = 5;
-            const maxChars = 400; // Set your character limit here
+            const maxChars = 2000; // Set your character limit here
             const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight);
             const maxHeight = lineHeight * maxLines;
 

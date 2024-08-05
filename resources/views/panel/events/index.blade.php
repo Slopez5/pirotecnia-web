@@ -39,7 +39,7 @@
             <!-- /.row -->
             <!-- Main row -->
             <div class="row">
-                <section class="col-lg-5">
+                <section class="col-lg-6">
                     <x-card title="Calendario" icon="fas fa-calendar-alt">
                         <x-slot:tools>
                             <a href="{{ route('events.create') }}" class="btn btn-primary btn-sm">
@@ -53,7 +53,7 @@
 
 
                 </section>
-                <section class="col-lg-7">
+                <section class="col-lg-6">
                     {{-- <x-card title="Eventos" icon="fas fa-calendar-alt">
                         <x-slot:tools>
                             <a href="{{ route('events.create') }}" class="btn btn-primary btn-sm">

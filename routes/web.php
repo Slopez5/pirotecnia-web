@@ -62,9 +62,7 @@ Route::middleware('auth')->group(function () {
 
     //Events
     Route::get('panel/events/create', [EventController::class, 'create'])->name('events.create');
-    Route::post('panel/events', [EventController::class, 'store'])->name('events.store');
     Route::get('panel/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
-    Route::put('panel/events/{id}', [EventController::class, 'update'])->name('events.update');
     Route::delete('panel/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::get('panel/events/{id}', [EventController::class, 'show'])->name('events.show');
     // Send reminder
