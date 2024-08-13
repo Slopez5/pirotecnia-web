@@ -28,6 +28,10 @@ Route::get('legal/privacy_policy', function () {
     return view('legal.privacy_policy');
 })->name('legal.privacy_policy');
 
+Route::get('legal/terms_of_service', function () {
+    return view('legal.terms_of_service');
+})->name('legal.terms_of_service');
+
 Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
