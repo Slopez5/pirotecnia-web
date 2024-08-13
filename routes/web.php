@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Chatbot\ChatbotWaController;
 use App\Http\Controllers\Panel\ClientTypeController;
 use App\Http\Controllers\Panel\DashboardController;
 use App\Http\Controllers\Panel\EquipamentController;
@@ -24,6 +25,7 @@ Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/register', [AuthController::class, 'registerSubmit'])->name('register.submit');
 
 Route::get('event/{id}', [EventController::class, 'showByWhatsapp']);
+
 Route::get('legal/privacy_policy', function () {
     return view('legal.privacy_policy');
 })->name('legal.privacy_policy');
@@ -31,6 +33,8 @@ Route::get('legal/privacy_policy', function () {
 Route::get('legal/terms_of_service', function () {
     return view('legal.terms_of_service');
 })->name('legal.terms_of_service');
+Route::get('/webhook', [ChatbotWaController::class, 'webhook']);
+Route::post('/webhook', [ChatbotWaController::class, 'recibe']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
