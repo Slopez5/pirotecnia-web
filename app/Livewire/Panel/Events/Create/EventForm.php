@@ -10,6 +10,7 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class EventForm extends Component
@@ -41,6 +42,23 @@ class EventForm extends Component
         'package_id' => 'required',
     ];
 
+
+    private function getProductsLowInventory($package)
+    {
+        $products = Product::with(['inventories', 'products.inventories'])
+            ->where(function (Builder $query) {
+                $query->whereHas('inventories', function ($query) {
+                    $query->where('quantity', '<=', Inventory::MIN_STOCK);
+                })->orWhereHas('products.inventories', function ($query) {
+                    $query->where('quantity', '<=', Inventory::MIN_STOCK);
+                });
+            })
+            ->whereIn('id', $package->materials->pluck('id'))
+            ->whereIn('id', $package->materials->where('product_role_id', 2)->products->pluck('id'))
+            ->get();
+        logger($products);
+    }
+
     public function updatedRadioSelected()
     {
         $package = Package::with(['materials', 'materials.inventories', 'materials.products.inventories'])->where('id', $this->package_id)->first();
@@ -59,7 +77,6 @@ class EventForm extends Component
                     }
                 }
             } else {
-                logger($material);
                 if ($material->inventories->first()) {
                     $material->inventories->first()->pivot->quantity -= $material->pivot->quantity;
                 }
@@ -73,6 +90,7 @@ class EventForm extends Component
         $package = Package::with(['materials', 'materials.products', 'materials.products.inventories', 'materials.inventories'])
             ->where('id', $this->package_id)
             ->first();
+        $this->getProductsLowInventory($package);
         $this->products = $package->materials->where('product_role_id', 2) ?? [];
     }
 
@@ -101,13 +119,11 @@ class EventForm extends Component
         $products = Product::with('inventories')->whereIn('id', $selectedProducts)->get();
         foreach ($package->materials as $material) {
             if ($material->product_role_id == 2) {
-                //$selectedProductsExample [53,52,52]
                 foreach ($products as $product) {
-                    //si product->id esta en selectedProducts restar 1 al inventario
                     $productCount = $selectedProducts->filter(function ($selectedProduct) use ($product) {
                         return $product->id == $selectedProduct;
                     })->count();
-                    if ($material->inventories->first()) {
+                    if ($product->inventories->first()) {
                         $product->inventories->first()->pivot->quantity -=  $productCount;
                     }
                 }

@@ -24,6 +24,9 @@ Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/register', [AuthController::class, 'registerSubmit'])->name('register.submit');
 
 Route::get('event/{id}', [EventController::class, 'showByWhatsapp']);
+Route::get('legal/privacy_policy', function () {
+    return view('legal.privacy_policy');
+})->name('legal.privacy_policy');
 
 Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');

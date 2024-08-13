@@ -11,6 +11,26 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'product_role_id',
+        'name',
+        'description',
+        'unit',
+        'duration',
+        'shots',
+        'caliber',
+        'shape'
+    ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($product) {
+            $product->products()->detach();
+        });
+    }
+
     public function products(): MorphToMany
     {
         return $this->morphToMany(Product::class, 'productable')
@@ -31,5 +51,10 @@ class Product extends Model
 
     public function inventories(): MorphToMany {
         return $this->morphedByMany(Inventory::class,'productable')->withPivot(['quantity','price']);
+    }
+
+    public function packages(): MorphToMany
+    {
+        return $this->morphedByMany(Package::class, 'productable');
     }
 }

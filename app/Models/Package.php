@@ -15,9 +15,11 @@ class Package extends Model
 
     protected $fillable = [
         'name',
+        'description',
         'price',
         'duration',
-        'description',
+        'video_url',
+        'experience_level_id',
     ];
 
     protected static function boot()

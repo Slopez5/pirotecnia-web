@@ -84,6 +84,46 @@
                 @endforeach
             </select>
         </div>
+        {{-- Discount --}}
+        <div class="form-group">
+            <label for="discount">Descuento</label>
+            <input type="text" class="form-control" wire:model="discount">
+            <div>
+                @error('discount')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
+        {{-- Anticipo --}}
+        <div class="form-group">
+            <label for="deposit">Anticipo</label>
+            <input type="text" class="form-control" wire:model="deposit">
+            <div>
+                @error('deposit')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
+        {{-- Viaticos --}}
+        <div class="form-group">
+            <label for="viatic">Viáticos</label>
+            <input type="text" class="form-control" wire:model="viatic">
+            <div>
+                @error('viatic')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
+        {{-- Notas --}}
+        <div class="form-group">
+            <label for="notes">Notas</label>
+            <textarea class="form-control" wire:model="notes"></textarea>
+            <div>
+                @error('notes')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
         {{-- if prodcts have products show radio buttons with options --}}
         @if (count($products))
             @foreach ($products as $indexProducts => $product)
