@@ -19,7 +19,9 @@ class MenuController extends Controller
 
     public function create()
     {
-        return view('panel.settings.menu.create');
+
+        $menus = Menu::find(1)->menuItems->where('parent_id', null);
+        return view('panel.settings.menu.create', compact('menus'));
     }
 
     public function store(Request $request)
@@ -29,12 +31,24 @@ class MenuController extends Controller
             'url' => 'required',
         ]);
 
-        $menu = new Menu();
-        $menu->name = $request->name;
-        $menu->url = $request->url;
+        $menu = Menu::find(1);
+        $order = 0;
+        if ($request->parent_id) {
+            $order = MenuItem::where('parent_id', $request->parent_id)->max('order') + 1;
+        } else {
+            $order = MenuItem::where('parent_id', null)->max('order') + 1;
+        }
+        $menu->menuItems()->create([
+            'title' => $request->name,
+            'url' => $request->url,
+            'icon' => $request->icon,
+            'parent_id' => $request->parent_id,
+            'order' => $order,
+            'active' => 1,
+        ]);
         $menu->save();
 
-        return redirect()->route('menu.index');
+        return redirect()->route('settings.menu.index');
     }
 
     public function edit($id)

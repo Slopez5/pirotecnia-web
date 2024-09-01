@@ -29,7 +29,7 @@ class Package extends Model
         static::deleting(function ($package) {
             $package->products()->detach();
             $package->materials()->detach();
-            $package->equipaments()->detach();
+            $package->equipments()->detach();
         });
     }
 
@@ -51,15 +51,15 @@ class Package extends Model
         ->where('product_role_id', 1);
     }
 
-    public function equipaments(): BelongsToMany
+    public function equipments(): BelongsToMany
     {
-        return $this->belongsToMany(Equipament::class)
+        return $this->belongsToMany(equipment::class)
         ->withPivot(['quantity'])
         ->withTimestamps();
     }
 
-    public function events(): HasMany {
-        return $this->hasMany(Event::class);
+    public function events(): BelongsToMany {
+        return $this->belongsToMany(Event::class);
     }
 
     public function experienceLevel(): BelongsTo

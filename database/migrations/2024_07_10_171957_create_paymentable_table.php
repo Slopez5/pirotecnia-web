@@ -15,6 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('payment_id');
             $table->morphs('paymentable');
             $table->timestamps();
+
+            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade');
         });
     }
 

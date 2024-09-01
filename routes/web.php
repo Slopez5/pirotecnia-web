@@ -4,9 +4,10 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Chatbot\ChatbotWaController;
 use App\Http\Controllers\Panel\ClientTypeController;
 use App\Http\Controllers\Panel\DashboardController;
-use App\Http\Controllers\Panel\EquipamentController;
+use App\Http\Controllers\Panel\equipmentController;
 use App\Http\Controllers\Panel\EventController;
 use App\Http\Controllers\Panel\EventTypeController;
+use App\Http\Controllers\Panel\ExperienceLevelController;
 use App\Http\Controllers\Panel\InventoryController;
 use App\Http\Controllers\Panel\MenuController;
 use App\Http\Controllers\Panel\PackageController;
@@ -50,9 +51,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/menu', [MenuController::class, 'index'])->name('settings.menu.index');
     Route::get('/settings/packages', [PackageController::class, 'index'])->name('settings.packages.index');
     Route::get('/settings/products', [ProductController::class, 'index'])->name('settings.products.index');
-    Route::get('/settings/equipaments', [EquipamentController::class, 'index'])->name('settings.equipaments.index');
+    Route::get('/settings/equipments', [equipmentController::class, 'index'])->name('settings.equipments.index');
     Route::get('/settings/client-types', [ClientTypeController::class, 'index'])->name('settings.client-types.index');
     Route::get('/settings/product-roles', [ProductRoleController::class, 'index'])->name('settings.product-roles.index');
+    Route::get('/settings/event-types', [EventTypeController::class, 'index'])->name('settings.event_types.index');
+    Route::get('/settings/experience-levels', [ExperienceLevelController::class, 'index'])->name('settings.experience-levels.index');
 
 
     //Users
@@ -132,13 +135,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('settings/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('settings/products/{id}', [ProductController::class, 'show'])->name('products.show');
     
-    //Equipaments
-    Route::get('settings/equipaments/create', [EquipamentController::class, 'create'])->name('equipaments.create');
-    Route::post('settings/equipaments', [EquipamentController::class, 'store'])->name('equipaments.store');
-    Route::get('settings/equipaments/{id}/edit', [EquipamentController::class, 'edit'])->name('equipaments.edit');
-    Route::put('settings/equipaments/{id}', [EquipamentController::class, 'update'])->name('equipaments.update');
-    Route::delete('settings/equipaments/{id}', [EquipamentController::class, 'destroy'])->name('equipaments.destroy');
-    Route::get('settings/equipaments/{id}', [EquipamentController::class, 'show'])->name('equipaments.show');
+    //equipments
+    Route::get('settings/equipments/create', [equipmentController::class, 'create'])->name('equipments.create');
+    Route::post('settings/equipments', [equipmentController::class, 'store'])->name('equipments.store');
+    Route::get('settings/equipments/{id}/edit', [equipmentController::class, 'edit'])->name('equipments.edit');
+    Route::put('settings/equipments/{id}', [equipmentController::class, 'update'])->name('equipments.update');
+    Route::delete('settings/equipments/{id}', [equipmentController::class, 'destroy'])->name('equipments.destroy');
+    Route::get('settings/equipments/{id}', [equipmentController::class, 'show'])->name('equipments.show');
 
     //ClientTypes
     Route::get('settings/client-types/create', [ClientTypeController::class, 'create'])->name('client-types.create');
@@ -157,12 +160,21 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/product-roles/{id}', [ProductRoleController::class, 'show'])->name('product-roles.show');
 
     //EventTypes
-    Route::get('settings/event-types/create', [EventTypeController::class, 'create'])->name('event-types.create');
-    Route::post('settings/event-types', [EventTypeController::class, 'store'])->name('event-types.store');
-    Route::get('settings/event-types/{id}/edit', [EventTypeController::class, 'edit'])->name('event-types.edit');
-    Route::put('settings/event-types/{id}', [EventTypeController::class, 'update'])->name('event-types.update');
-    Route::delete('settings/event-types/{id}', [EventTypeController::class, 'destroy'])->name('event-types.destroy');
-    Route::get('settings/event-types/{id}', [EventTypeController::class, 'show'])->name('event-types.show');
+    Route::get('settings/event_types/create', [EventTypeController::class, 'create'])->name('event_types.create');
+    Route::post('settings/event_types', [EventTypeController::class, 'store'])->name('event_types.store');
+    Route::get('settings/event_types/{id}/edit', [EventTypeController::class, 'edit'])->name('event_types.edit');
+    Route::put('settings/event_types/{id}', [EventTypeController::class, 'update'])->name('event_types.update');
+    Route::delete('settings/event_types/{id}', [EventTypeController::class, 'destroy'])->name('event_types.destroy');
+    Route::get('settings/event_types/{id}', [EventTypeController::class, 'show'])->name('event_types.show');
 
+
+    //ExperienceLevels
+    Route::get('settings/experience-levels/create', [ExperienceLevelController::class, 'create'])->name('experience-levels.create');
+    Route::post('settings/experience-levels', [ExperienceLevelController::class, 'store'])->name('experience-levels.store');
+    Route::get('settings/experience-levels/{id}/edit', [ExperienceLevelController::class, 'edit'])->name('experience-levels.edit');
+    Route::put('settings/experience-levels/{id}', [ExperienceLevelController::class, 'update'])->name('experience-levels.update');
+    Route::delete('settings/experience-levels/{id}', [ExperienceLevelController::class, 'destroy'])->name('experience-levels.destroy');
+    Route::get('settings/experience-levels/{id}', [ExperienceLevelController::class, 'show'])->name('experience-levels.show');
+    
 
 });

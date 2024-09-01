@@ -2,11 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Helper\Whatsapp;
+use App\Helper\WhatsappComponent;
+use App\Models\Event;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 
 class SendReminder implements ShouldQueue
 {
@@ -14,14 +18,16 @@ class SendReminder implements ShouldQueue
 
     protected $method;
     protected $event;
+    protected $sendToOwner;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($method, $event)
+    public function __construct($method, $event, $sendToOwner = false)
     {
         $this->method = $method;
-        $this->event = $event;
+        $this->event = Event::find($event->id);
+        $this->sendToOwner = $sendToOwner;
     }
 
     /**
@@ -61,8 +67,54 @@ class SendReminder implements ShouldQueue
     {
         //Send Whatsapp
         logger('Whatsapp sent');
-        
+
+        $event = $this->event;
+        $eventType = $event->type;
+        $eventDate = $event->date;
+        $eventTime = $event->time;
+        $eventAddress = $event->address;
+        $eventCoordinator = $event->employees->first()->name;
+        $eventComments = $event->notes;
+        if ($this->sendToOwner) {
+            $phoneOwner = Auth::user()->phone;
+            $phone = "52$phoneOwner";
+
+            Whatsapp::templateMessage($phone)
+                ->setName("event_reminder")
+                ->setLanguage("es")
+                ->addComponent(WhatsappComponent::bodyComponent()
+                    ->addParameter("text", $eventType, null)
+                    ->addParameter("text", $eventDate, null)
+                    ->addParameter("text", $eventTime, null)
+                    ->addParameter("text", $eventAddress, null)
+                    ->addParameter("text", $eventCoordinator, null)
+                    ->addParameter("text", $eventComments, null))
+                ->addComponent(WhatsappComponent::buttonComponent()
+                    ->setSubType("url")
+                    ->setIndex("0")
+                    ->addParameter("text", "$event->id", null))
+                ->send();
+        } else {
+            foreach ($event->employees as $employee) {
+                $phoneEmployee = $employee->phone;
+                $phone = "52$phoneEmployee";
+
+                Whatsapp::templateMessage($phone)
+                    ->setName("event_reminder")
+                    ->setLanguage("es")
+                    ->addComponent(WhatsappComponent::bodyComponent()
+                        ->addParameter("text", $eventType, null)
+                        ->addParameter("text", $eventDate, null)
+                        ->addParameter("text", $eventTime, null)
+                        ->addParameter("text", $eventAddress, null)
+                        ->addParameter("text", $eventCoordinator, null)
+                        ->addParameter("text", $eventComments, null))
+                    ->addComponent(WhatsappComponent::buttonComponent()
+                        ->setSubType("url")
+                        ->setIndex("0")
+                        ->addParameter("text", "$event->id", null))
+                    ->send();
+            }
+        }
     }
-
-
 }

@@ -21,22 +21,6 @@
 @section('content')
     <section class="content">
         <div class="container-fluid">
-            <!-- Small boxes (Stat box) -->
-            <div class="row">
-                <x-small-box color="bg-info" number="150" text="Nuevos pedidos" icon="ion ion-bag" url="#"
-                    footerText="Más información" />
-                <!-- ./col -->
-                <x-small-box color="bg-success" number="53" text="Tasa de rebote" icon="ion ion-stats-bars"
-                    url="#" footerText="Más información" />
-                <!-- ./col -->
-                <x-small-box color="bg-warning" number="44" text="Registros de usuario" icon="ion ion-person-add"
-                    url="#" footerText="Más información" />
-                <!-- ./col -->
-                <x-small-box color="bg-danger" number="65" text="Visitantes únicos" icon="ion ion-pie-graph"
-                    url="#" footerText="Más información" />
-                <!-- ./col -->
-            </div>
-            <!-- /.row -->
             <!-- Main row -->
             <div class="row">
                 <section class="col-lg-6">
@@ -169,7 +153,7 @@
                     @foreach ($events as $event)
                         {
                             id: '{{ $event->id }}',
-                            title: '{{ $event->package->name }} - {{ $event->event_address }}',
+                            title: ' - {{ $event->event_address }}',
                             start: '{{ $event->event_date }}',
                             url: '{{ route('events.show', $event) }}'
                         },

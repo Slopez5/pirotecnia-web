@@ -28,7 +28,7 @@ class MaterialInPackageForm extends Component
 
     public function updatedPrice($value)
     {
-        logger($value);
+        
     }
 
     public function updatedShot($value)
@@ -124,6 +124,6 @@ class MaterialInPackageForm extends Component
 
     public function nextTab()
     {
-        $this->dispatch('nextToEquipaments');
+        $this->dispatch('nextToequipments');
     }
 }

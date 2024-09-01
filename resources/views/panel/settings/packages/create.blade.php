@@ -39,9 +39,9 @@
                                         onclick="setActiveTab('materials')">Materiales</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link disabled" id="equipaments-tab" data-toggle="pill" href="#equipaments"
-                                        role="tab" aria-controls="equipaments" aria-selected="false"
-                                        onclick="setActiveTab('equipaments')">Equipo</a>
+                                    <a class="nav-link disabled" id="equipments-tab" data-toggle="pill" href="#equipments"
+                                        role="tab" aria-controls="equipments" aria-selected="false"
+                                        onclick="setActiveTab('equipments')">Equipo</a>
                                 </li>
                             </ul>
                         </x-slot:header>
@@ -56,10 +56,10 @@
                                     {{-- Form to add materials to package --}}
                                     <livewire:panel.settings.packages.material-in-package-form>
                                 </div>
-                                <div class="tab-pane fade" id="equipaments" role="tabpanel"
-                                    aria-labelledby="equipaments-tab">
-                                    {{-- Form to add equipaments to package --}}
-                                    <livewire:panel.settings.packages.equipament-in-package-form>
+                                <div class="tab-pane fade" id="equipments" role="tabpanel"
+                                    aria-labelledby="equipments-tab">
+                                    {{-- Form to add equipments to package --}}
+                                    <livewire:panel.settings.packages.equipment-in-package-form>
                                 </div>
                             </div>
                         </x-slot:body>

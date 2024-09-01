@@ -9,17 +9,17 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($equipaments as $index => $equipament)
-                    <tr wire:key="{{ $equipament->id }}">
+                @foreach ($equipments as $index => $equipment)
+                    <tr wire:key="{{ $equipment->id }}">
                         <td>
-                            {{ $equipament->name }}
+                            {{ $equipment->name }}
                         </td>
                         <td>
-                            {{ $equipament->pivot->quantity }}
+                            {{ $equipment->pivot->quantity }}
 
                         </td>
                         <td>
-                            {{ $equipament->unit }}
+                            {{ $equipment->unit }}
                         </td>
                     </tr>
                 @endforeach

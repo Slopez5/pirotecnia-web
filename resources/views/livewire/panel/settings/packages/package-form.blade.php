@@ -29,6 +29,15 @@
                 <span class="error">{{ $message }}</span>
             @enderror
         </div>
+        {{-- Link video_url--}}
+        <div class="form-group">
+            <label for="video_url">Link del video</label>
+            <input type="text" class="form-control" id="video_url" wire:model="video_url">
+            @error('video_url')
+                <span class="error">{{ $message }}</span>
+            @enderror
+        </div>
+        
         <div class="form-group">
             <label for="experience">Experiencia</label>
             <select class="form-control" id="experience" wire:model="experience_id">
@@ -128,7 +137,7 @@
 
             // enable materials tab
             $('#custom-tabs-two-tab a[href="#materials"]').removeClass('disabled');
-            $('#custom-tabs-two-tab a[href="#equipaments"]').removeClass('disabled');
+            $('#custom-tabs-two-tab a[href="#equipments"]').removeClass('disabled');
             changeTab('materials');
         });
 

@@ -21,29 +21,13 @@
 @section('content')
     <section class="content">
         <div class="container-fluid">
-            <!-- Small boxes (Stat box) -->
-            <div class="row">
-                <x-small-box color="bg-info" number="150" text="Nuevos pedidos" icon="ion ion-bag" url="#"
-                    footerText="Más información" />
-                <!-- ./col -->
-                <x-small-box color="bg-success" number="53" text="Tasa de rebote" icon="ion ion-stats-bars"
-                    url="#" footerText="Más información" />
-                <!-- ./col -->
-                <x-small-box color="bg-warning" number="44" text="Registros de usuario" icon="ion ion-person-add"
-                    url="#" footerText="Más información" />
-                <!-- ./col -->
-                <x-small-box color="bg-danger" number="65" text="Visitantes únicos" icon="ion ion-pie-graph"
-                    url="#" footerText="Más información" />
-                <!-- ./col -->
-            </div>
-            <!-- /.row -->
             <!-- Main row -->
             <div class="row">
                 <!-- Left col -->
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Equipo" icon="fas fa-box">
                         <x-slot:tools>
-                            <a href="{{ route('equipaments.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('equipments.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
@@ -57,20 +41,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($equipaments as $equipament)
+                                    @foreach ($equipments as $equipment)
                                         <tr>
-                                            <td>{{ $equipament->name }}</td>
-                                            <td>{{ $equipament->description }}</td>
+                                            <td>{{ $equipment->name }}</td>
+                                            <td>{{ $equipment->description }}</td>
                                             <td>
-                                                <a href="{{ route('equipaments.edit', $equipament) }}"
+                                                <a href="{{ route('equipments.edit', $equipment) }}"
                                                     class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form id="deleteForm-{{$equipament->id}}" action="{{ route('equipaments.destroy', $equipament->id) }}" method="POST"
+                                                <form id="deleteForm-{{$equipment->id}}" action="{{ route('equipments.destroy', $equipment->id) }}" method="POST"
                                                     style="display: inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="button" onclick="confirmDelete({{ $equipament->id }})">
+                                                    <button class="btn btn-danger btn-sm" type="button" onclick="confirmDelete({{ $equipment->id }})">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

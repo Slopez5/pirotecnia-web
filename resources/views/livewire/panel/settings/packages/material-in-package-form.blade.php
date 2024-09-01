@@ -1,108 +1,5 @@
 <div>
     <form wire:submit.prevent="save">
-        {{-- Radio with type Product --}}
-        <div class="form-group">
-            <label for="type">Tipo</label>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="type" id="candil" value="candil"
-                    wire:model.live="type">
-                <label class="form-check-label" for="candil">Candil</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="type" id="bomba" value="bomba"
-                    wire:model.live="type">
-                <label class="form-check-label" for="bomba">Bomba</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="type" id="cake" value="cake"
-                    wire:model.live="type">
-                <label class="form-check-label" for="cake">Cake</label>
-            </div>
-            @error('type')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-        {{-- Configuration Filter by type --}}
-        @if ($type == 'candil')
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="shots">Tiros</label>
-                        <select class="form-control" id="shot" wire:model.live="shot">
-                            <option value="">Seleccione numero de disparos</option>
-                            @foreach ($shots as $shot)
-                                <option value="{{ $shot }}">{{ $shot }}</option>
-                            @endforeach
-                        </select>
-                        @error('shots')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="caliber">Calibre</label>
-                        <select class="form-control" id="caliber" wire:model.live="caliber">
-                            <option value="">Seleccione un calibre</option>
-                            @foreach ($calibers as $caliber)
-                                <option value="{{ $caliber }}">{{ $caliber }}</option>
-                            @endforeach
-                        </select>
-                        @error('caliber')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-
-        @endif
-        @if ($type == 'bomba')
-        @endif
-        @if ($type == 'cake')
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="shots">Tiros</label>
-                        <select class="form-control" id="shot" wire:model.live="shot">
-                            <option value="">Seleccione numero de disparos</option>
-                            @foreach ($shots as $shot)
-                                <option value="{{ $shot }}">{{ $shot }}</option>
-                            @endforeach
-                        </select>
-                        @error('shots')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="caliber">Calibre</label>
-                        <select class="form-control" id="caliber" wire:model.live="caliber">
-                            <option value="">Seleccione un calibre</option>
-                            @foreach ($calibers as $caliber)
-                                <option value="{{ $caliber }}">{{ $caliber }}</option>
-                            @endforeach
-                        </select>
-                        @error('caliber')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col">
-                    {{-- Slide with min and max value --}}
-                    <div class="form-group">
-                        <label for="price">Precio</label>
-                        <input id="range_1" type="text" name="range_1" wire:model.live='price'>
-
-                        @error('price')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                </div>
-            </div>
-        @endif
 
         <div class="form-group">
             <label for="material_id">Material</label>
@@ -227,8 +124,8 @@
             })
         });
 
-        Livewire.on('nextToEquipaments', () => {
-            changeTab('equipaments');
+        Livewire.on('nextToequipments', () => {
+            changeTab('equipments');
         });
 
         function changeTab(tabId) {

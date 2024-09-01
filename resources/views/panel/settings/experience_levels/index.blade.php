@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Compras</h1>
+                    <h1 class="m-0">Niveles de experiencia</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active">Compras</li>
+                        <li class="breadcrumb-item active">Niveles de experiencia</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -25,40 +25,38 @@
             <div class="row">
                 <!-- Left col -->
                 <section class="col-lg-12 connectedSortable">
-                    <x-card title="Compras" icon="fas fa-shopping-cart">
+                    <x-card title="Niveles de experiencia" icon="fas fa-box">
                         <x-slot:tools>
-                            <a href="{{ route('purchases.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('experience-levels.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
-                        <x-slot:body class="card-body table-responsive p-0">
-                            <table class="table table-bordered table-hover text-nowrap">
+                        <x-slot:body class="table-responsive">
+                            <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>id</th>
-                                        <th>Fecha</th>
-                                        <th>Acciones</th>
+                                        <th class="col-8">Nombre</th>
+                                        <th class="col-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($purchases as $purchase)
+                                    @foreach ($experienceLevels as $experience_level)
                                         <tr>
-                                            <td>{{ $purchase->id }}</td>
-                                            <td>{{ $purchase->created_at }}</td>
+                                            <td>{{ $experience_level->name }}</td>
                                             <td>
-                                                <a href="{{ route('purchases.show', $purchase) }}"
-                                                    class="btn btn-primary btn-sm">
+                                                <a href="{{ route('experience-levels.show', $experience_level) }}"
+                                                    class="btn btn-info btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('purchases.edit', $purchase) }}"
+                                                <a href="{{ route('experience-levels.edit', $experience_level) }}"
                                                     class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('purchases.destroy', $purchase) }}" method="POST"
-                                                    style="display: inline">
+                                                <form action="{{ route('experience-levels.destroy', $experience_level) }}"
+                                                    method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="submit">
+                                                    <button type="submit" class="btn btn-danger btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -71,7 +69,6 @@
                     </x-card>
                 </section>
             </div>
-            <!-- /.row (main row) -->
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 @endsection

@@ -28,6 +28,11 @@ class Event extends Model
         return $this->belongsTo(Package::class);
     }
 
+    public function packages(): BelongsToMany
+    {
+        return $this->belongsToMany(Package::class);
+    }
+
     public function employees(): BelongsToMany
     {
         return $this->belongsToMany(Employee::class)->withTimestamps();

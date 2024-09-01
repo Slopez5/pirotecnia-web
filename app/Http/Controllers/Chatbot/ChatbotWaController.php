@@ -26,7 +26,5 @@ class ChatbotWaController extends Controller
             exit;
         }
         $respuesta = json_decode($respuesta);
-        
-        logger($respuesta);
     }
 }

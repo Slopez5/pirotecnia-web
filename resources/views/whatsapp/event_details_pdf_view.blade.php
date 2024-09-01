@@ -88,7 +88,7 @@
         </tbody>
     </table>
 
-    {{-- Event Equipaments --}}
+    {{-- Event equipments --}}
     <h3>Equipo del evento</h3>
     <table id="equipment_table">
         <thead>

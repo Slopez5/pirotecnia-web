@@ -29,23 +29,23 @@
                         <x-slot name="body">
                             <div class="row">
                                 <div class="col-12">
-                                    <form action="{{ route('equipaments.update', $equipament->id) }}" method="POST">
+                                    <form action="{{ route('equipments.update', $equipment->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
                                         {{-- Name --}}
                                         <div class="form-group">
                                             <label for="name">Nombre</label>
-                                            <input type="text" name="name" id="name" class="form-control" value="{{ $equipament->name }}">
+                                            <input type="text" name="name" id="name" class="form-control" value="{{ $equipment->name }}">
                                         </div>
                                         {{-- Description --}}
                                         <div class="form-group">
                                             <label for="description">Descripción</label>
-                                            <textarea name="description" id="description" class="form-control">{{ $equipament->description }}</textarea>
+                                            <textarea name="description" id="description" class="form-control">{{ $equipment->description }}</textarea>
                                         </div>
                                         {{-- Unit --}}
                                         <div class="form-group">
                                             <label for="unit">Unidad</label>
-                                            <input type="text" name="unit" id="unit" class="form-control" value="{{ $equipament->unit }}">
+                                            <input type="text" name="unit" id="unit" class="form-control" value="{{ $equipment->unit }}">
                                         </div>
                                         {{-- Submit Button --}}
                                         <button type="submit" class="btn btn-primary">Guardar</button>

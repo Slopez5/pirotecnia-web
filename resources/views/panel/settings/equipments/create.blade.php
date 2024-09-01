@@ -29,7 +29,7 @@
                         <x-slot name="body">
                             <div class="row">
                                 <div class="col-12">
-                                    <form action="{{ route('equipaments.store') }}" method="POST">
+                                    <form action="{{ route('equipments.store') }}" method="POST">
                                         @csrf
                                         {{-- Name --}}
                                         <div class="form-group">

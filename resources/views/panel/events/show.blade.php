@@ -44,6 +44,15 @@
             <div class="row">
                 <div class="col-12">
                     <x-card title="Información del evento" icon="fas fa-calendar-alt">
+                        <x-slot:tools>
+                            <a href="{{ route('events.index') }}" class="btn btn-default btn-sm">
+                                <i class="fas fa-arrow-left"></i> Volver
+                            </a>
+                            <a href="{{ route('events.edit', $event) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                           
+                        </x-slot>
                         <x-slot:body>
                             <div class="row">
                                 <div class="col">
@@ -84,7 +93,8 @@
                                     <tbody>
                                         @foreach ($event->products as $material)
                                             <tr>
-                                                <td>{{ $material->name }}</td>
+                                                
+                                                <td>{{ $material->name }} {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }} {{ $material->shape}} </td>
                                                 <td>{{ $material->pivot->quantity }}</td>
                                             </tr>
                                         @endforeach
@@ -106,7 +116,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($event->package->equipaments as $equipment)
+                                        @foreach ($event->equipments as $equipment)
                                             <tr>
                                                 <td>{{ $equipment->name }}</td>
                                                 <td>{{ $equipment->pivot->quantity }}</td>

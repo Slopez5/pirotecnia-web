@@ -29,7 +29,7 @@
                 <section class="col-lg-12 connectedSortable">
                     <x-card title="Crear Evento" icon="fas fa-calendar-plus">
                         <x-slot:body class="table-responsive">
-                            <livewire:panel.events.create.event-form :packages="$packages" />
+                            <livewire:panel.events.event-form />
                         </x-slot:body>
                     </x-card>
                 </section>

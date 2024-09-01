@@ -8,12 +8,16 @@ use Livewire\Component;
 
 class PackageForm extends Component
 {
-    public $experienceLevels;
-    public $experience_id;
+    
+   
     public $name;
+    public $description;
     public $price;
     public $duration;
-    public $description;
+    public $video_url;
+    public $experience_id;
+    
+    public $experienceLevels;
     public $package;
     public $enableNextTab = false;
 
@@ -31,6 +35,7 @@ class PackageForm extends Component
         $this->duration = $package->duration;
         $this->description = $package->description;
         $this->experience_id = $package->experience_level_id;
+        $this->video_url = $package->video_url;
     }
 
 
@@ -59,6 +64,7 @@ class PackageForm extends Component
                 'price' => $amountDouble,
                 'duration' => $this->duration,
                 'description' => $this->description,
+                'video_url' => $this->video_url,
             ]);
             $experience = ExperienceLevel::find($this->experience_id);
             $this->package->experienceLevel()->associate($experience);

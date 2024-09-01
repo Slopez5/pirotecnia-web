@@ -6,16 +6,16 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class EquipamentTable extends Component
+class equipmentTable extends Component
 {
 
-    public $equipaments;
+    public $equipments;
     /**
      * Create a new component instance.
      */
-    public function __construct($equipaments)
+    public function __construct($equipments)
     {
-        $this->equipaments = $equipaments;
+        $this->equipments = $equipments;
     }
 
     /**
@@ -23,6 +23,6 @@ class EquipamentTable extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.panel.settings.packages.show.equipament-table');
+        return view('components.panel.settings.packages.show.equipment-table');
     }
 }

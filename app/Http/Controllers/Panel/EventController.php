@@ -27,18 +27,18 @@ class EventController extends Controller
         $dateLocal = $utcDateTime->format('Y-m-d H:i:s');
         $packages = Package::all();
         // separes the products of the package in materials and products
-        $events = Event::with(['package', 'products', 'package.products', 'package.products.products'])
+        $events = Event::with(['packages', 'products', 'packages.products', 'packages.products.products'])
             ->where('event_date', '>', $dateLocal)
             ->get()
             ->map(function ($event) {
-                $productPackages = $event->package->products;
-                unset($event->package->products);
-                $event->package->products = $productPackages->filter(function ($product) {
-                    return $product->product_role_id == 3;
-                })->values();
-                $event->package->materials = $productPackages->filter(function ($product) {
-                    return $product->product_role_id == 2 || $product->product_role_id == 1;
-                })->values();
+                // $productPackages = $event->packages->first()->products;
+                // unset($event->packages->first()->products);
+                // $event->package->first()->products = $productPackages->filter(function ($product) {
+                //     return $product->product_role_id == 3;
+                // })->values();
+                // $event->package->first()->materials = $productPackages->filter(function ($product) {
+                //     return $product->product_role_id == 2 || $product->product_role_id == 1;
+                // })->values();
 
 
                 return $event;
@@ -53,8 +53,7 @@ class EventController extends Controller
     /// - View: The view with the form to create a new event
     public function create()
     {
-        $packages = Package::all();
-        return view('panel.events.create', compact('packages'));
+        return view('panel.events.create');
     }
 
     public function edit($id)
@@ -74,13 +73,21 @@ class EventController extends Controller
     public function show($id)
     {
         $event = Event::find($id);
+        // Conbine all materials and equipments of all packages
+        $event->equipments = $event->packages->map(function ($package) {
+            return $package->equipments;
+        })->flatten();
+        // $event->products = $event->packages->map(function ($package) {
+        //     return $package->materials;
+        // })->flatten();
         return view('panel.events.show', compact('event'));
     }
 
     public function reminder($id)
     {
         $event = Event::find($id);
-        $phone = "52$event->phone";
+        $phoneEmployee = $event->employees->first()->phone;
+        $phone = "52$phoneEmployee";
         $eventType = $event->event_type;
         $eventDate = date('j \d\e F \d\e Y', strtotime($event->event_date));
         $eventTime = date('g:ia', strtotime($event->event_date));
@@ -111,7 +118,7 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         if ($event) {
-            $event->equipments = $event->package->equipaments;
+            $event->equipments = $event->package->equipments;
         }
         // Build PDF
         $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));

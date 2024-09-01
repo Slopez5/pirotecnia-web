@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Equipament;
+use App\Models\equipment;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class EquipamentSeeder extends Seeder
+class equipmentSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,7 +14,7 @@ class EquipamentSeeder extends Seeder
     public function run(): void
     {
 
-        $equipaments = [
+        $equipments = [
             [
                 'name' => 'Base para cakes',
                 'description' => 'Base para cakes',
@@ -92,8 +92,8 @@ class EquipamentSeeder extends Seeder
             ],
         ];
 
-        foreach ($equipaments as $equipament) {
-            Equipament::create($equipament);
+        foreach ($equipments as $equipment) {
+            equipment::create($equipment);
         }
     }
 }

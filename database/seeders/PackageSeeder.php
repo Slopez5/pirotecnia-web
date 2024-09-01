@@ -39,19 +39,19 @@ detonando en alturas de 50 y 120 mts compuesto por lo siguiente:
 
         foreach ($packages as $package) {
             $products = [];
-            $equipaments = [];
+            $equipments = [];
             if (isset($package["products"])) {
                 $products = $package["products"];
                 unset($package["products"]);
             }
-            if (isset($package["equipaments"])) {
-                $equipaments = $package["equipaments"];
-                unset($package["equipaments"]);
+            if (isset($package["equipments"])) {
+                $equipments = $package["equipments"];
+                unset($package["equipments"]);
             }
             $newPackage = new Package($package);
 
-            foreach ($equipaments as $equipament) {
-                $newPackage->equipaments()->attach($equipament["id"], ['quantity' => $equipament["quantity"]]);
+            foreach ($equipments as $equipment) {
+                $newPackage->equipments()->attach($equipment["id"], ['quantity' => $equipment["quantity"]]);
             }
 
             foreach ($products as $product) {

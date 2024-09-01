@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Compras</h1>
+                    <h1 class="m-0">Tipos de eventos</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active">Compras</li>
+                        <li class="breadcrumb-item active">Tipos de eventos</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -25,40 +25,42 @@
             <div class="row">
                 <!-- Left col -->
                 <section class="col-lg-12 connectedSortable">
-                    <x-card title="Compras" icon="fas fa-shopping-cart">
+                    <x-card title="Tipos de eventos" icon="fas fa-calendar-alt">
                         <x-slot:tools>
-                            <a href="{{ route('purchases.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('event_types.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
-                        <x-slot:body class="card-body table-responsive p-0">
-                            <table class="table table-bordered table-hover text-nowrap">
+                        <x-slot:body class="table-responsive">
+                            <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>id</th>
-                                        <th>Fecha</th>
-                                        <th>Acciones</th>
+                                        <th class="col-8">Nombre</th>
+                                        <th class="col-2">Precio</th>
+                                        <th class="col-2">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($purchases as $purchase)
+                                    @foreach ($eventTypes as $event_type)
                                         <tr>
-                                            <td>{{ $purchase->id }}</td>
-                                            <td>{{ $purchase->created_at }}</td>
+                                            <td>{{ $event_type->name }}</td>
+                                            <td>{{ $event_type->price }}</td>
                                             <td>
-                                                <a href="{{ route('purchases.show', $purchase) }}"
-                                                    class="btn btn-primary btn-sm">
+                                                <a href="{{ route('event_types.show', $event_type) }}"
+                                                    class="btn btn-info btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('purchases.edit', $purchase) }}"
-                                                    class="btn btn-warning btn-sm">
+                                                <a href="{{ route('event_types.edit', $event_type) }}"
+                                                    class="btn btn-warning btn-sm" onclick="editEventType()">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('purchases.destroy', $purchase) }}" method="POST"
+                                                <form id="deleteForm-{{ $event_type->id }}"
+                                                    action="{{ route('event_types.destroy', $event_type) }}" method="POST"
                                                     style="display: inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="submit">
+                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                        onclick="deleteEventType({{ $event_type->id }})">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -71,7 +73,8 @@
                     </x-card>
                 </section>
             </div>
-            <!-- /.row (main row) -->
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 @endsection
+
+    

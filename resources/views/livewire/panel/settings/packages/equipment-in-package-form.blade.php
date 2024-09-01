@@ -1,14 +1,14 @@
 <div>
     <form wire:submit.prevent="save">
         <div class="form-group">
-            <label for="equipament_id">Equipo</label>
-            <select class="form-control" id="equipament_id" wire:model="equipament_id">
+            <label for="equipment_id">Equipo</label>
+            <select class="form-control" id="equipment_id" wire:model="equipment_id">
                 <option value="">Seleccione un equipo</option>
-                @foreach ($equipaments as $equipament)
-                    <option value="{{ $equipament->id }}">{{ $equipament->name }}</option>
+                @foreach ($equipments as $equipment)
+                    <option value="{{ $equipment->id }}">{{ $equipment->name }}</option>
                 @endforeach
             </select>
-            @error('equipament_id')
+            @error('equipment_id')
                 <span class="error">{{ $message }}</span>
             @enderror
         </div>
@@ -33,9 +33,9 @@
     {{-- spacer --}}
     <div class="mb-3"></div>
 
-    {{-- Table with equipaments in Package the table has max height --}}
+    {{-- Table with equipments in Package the table has max height --}}
     <div class="table-responsive">
-        @isset($equipamentsInPackage)
+        @isset($equipmentsInPackage)
 
             <table class="table table-bordered table-striped">
                 <thead>
@@ -46,13 +46,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($equipamentsInPackage as $equipament)
+                    @foreach ($equipmentsInPackage as $equipment)
                         <tr>
-                            <td>{{ $equipament->name }}</td>
-                            <td>{{ $equipament->pivot->quantity }}</td>
+                            <td>{{ $equipment->name }}</td>
+                            <td>{{ $equipment->pivot->quantity }}</td>
                             <td>
                                 {{-- icon trash --}}
-                                <button class="btn btn-danger" wire:click="removeEquipament({{ $equipament->id }})">
+                                <button class="btn btn-danger" wire:click="removeequipment({{ $equipment->id }})">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -63,7 +63,7 @@
                     <tr>
                         <td colspan="3">
                             {{-- Pagination --}}
-                            {{ $equipamentsInPackage->links('vendor.pagination.bootstrap-4') }}
+                            {{ $equipmentsInPackage->links('vendor.pagination.bootstrap-4') }}
                         </td>
                     </tr>
                 </tfoot>
@@ -75,7 +75,7 @@
 
 @script
     <script>
-        Livewire.on('confirmDeleteEquipament', (request) => {
+        Livewire.on('confirmDeleteequipment', (request) => {
             Swal.fire({
                 title: '¿Deseas eliminar ' + request.name + '?',
                 text: "¡No podrás revertir esto!",
@@ -86,8 +86,8 @@
                 confirmButtonText: '¡Sí, bórralo!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('deleteEquipament', {
-                        equipamentId: request.id
+                    Livewire.dispatch('deleteequipment', {
+                        equipmentId: request.id
                     });
                 }
             });

@@ -121,7 +121,7 @@ class MenuSeeder extends Seeder
                 "parent_id" => 7,
                 "menu_open" => false,
                 "title" => "Equipo",
-                "url" => "settings.equipaments.index",
+                "url" => "settings.equipments.index",
                 "icon" => "fas fa-tools",
                 "active" => true,
                 "order" => 2
