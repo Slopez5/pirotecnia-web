@@ -192,7 +192,12 @@ class EventForm extends Component
         $event->event_address = $this->event_address;
         $event->event_date = $this->event_date . ' ' . $this->event_time;
         $event->event_type_id = $this->event_type_id;
-        // Verify package_id is one or more
+        // save first package as main package
+        if (count($this->package_id) >= 1) {
+
+            $event->package()->associate($this->package_id[0]);
+        }
+
         $event->discount = $this->discount;
         $event->advance = $this->deposit;
         $event->travel_expenses = $this->viatic;
