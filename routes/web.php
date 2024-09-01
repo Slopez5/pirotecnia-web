@@ -4,7 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Chatbot\ChatbotWaController;
 use App\Http\Controllers\Panel\ClientTypeController;
 use App\Http\Controllers\Panel\DashboardController;
-use App\Http\Controllers\Panel\equipmentController;
+use App\Http\Controllers\Panel\EquipmentController;
 use App\Http\Controllers\Panel\EventController;
 use App\Http\Controllers\Panel\EventTypeController;
 use App\Http\Controllers\Panel\ExperienceLevelController;

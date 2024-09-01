@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
-use App\Models\equipment;
+use App\Models\Equipment;
 use Illuminate\Http\Request;
 
-class equipmentController extends Controller
+class EquipmentController extends Controller
 {
     //
     public function index()
     {
-        $equipments = equipment::all();
+        $equipments = Equipment::all();
         $parentItemActive = 7;
         $itemActive = 2;
         return view('panel.settings.equipments.index', compact('equipments', 'itemActive', 'parentItemActive'));
@@ -30,7 +30,7 @@ class equipmentController extends Controller
             'description' => 'required',
         ]);
 
-        $equipment = new equipment();
+        $equipment = new Equipment();
         $equipment->name = $request->name;
         $equipment->description = $request->description;
         $equipment->unit = 'pz';
@@ -43,14 +43,14 @@ class equipmentController extends Controller
     public function show($id)
     {
         //
-        $equipment = equipment::find($id);
+        $equipment = Equipment::find($id);
         return view('panel.settings.equipments.show', compact('equipment'));
     }
 
     public function edit($id)
     {
         //
-        $equipment = equipment::find($id);
+        $equipment = Equipment::find($id);
         return view('panel.settings.equipments.edit', compact('equipment'));
     }
 
@@ -62,7 +62,7 @@ class equipmentController extends Controller
             'description' => 'required',
         ]);
 
-        $equipment = equipment::find($id);
+        $equipment = Equipment::find($id);
         $equipment->name = $request->name;
         $equipment->description = $request->description;
         $equipment->unit = 'pz';
@@ -74,7 +74,7 @@ class equipmentController extends Controller
     public function destroy($id)
     {
         //
-        $equipment = equipment::find($id);
+        $equipment = Equipment::find($id);
         $equipment->delete();
 
         return redirect()->route('settings.equipments.index');
