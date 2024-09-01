@@ -193,18 +193,12 @@ class EventForm extends Component
         $event->event_date = $this->event_date . ' ' . $this->event_time;
         $event->event_type_id = $this->event_type_id;
         // Verify package_id is one or more
-        if (is_array($this->package_id) && count($this->package_id) >= 1) {
-            // Detach all packages
-            $event->packages()->detach();
-            // Verify duplicate packages
-            $this->package_id = array_unique($this->package_id);
-            // Attach packages
-            $event->packages()->attach($this->package_id);
-        }
         $event->discount = $this->discount;
         $event->advance = $this->deposit;
         $event->travel_expenses = $this->viatic;
         $event->notes = $this->notes;
+        $event->save();
+
         if (count($this->employee_id) >= 1) {
             // Detach all employees
             $event->employees()->detach();
@@ -213,7 +207,15 @@ class EventForm extends Component
             // Attach employees
             $event->employees()->attach($this->employee_id);
         }
-        $event->save();
+
+        if (is_array($this->package_id) && count($this->package_id) >= 1) {
+            // Detach all packages
+            $event->packages()->detach();
+            // Verify duplicate packages
+            $this->package_id = array_unique($this->package_id);
+            // Attach packages
+            $event->packages()->attach($this->package_id);
+        }
 
         if ($addEmployee) {
             // if event date is less than 3 days send reminder now only new employees else send reminder 3 days before only new employees
