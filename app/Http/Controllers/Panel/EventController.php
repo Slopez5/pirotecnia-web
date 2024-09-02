@@ -87,8 +87,11 @@ class EventController extends Controller
     public function reminder($id)
     {
         $event = Event::find($id);
-
-        SendReminder::dispatch('whatsapp', $event, true);
+        if ($event->employees->count() >= 1) {
+            SendReminder::dispatch('whatsapp', $event, false);
+        } else {
+            SendReminder::dispatch('whatsapp', $event, true);
+        }
 
         return redirect()->route('events.show', $id);
     }

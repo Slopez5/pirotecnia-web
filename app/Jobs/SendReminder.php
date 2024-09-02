@@ -75,7 +75,11 @@ class SendReminder implements ShouldQueue
         $eventDate = $event->date;
         $eventTime = $event->time;
         $eventAddress = $event->address;
-        $eventCoordinator = $event->employees->first()->name;
+        if ($event->employees->count() >= 1) {
+            $eventCoordinator = $event->employees->first()->name;
+        } else {
+            $eventCoordinator = "No asignado";
+        }
         $eventComments = $event->notes;
         if ($this->sendToOwner) {
             $phoneOwner = Auth::user()->phone;
