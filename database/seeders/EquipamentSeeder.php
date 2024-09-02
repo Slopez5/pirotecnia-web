@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\equipment;
+use App\Models\Equipment;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -93,7 +93,7 @@ class equipmentSeeder extends Seeder
         ];
 
         foreach ($equipments as $equipment) {
-            equipment::create($equipment);
+            Equipment::create($equipment);
         }
     }
 }

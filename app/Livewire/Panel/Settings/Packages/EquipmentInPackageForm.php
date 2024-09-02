@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Panel\Settings\Packages;
 
-use App\Models\equipment;
+use App\Models\Equipment;
 use App\Models\Package;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -22,7 +22,7 @@ class equipmentInPackageForm extends Component
     public function mount($package = null)
     {
         $this->package = $package;
-        $this->equipments = equipment::all()->sortBy('name', SORT_NATURAL);
+        $this->equipments = Equipment::all()->sortBy('name', SORT_NATURAL);
     }
 
     public function render()

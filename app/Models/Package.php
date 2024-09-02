@@ -53,7 +53,7 @@ class Package extends Model
 
     public function equipments(): BelongsToMany
     {
-        return $this->belongsToMany(equipment::class)
+        return $this->belongsToMany(Equipment::class)
         ->withPivot(['quantity'])
         ->withTimestamps();
     }
