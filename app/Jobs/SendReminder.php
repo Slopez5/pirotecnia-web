@@ -85,7 +85,7 @@ class SendReminder implements ShouldQueue
             logger('Sending to owner');
             $user = Auth::user();
             logger($user);
-            if ($user->phone == null) {
+            if ($user == null) {
                 logger('User has no phone');
                 $phoneOwner = "3121034666";
                 $phone = "52$phoneOwner";
