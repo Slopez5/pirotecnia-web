@@ -82,8 +82,19 @@ class SendReminder implements ShouldQueue
         }
         $eventComments = $event->notes;
         if ($this->sendToOwner) {
-            $phoneOwner = Auth::user()->phone;
-            $phone = "52$phoneOwner";
+            logger('Sending to owner');
+            $user = Auth::user();
+            logger($user);
+            if ($user->phone == null) {
+                logger('User has no phone');
+                $phoneOwner = "3121034666";
+                $phone = "52$phoneOwner";
+                return;
+            } else {
+                $phoneOwner = Auth::user()->phone;
+                $phone = "52$phoneOwner";
+            }
+
 
             Whatsapp::templateMessage($phone)
                 ->setName("pirotecnia_san_rafael_reminder")
