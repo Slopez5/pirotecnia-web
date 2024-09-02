@@ -35,6 +35,8 @@ class SendReminder implements ShouldQueue
      */
     public function handle(): void
     {
+        logger("Sending reminder for event {$this->event->id} by {$this->method}");
+
         //
         switch ($this->method) {
             case 'sms':
