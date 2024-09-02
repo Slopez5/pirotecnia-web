@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Helper\Whatsapp;
 use App\Helper\WhatsappComponent;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendReminder;
 use App\Models\Event;
 use App\Models\Package;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -86,30 +87,8 @@ class EventController extends Controller
     public function reminder($id)
     {
         $event = Event::find($id);
-        $phoneEmployee = $event->employees->first()->phone;
-        $phone = "52$phoneEmployee";
-        $eventType = $event->event_type;
-        $eventDate = date('j \d\e F \d\e Y', strtotime($event->event_date));
-        $eventTime = date('g:ia', strtotime($event->event_date));
-        $eventAddress = $event->event_address;
-        $eventCoordinator = "Javier Lopez";
-        $eventComments = "Dirigirse con la encargada del evento";
 
-        Whatsapp::templateMessage($phone)
-            ->setName("event_reminder")
-            ->setLanguage("es")
-            ->addComponent(WhatsappComponent::bodyComponent()
-                ->addParameter("text", $eventType, null)
-                ->addParameter("text", $eventDate, null)
-                ->addParameter("text", $eventTime, null)
-                ->addParameter("text", $eventAddress, null)
-                ->addParameter("text", $eventCoordinator, null)
-                ->addParameter("text", $eventComments, null))
-            ->addComponent(WhatsappComponent::buttonComponent()
-                ->setSubType("url")
-                ->setIndex("0")
-                ->addParameter("text", "$event->id", null))
-            ->send();
+        SendReminder::dispatch('whatsapp', $event, true);
 
         return redirect()->route('events.show', $id);
     }
