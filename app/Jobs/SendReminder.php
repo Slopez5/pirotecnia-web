@@ -93,6 +93,10 @@ class SendReminder implements ShouldQueue
                 $phoneOwner = Auth::user()->phone;
                 $phone = "52$phoneOwner";
             }
+            // Verify if event commnts is empty
+            if ($eventComments == "") {
+                $eventComments = "N/A";
+            }
 
 
             $response = Whatsapp::templateMessage($phone)
@@ -104,7 +108,7 @@ class SendReminder implements ShouldQueue
                     ->addParameter("text", $eventTime ?? "00:00", null)
                     ->addParameter("text", $eventAddress ?? "N/A", null)
                     ->addParameter("text", $eventCoordinator ?? "", null)
-                    ->addParameter("text", $eventComments ?? "N/A", null))
+                    ->addParameter("text", $eventComments, null))
                 ->addComponent(WhatsappComponent::buttonComponent()
                     ->setSubType("url")
                     ->setIndex("0")
