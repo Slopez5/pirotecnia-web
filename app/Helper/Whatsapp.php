@@ -110,6 +110,7 @@ class Whatsapp
         ];
         $payload[$this->type] = $this->payload;
         $data = $payload;
+        logger($this->baseUrl);
         logger($data);
         $response = CurlHelper::post($this->baseUrl, $data, [
             "Authorization: Bearer $this->bearerToken",
