@@ -98,6 +98,7 @@ class Whatsapp
      */
     public function send()
     {
+        
         if (!$this->payload) {
             return;
         }
@@ -109,6 +110,7 @@ class Whatsapp
         ];
         $payload[$this->type] = $this->payload;
         $data = $payload;
+        logger($data);
         $response = CurlHelper::post($this->baseUrl, $data, [
             "Authorization: Bearer $this->bearerToken",
             "Content-Type: application/json"
