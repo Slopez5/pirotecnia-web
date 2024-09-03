@@ -94,6 +94,7 @@ class SendReminder implements ShouldQueue
                 $phone = "52$phoneOwner";
             }
             // Verify if event commnts is empty
+            logger($eventComments);
             if ($eventComments == "") {
                 $eventComments = "N/A";
             }
