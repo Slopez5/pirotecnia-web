@@ -80,7 +80,7 @@ class SendReminder implements ShouldQueue
         } else {
             $eventCoordinator = "No asignado";
         }
-        $eventComments = $event->notes;
+        $eventComments = $event->notes ?? "N/A";
         if ($this->sendToOwner) {
             logger('Sending to owner');
             $user = Auth::user();
