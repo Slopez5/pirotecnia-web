@@ -20,6 +20,7 @@ class Event extends Model
         static::deleting(function ($event) {
             $event->products()->detach();
             $event->employees()->detach();
+            $event->packages()->detach();
         });
     }
 
