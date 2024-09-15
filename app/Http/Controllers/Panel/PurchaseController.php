@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PurchaseController extends Controller
 {
@@ -14,7 +15,7 @@ class PurchaseController extends Controller
     public function index()
     {
         $purchases = Purchase::all();
-        $itemActive = 5;
+        $itemActive = 6;
         return view('panel.purchases.index',compact('purchases','itemActive'));
     }
 
@@ -29,7 +30,7 @@ class PurchaseController extends Controller
         //create purchase and update inventory
         //create purchase
         $purchase = Purchase::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::user()->id,
             'date' => $request->date
         ]);
         //update inventory

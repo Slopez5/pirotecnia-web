@@ -12,7 +12,7 @@ class EquipmentController extends Controller
     public function index()
     {
         $equipments = Equipment::all();
-        $parentItemActive = 7;
+        $parentItemActive = 8;
         $itemActive = 2;
         return view('panel.settings.equipments.index', compact('equipments', 'itemActive', 'parentItemActive'));
     }

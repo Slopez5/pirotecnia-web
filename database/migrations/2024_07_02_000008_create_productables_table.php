@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('productables', function (Blueprint $table) {
-            //
-            $table->double('quantity')->nullable()->change();
+        Schema::create('productables', function (Blueprint $table) {
+            $table->unsignedBigInteger('product_id');
+            $table->morphs('productable');
+            $table->double('quantity');
+            $table->double('price')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -22,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('productables', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('productables');
     }
 };

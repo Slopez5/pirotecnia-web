@@ -13,7 +13,7 @@ class SaleController extends Controller
     public function index()
     {
         $sales = Sale::all();
-        $itemActive = 6;
+        $itemActive = 7;
         return view('panel.sales.index', compact('sales', 'itemActive'));
     }
 

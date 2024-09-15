@@ -24,7 +24,7 @@ class InventoryController extends Controller
             $inventory->save();
             
         }
-        $itemActive = 4;
+        $itemActive = 5;
         return view('panel.inventory.index', compact('products', 'itemActive', 'clientTypes'));
     }
 

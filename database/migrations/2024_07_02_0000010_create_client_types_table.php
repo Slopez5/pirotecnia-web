@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('productables', function (Blueprint $table) {
-            $table->unsignedBigInteger('product_id');
-            $table->morphs('productable');
-            $table->unsignedInteger('quantity');
-            $table->double('price')->nullable();
+        Schema::create('client_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('description');
+            $table->double('percentage_price')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('productables');
+        Schema::dropIfExists('client_types');
     }
 };

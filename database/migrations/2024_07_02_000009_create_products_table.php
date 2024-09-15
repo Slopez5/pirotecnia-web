@@ -17,7 +17,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->string('unit');
+            $table->string('duration')->nullable();
+            $table->string('shots')->nullable();
+            $table->string('caliber')->nullable();
+            $table->string('shape')->nullable();
             $table->timestamps();
+
+            $table->foreign('product_role_id')->references('id')->on('product_roles');
         });
     }
 

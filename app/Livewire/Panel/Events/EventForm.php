@@ -54,13 +54,7 @@ class EventForm extends Component
         'date' => 'required'
     ];
 
-    public function updatedPackageId($packageId)
-    {
-        $this->products = Package::with(['materials', 'materials.products', 'materials.products.inventories', 'materials.inventories'])
-            ->where('id', $packageId)
-            ->first()
-            ->materials->where('product_role_id', 2) ?? [];
-    }
+    public function updatedPackageId($packageId) {}
 
     public function updatedEmployeeId($employeeId)
     {
@@ -91,7 +85,14 @@ class EventForm extends Component
 
     public function render()
     {
-        return view('livewire.panel.events.event-form');
+        $query = Package::with(['materials', 'materials.products', 'materials.products.inventories', 'materials.inventories']);
+        $query = $query->whereIn('id', $this->package_id);
+        $query = $query->first();
+        if ($query) {
+            $this->products = $query->materials->where('product_role_id', 2) ?? [];
+        }
+
+        return view('livewire.panel.events.event-form', ["products" => $this->products]);
     }
 
     public function addPackageInput()
@@ -285,7 +286,12 @@ class EventForm extends Component
 
     public function save()
     {
-        $this->discount = str_replace('%', '', $this->discountString) / 100;
+        if ($this->discountString == '') {
+            $this->discount = 0;
+        } else {
+
+            $this->discount = str_replace('%', '', $this->discountString) / 100;
+        }
 
         //Verificar existencia de productos en inventario
         if (!$this->validateStock()) {

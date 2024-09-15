@@ -48,11 +48,21 @@ class MenuSeeder extends Seeder
                 "menu_id" => 1,
                 "parent_id" => null,
                 "menu_open" => false,
+                "title" => "Empleados",
+                "url" => "employees.index",
+                "icon" => "fas fa-users",
+                "active" => true,
+                "order" => 2
+            ],
+            [
+                "menu_id" => 1,
+                "parent_id" => null,
+                "menu_open" => false,
                 "title" => "Eventos",
                 "url" => "events.index",
                 "icon" => "fas fa-calendar-alt",
                 "active" => true,
-                "order" => 2
+                "order" => 3
             ],
             [
                 "menu_id" => 1,
@@ -62,7 +72,7 @@ class MenuSeeder extends Seeder
                 "url" => "inventories.index",
                 "icon" => "fas fa-boxes",
                 "active" => true,
-                "order" => 3
+                "order" => 4
             ],
             //Purchases
             [
@@ -73,7 +83,7 @@ class MenuSeeder extends Seeder
                 "url" => "purchases.index",
                 "icon" => "fas fa-shopping-cart",
                 "active" => true,
-                "order" => 4
+                "order" => 5
             ],
             //Sales
             [
@@ -84,7 +94,7 @@ class MenuSeeder extends Seeder
                 "url" => "sales.index",
                 "icon" => "fas fa-cash-register",
                 "active" => true,
-                "order" => 5
+                "order" => 6
             ],
             [
                 "menu_id" => 1,
@@ -94,11 +104,11 @@ class MenuSeeder extends Seeder
                 "url" => null,
                 "icon" => "fas fa-th",
                 "active" => true,
-                "order" => 6
+                "order" => 7
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 7,
+                "parent_id" => 8,
                 "menu_open" => false,
                 "title" => "Paquetes",
                 "url" => "settings.packages.index",
@@ -108,7 +118,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 7,
+                "parent_id" => 8,
                 "menu_open" => false,
                 "title" => "Productos",
                 "url" => "settings.products.index",
@@ -118,14 +128,44 @@ class MenuSeeder extends Seeder
             ],
             [
                 "menu_id" => 1,
-                "parent_id" => 7,
+                "parent_id" => 8,
                 "menu_open" => false,
                 "title" => "Equipo",
                 "url" => "settings.equipments.index",
                 "icon" => "fas fa-tools",
                 "active" => true,
                 "order" => 2
-            ]
+            ],
+            [
+                "menu_id" => 1,
+                "parent_id" => 8,
+                "menu_open" => false,
+                "title" => "Tipos de cliente",
+                "url" => "settings.client-types.index",
+                "icon" => "fas fa-user",
+                "active" => true,
+                "order" => 3
+            ],
+            [
+                "menu_id" => 1,
+                "parent_id" => 8,
+                "menu_open" => false,
+                "title" => "Tipos de evento",
+                "url" => "settings.event_types.index",
+                "icon" => "fas fa-calendar-alt",
+                "active" => true,
+                "order" => 4
+            ],
+            [
+                "menu_id" => 1,
+                "parent_id" => 8,
+                "menu_open" => false,
+                "title" => "Niveles de experiencia",
+                "url" => "settings.experience-levels.index",
+                "icon" => "",
+                "active" => true,
+                "order" => 5
+            ],
         ];
 
         MenuItem::insert($menuItems);

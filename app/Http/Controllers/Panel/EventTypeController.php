@@ -12,7 +12,7 @@ class EventTypeController extends Controller
 
     public function index()
     {
-        $parentItemActive = 7;
+        $parentItemActive = 8;
         $itemActive = 4;
         $eventTypes = EventType::all();
         return view('panel.settings.event_types.index', compact('itemActive', 'parentItemActive', 'eventTypes'));

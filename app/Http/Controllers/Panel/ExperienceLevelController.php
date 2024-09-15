@@ -14,7 +14,7 @@ class ExperienceLevelController extends Controller
     public function index()
     {
         $experienceLevels = ExperienceLevel::all();
-        $parentItemActive = 7;
+        $parentItemActive = 8;
         $itemActive = 5;
         return view('panel.settings.experience_levels.index', compact('parentItemActive', 'itemActive', 'experienceLevels'));
     }

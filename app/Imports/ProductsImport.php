@@ -29,7 +29,7 @@ class ProductsImport implements ToCollection
                         "Shots" => $productExcel[3],
                         "Caliber" => $productExcel[4],
                         "Price" => $productExcel[5],
-                        "Stock" => $productExcel[6],
+                        "Stock" => $productExcel[6] ?? 0,
 
                     ]);
                     if ($product['name'] != null) {

@@ -80,7 +80,7 @@ class UserController extends Controller
     public function indexEmployees()
     {
         $employees = Employee::all();
-        $itemActive = 12;
+        $itemActive = 3;
         return view('panel.employees.index', compact('employees', 'itemActive'));
     }
 

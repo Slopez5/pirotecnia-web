@@ -44,7 +44,7 @@ class EventController extends Controller
 
                 return $event;
             });
-        $itemActive = 3;
+        $itemActive = 4;
         return view('panel.events.index', compact('events', 'packages', 'itemActive'));
     }
 
