@@ -25,8 +25,9 @@ class SendReminder implements ShouldQueue
      */
     public function __construct($method, $event, $sendToOwner = false)
     {
+
         $this->method = $method;
-        $this->event = Event::find($event->id);
+        $this->event = $event;
         $this->sendToOwner = $sendToOwner;
     }
 
@@ -35,9 +36,6 @@ class SendReminder implements ShouldQueue
      */
     public function handle(): void
     {
-        logger("Sending reminder for event {$this->event->id} by {$this->method}");
-
-        //
         switch ($this->method) {
             case 'sms':
                 $this->sendSms();
@@ -71,10 +69,12 @@ class SendReminder implements ShouldQueue
         logger('Whatsapp sent');
 
         $event = $this->event;
-        $eventType = $event->type;
-        $eventDate = $event->date;
-        $eventTime = $event->time;
-        $eventAddress = $event->address;
+
+        $eventType = $event["typeEvent"]["name"];
+        // get event date and time
+        $eventDate = date('d/m/Y', strtotime($event->event_date));
+        $eventTime = date('H:i', strtotime($event->event_date));
+        $eventAddress = $event->event_address;
         if ($event->employees->count() >= 1) {
             $eventCoordinator = $event->employees->first()->name;
         } else {
@@ -82,11 +82,8 @@ class SendReminder implements ShouldQueue
         }
         $eventComments = $event->notes ?? "N/A";
         if ($this->sendToOwner) {
-            logger('Sending to owner');
             $user = Auth::user();
-            logger($user);
             if ($user == null) {
-                logger('User has no phone');
                 $phoneOwner = "3121034666";
                 $phone = "52$phoneOwner";
             } else {
@@ -94,11 +91,9 @@ class SendReminder implements ShouldQueue
                 $phone = "52$phoneOwner";
             }
             // Verify if event commnts is empty
-            logger($eventComments);
             if ($eventComments == "") {
                 $eventComments = "N/A";
             }
-
 
             $response = Whatsapp::templateMessage($phone)
                 ->setName("pirotecnia_san_rafael_reminder")
@@ -121,7 +116,7 @@ class SendReminder implements ShouldQueue
                 $phoneEmployee = $employee->phone;
                 $phone = "52$phoneEmployee";
 
-                Whatsapp::templateMessage($phone)
+                $response = Whatsapp::templateMessage($phone)
                     ->setName("event_reminder")
                     ->setLanguage("es")
                     ->addComponent(WhatsappComponent::bodyComponent()
@@ -136,7 +131,11 @@ class SendReminder implements ShouldQueue
                         ->setIndex("0")
                         ->addParameter("text", "$event->id", null))
                     ->send();
+
+                logger($response);
             }
         }
+        // Update inventory
+        UpdateInventory::dispatch($event);
     }
 }

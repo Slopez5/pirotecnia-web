@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {

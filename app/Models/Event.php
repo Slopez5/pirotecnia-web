@@ -42,5 +42,10 @@ class Event extends Model
     public function products() : MorphToMany {
         return $this->morphToMany(Product::class, 'productable')->withPivot('quantity', 'price')->withTimestamps();
     }
+
+    public function typeEvent(): BelongsTo
+    {
+        return $this->belongsTo(EventType::class, 'event_type_id', 'id');
+    }
     
 }
