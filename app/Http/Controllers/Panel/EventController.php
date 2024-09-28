@@ -99,7 +99,7 @@ class EventController extends Controller
 
     public function showByWhatsapp($id)
     {
-        $event = Event::find($id);
+        $event = Event::with(['typeEvent'])->where('id',$id)->get()->first();
         if ($event) {
             $event->equipments = $event->package->equipments;
         }

@@ -204,8 +204,8 @@ class EventForm extends Component
         $event->travel_expenses = $this->viatic;
         $event->notes = $this->notes;
         $event->save();
-        $event = $event->fresh();
-        $event = Event::with(['employees', 'packages', 'products','typeEvent'])->find($event->id);
+       
+        
 
         if (count($this->employee_id) >= 1) {
             // Detach all employees
@@ -229,8 +229,8 @@ class EventForm extends Component
             // if event date is less than 3 days send reminder now only new employees else send reminder 3 days before only new employees
             $event->employees = $event->employees->whereIn('id', $newEmployees);
         }
-
-        // update inventory
+        $event = $event->fresh();
+        $event = Event::with(['employees', 'packages', 'products','typeEvent'])->find($event->id);
         
         // event date - 4 days send admin reminder
         if (!$this->isEditMode) {
