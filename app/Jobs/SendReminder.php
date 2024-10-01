@@ -27,7 +27,7 @@ class SendReminder implements ShouldQueue
     {
 
         $this->method = $method;
-        $this->event = $event;
+        $this->event = Event::with(['employees', 'packages', 'products', 'typeEvent'])->find($event->id);
         $this->sendToOwner = $sendToOwner;
     }
 
@@ -113,29 +113,35 @@ class SendReminder implements ShouldQueue
             logger($response);
         } else {
             foreach ($event->employees as $employee) {
-                $phoneEmployee = $employee->phone;
-                $phone = "52$phoneEmployee";
+                if ($employee->pivot->is_send_message == 0) {
+                    $phoneEmployee = $employee->phone;
+                    $phone = "52$phoneEmployee";
 
-                $response = Whatsapp::templateMessage($phone)
-                    ->setName("event_reminder")
-                    ->setLanguage("es")
-                    ->addComponent(WhatsappComponent::bodyComponent()
-                        ->addParameter("text", $eventType ?? "Otro", null)
-                        ->addParameter("text", $eventDate ?? "", null)
-                        ->addParameter("text", $eventTime ?? "00:00", null)
-                        ->addParameter("text", $eventAddress ?? "N/A", null)
-                        ->addParameter("text", $eventCoordinator ?? "", null)
-                        ->addParameter("text", $eventComments ?? "N/A", null))
-                    ->addComponent(WhatsappComponent::buttonComponent()
-                        ->setSubType("url")
-                        ->setIndex("0")
-                        ->addParameter("text", "$event->id", null))
-                    ->send();
+                    $response = Whatsapp::templateMessage($phone)
+                        ->setName("event_reminder")
+                        ->setLanguage("es")
+                        ->addComponent(WhatsappComponent::bodyComponent()
+                            ->addParameter("text", $eventType ?? "Otro", null)
+                            ->addParameter("text", $eventDate ?? "", null)
+                            ->addParameter("text", $eventTime ?? "00:00", null)
+                            ->addParameter("text", $eventAddress ?? "N/A", null)
+                            ->addParameter("text", $eventCoordinator ?? "", null)
+                            ->addParameter("text", $eventComments ?? "N/A", null))
+                        ->addComponent(WhatsappComponent::buttonComponent()
+                            ->setSubType("url")
+                            ->setIndex("0")
+                            ->addParameter("text", "$event->id", null))
+                        ->send();
 
-                logger($response);
+                    $event->employees()->updateExistingPivot($employee->id, ['is_send_message' => 1]);
+
+                    logger($response);
+                } else {
+                    logger("Message already sent");
+                }
             }
         }
         // Update inventory
-        UpdateInventory::dispatch($event);
+        // UpdateInventory::dispatch($event);
     }
 }

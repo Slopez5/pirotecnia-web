@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Panel\Events;
 
+use App\Helper\Reminder;
 use App\Jobs\SendReminder;
 use App\Jobs\UpdateInventory;
 use App\Models\Employee;
@@ -134,7 +135,7 @@ class EventForm extends Component
         $this->package_id = $this->event->packages->pluck('id')->toArray();
         $this->employee_id = $this->event->employees->pluck('id')->toArray();
         $this->countPackageInputs = $this->event->packages->count();
-        $this->countEmployeeInputs =  $this->event->employees->count();
+        $this->countEmployeeInputs =  $this->event->employees->count() > 0 ? $this->event->employees->count() : 1;
         $this->discount = $this->event->discount;
         $this->discountString = $this->event->discount * 100 . '%';
         $this->deposit = $this->event->advance;
@@ -181,7 +182,6 @@ class EventForm extends Component
                 $addEmployee = true;
                 // get new employees
                 $newEmployees = array_diff($this->employee_id, $event->employees->pluck('id')->toArray());
-                // if event date is less than 3 days send reminder now else send reminder 3 days before
             }
         } else {
             $event = new Event();
@@ -204,8 +204,6 @@ class EventForm extends Component
         $event->travel_expenses = $this->viatic;
         $event->notes = $this->notes;
         $event->save();
-       
-        
 
         if (count($this->employee_id) >= 1) {
             // Detach all employees
@@ -225,29 +223,20 @@ class EventForm extends Component
             $event->packages()->attach($this->package_id);
         }
 
+        
+
         if ($addEmployee) {
             // if event date is less than 3 days send reminder now only new employees else send reminder 3 days before only new employees
             $event->employees = $event->employees->whereIn('id', $newEmployees);
         }
-        $event = $event->fresh();
-        $event = Event::with(['employees', 'packages', 'products','typeEvent'])->find($event->id);
         
-        // event date - 4 days send admin reminder
+        // event date - 4 days send to admin reminder
         if (!$this->isEditMode) {
-            if (Date::parse($event->event_date)->diffInDays() < 4) {
-                SendReminder::dispatch('whatsapp', $event, true);
-            } else {
-                SendReminder::dispatch('whatsapp', $event, true)->delay(Date::parse($event->event_date)->subDays(4));
-            }
+            Reminder::send($event, 'whatsapp', 4, true);
         }
         // event date - 3 days send to employee reminder
         if ($event->employees->count() > 0) {
-            if (Date::parse($event->event_date)->diffInDays() < 3) {
-                // hide employees that are not new
-                SendReminder::dispatch('whatsapp', $event);
-            } else {
-                SendReminder::dispatch('whatsapp', $event)->delay(Date::parse($event->event_date)->subDays(3));
-            }
+            Reminder::send($event, 'whatsapp', 3);
         }
 
         return $event;
