@@ -76,13 +76,17 @@ class WhatsappComponent
             "type" => $type,
         ];
         if ($text) {
-            $parameter["text"] = $text;
+            $parameter["text"] = $this->cleanText($text);
         }
         if ($payload) {
             $parameter["payload"] = $payload;
         }
         $this->parameters[] = $parameter;
         return $this;
+    }
+
+    private function cleanText($text) {
+        return preg_replace(['/[\t\n]/', '/\s{2,}/'], [' ', ' '], $text);
     }
 
     /**
