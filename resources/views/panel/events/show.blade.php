@@ -73,6 +73,9 @@
                                         <button type="submit" class="btn btn-primary">Enviar recordatorio</button>
                                     </form>
                                 </div>
+                                {{-- Show pdf with event --}}
+                                <div class="col">
+                                    <a class="btn btn-primary" href="{{ route('showByWhatsapp', $event->id) }}" class="btn btn-primary">Ver PDF</a>
                             </div>
                         </x-slot>
                     </x-card>

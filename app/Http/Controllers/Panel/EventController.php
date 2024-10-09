@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Panel;
 
+use App\Helper\Reminder;
 use App\Helper\Whatsapp;
 use App\Helper\WhatsappComponent;
 use App\Http\Controllers\Controller;
@@ -88,21 +89,24 @@ class EventController extends Controller
     public function reminder($id)
     {
         $event = Event::find($id);
-        if ($event->employees->count() >= 1) {
-            SendReminder::dispatch('whatsapp', $event, false);
-        } else {
-            SendReminder::dispatch('whatsapp', $event, true);
-        }
-
+        Reminder::send($event, 'whatsapp', 0, true);
         return redirect()->route('events.show', $id);
     }
 
     public function showByWhatsapp($id)
     {
-        $event = Event::with(['typeEvent'])->where('id',$id)->get()->first();
-        if ($event) {
-            $event->equipments = $event->package->equipments;
+        $event = Event::with(['typeEvent','packages'])->where('id',$id)->get()->first();
+        logger($event);
+        $price = 0;
+        foreach ($event->packages as $package) {
+            $price  += $package->price;
         }
+        $event->full_price = $price;
+        // Faltante a pagar
+        // $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
+        $event->balance = $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
+        
+        logger($event->full_price);
         // Build PDF
         $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));
         return $pdf->stream('event_details.pdf');

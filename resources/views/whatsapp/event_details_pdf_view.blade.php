@@ -85,7 +85,10 @@
     <p><strong>Cliente:</strong> {{ $event->client_name }}</p>
     <p><strong>Dirección de cliente:</strong> {{ $event->client_address }}</p>
     <p><strong>Dirección del evento:</strong> {{ $event->event_address }}</p>
-    <p><strong>Fecha del evento:</strong> {{ date('j \d\e F \d\e Y \a \l\a\s g:ia', strtotime($event->event_date)) }}</p>
+    <p><strong>Fecha del evento:</strong> {{ date('j \d\e F \d\e Y \a \l\a\s g:ia', strtotime($event->event_date)) }}
+    </p>
+    <p><strong>Total de Paquete:</strong> ${{ $event->full_price }}</p>
+    <p><strong>Saldo:</strong> ${{ $event->balance }}</p>
     @foreach ($event->employees as $index => $employee)
         <p><strong>Responsable {{ $index + 1 }}:</strong> {{ $employee->name }}</p>
     @endforeach
@@ -126,17 +129,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($event->equipments as $equipment)
-                <tr>
-                    <td>{{ $equipment->name }}</td>
-                    <td>{{ $equipment->pivot->quantity }}</td>
-                    <td></td>
-                </tr>
+            @foreach ($event->packages as $package)
+                @foreach ($package->equipments as $equipment)
+                    <tr>
+                        <td>{{ $equipment->name }}</td>
+                        <td>{{ $equipment->pivot->quantity }}</td>
+                        <td></td>
+                    </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>
-
-
 </body>
 
 </html>
