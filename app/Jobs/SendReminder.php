@@ -118,7 +118,7 @@ class SendReminder implements ShouldQueue
                     $phone = "52$phoneEmployee";
 
                     $response = Whatsapp::templateMessage($phone)
-                        ->setName("event_reminder")
+                        ->setName("pirotecnia_san_rafael_reminder")
                         ->setLanguage("es")
                         ->addComponent(WhatsappComponent::bodyComponent()
                             ->addParameter("text", $eventType ?? "Otro", null)
