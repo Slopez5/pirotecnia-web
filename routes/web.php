@@ -16,7 +16,6 @@ use App\Http\Controllers\Panel\ProductRoleController;
 use App\Http\Controllers\Panel\PurchaseController;
 use App\Http\Controllers\Panel\SaleController;
 use App\Http\Controllers\Panel\UserController;
-use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
 //Auth

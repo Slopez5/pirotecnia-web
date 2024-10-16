@@ -12,10 +12,12 @@ class Reminder
     {
         // Ejecuta el job para enviar el recordatorio
 
-        logger('Event date: ' . $event->event_date);
-        logger('Now: ' . now());
-        logger('Diff in days: ' . Carbon::parse($event->event_date)->diffInDays(now()));
-        if (Carbon::parse($event->event_date)->diffInDays(now()) <= $days) {
+        $now = Carbon::now('America/Mexico_City');
+        $diffDays = Carbon::parse($event->event_date)->diffInDays($now);
+        logger('Diff days: ' . $diffDays);
+        // Carbon::parse($event->event_date)->subDays($days)
+        logger('Reminder date: ' . Carbon::parse($event->event_date)->subDays($days));
+        if ($diffDays <= $days) {
             SendReminder::dispatch($method, $event, $sendToOwner);
         } else {
             SendReminder::dispatch($method, $event, $sendToOwner)->delay(Carbon::parse($event->event_date)->subDays($days));

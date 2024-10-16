@@ -92,7 +92,7 @@
     @foreach ($event->employees as $index => $employee)
         <p><strong>Responsable {{ $index + 1 }}:</strong> {{ $employee->name }}</p>
     @endforeach
-    <p><strong>Detalles adicionales:</strong> {{ $event->notes }}</p>
+    <p><strong>Detalles adicionales: {{ $event->notes }}</strong></p>
 
 
     {{-- Event Materials --}}
