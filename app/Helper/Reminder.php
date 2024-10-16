@@ -13,7 +13,7 @@ class Reminder
         // Ejecuta el job para enviar el recordatorio
 
         $now = Carbon::now('America/Mexico_City');
-        $diffDays = Carbon::parse($event->event_date)->diffInDays($now);
+        $diffDays = Carbon::parse($now)->diffInDays($event->event_date);
         logger('Diff days: ' . $diffDays);
         // Carbon::parse($event->event_date)->subDays($days)
         logger('Reminder date: ' . Carbon::parse($event->event_date)->subDays($days));
