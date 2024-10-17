@@ -90,7 +90,6 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         Reminder::send($event, 'whatsapp', 0, true);
-        sleep(20);
         Reminder::send($event, 'whatsapp', 0, false);
         return redirect()->route('events.show', $id);
     }
