@@ -18,7 +18,7 @@ class Reminder
         logger('Days: ' . $days);
         // Carbon::parse($event->event_date)->subDays($days)
         logger('Reminder date: ' . Carbon::parse($event->event_date)->subDays($days));
-        if (($diffDays <= $days) || $sendToOwner || $days == 0) {
+        if (($diffDays <= $days) || $days == 0) {
             SendReminder::dispatch($method, $event, $sendToOwner);
         } else {
             SendReminder::dispatch($method, $event, $sendToOwner)->delay(Carbon::parse($event->event_date)->subDays($days));

@@ -23,17 +23,17 @@
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                <x-small-box color="bg-info" number="150" text="New Orders" icon="ion ion-bag" url="#"
-                    footerText="More info" />
+                <x-small-box color="bg-info" number="{{$evdntsInWeek}}" text="Eventos" icon="ion ion-bag" url="#"
+                    footerText="Mas Información" />
                 <!-- ./col -->
-                <x-small-box color="bg-success" number="53" text="Bounce Rate" icon="ion ion-stats-bars" url="#"
-                    footerText="More info" />
+                <x-small-box color="bg-success" number="{{$employees}}" text="Empleados" icon="ion ion-stats-bars" url="#"
+                    footerText="Mas Información" />
                 <!-- ./col -->
-                <x-small-box color="bg-warning" number="44" text="User Registrations" icon="ion ion-person-add"
-                    url="#" footerText="More info" />
+                {{-- <x-small-box color="bg-warning" number="44" text="User Registrations" icon="ion ion-person-add"
+                    url="#" footerText="Mas Información" />
                 <!-- ./col -->
                 <x-small-box color="bg-danger" number="65" text="Unique Visitors" icon="ion ion-pie-graph" url="#"
-                    footerText="More info" />
+                    footerText="Mas Información" /> --}}
                 <!-- ./col -->
             </div>
             <!-- /.row -->

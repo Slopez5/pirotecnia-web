@@ -96,18 +96,23 @@ class EventController extends Controller
 
     public function showByWhatsapp($id)
     {
-        $event = Event::with(['typeEvent','packages'])->where('id',$id)->get()->first();
+        $event = Event::with(['typeEvent', 'packages'])->where('id', $id)->get()->first();
         logger($event);
         $price = 0;
-        foreach ($event->packages as $package) {
-            $price  += $package->price;
+        // verify if exist packages key
+        if ($event) {
+            foreach ($event->packages as $package) {
+                $price  += $package->price;
+            }
+            $event->full_price = $price;
+            // Faltante a pagar
+            // $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
+            $event->balance = $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
         }
-        $event->full_price = $price;
-        // Faltante a pagar
-        // $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
-        $event->balance = $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
+
+
+
         
-        logger($event->full_price);
         // Build PDF
         $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));
         return $pdf->stream('event_details.pdf');

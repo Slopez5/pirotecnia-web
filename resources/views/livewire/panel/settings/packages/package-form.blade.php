@@ -29,7 +29,7 @@
                 <span class="error">{{ $message }}</span>
             @enderror
         </div>
-        {{-- Link video_url--}}
+        {{-- Link video_url --}}
         <div class="form-group">
             <label for="video_url">Link del video</label>
             <input type="text" class="form-control" id="video_url" wire:model="video_url">
@@ -37,7 +37,7 @@
                 <span class="error">{{ $message }}</span>
             @enderror
         </div>
-        
+
         <div class="form-group">
             <label for="experience">Experiencia</label>
             <select class="form-control" id="experience" wire:model="experience_id">
@@ -50,15 +50,19 @@
                 <span class="error">{{ $message }}</span>
             @enderror
         </div>
-                
+
         <div class="row justify-content-between">
             <div class="col">
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </div>
-            <div class="col text-end">
-                <button type="button" class="btn btn-success" wire:click="nextTab">Siguiente</button>
-            </div>
+            @if ($isTabs)
+                <div class="col text-end">
+                    <button type="button" class="btn btn-success" wire:click="nextTab">Siguiente</button>
+                </div>
+            @endif
         </div>
+
+
     </form>
 </div>
 

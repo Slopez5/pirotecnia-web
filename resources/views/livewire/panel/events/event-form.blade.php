@@ -98,6 +98,7 @@
                             <option value="{{ $package->id }}">
                                 {{ $package->name }} - ${{ $package->price }} </option>
                         @endforeach
+                        <option value="-1">Agregar paquete</option>
                     @endif
                 </select>
                 {{-- add button in left screen to add more packages --}}
@@ -242,9 +243,81 @@
     {{-- Error Message in Modal with button continue and cancel --}}
     @if ($this->showAlert)
         <div class="alert alert-danger mt-3">
-            <p></p>
+            <p>{{$this->errorMessage ?? ""}}</p>
             <button wire:click="saveAndContinue" class="btn btn-primary">Continuar</button>
             <button wire:click="closeAlert" class="btn btn-danger">Cancelar</button>
         </div>
     @endif
+
+    {{-- Modal New Package--}}
+    <x-modal id="new-package" title="Nuevo Paquete">
+        <x-slot:body>
+            <livewire:panel.settings.packages.package-form :isTabs="false">
+        </x-slot>
+    </x-modal>
+
+    {{-- Modal New Emplyee --}}
+    <x-modal id="new-employee" title="Nuevo Encargado">
+        <x-slot:body>
+            
+        </x-slot>
+    </x-modal>
 </div>
+
+
+@script
+    <script>
+ 
+            Livewire.on('closeModal', (data) => {
+                let modalElement = document.getElementById(data[0].id);
+                let modalInstance = new bootstrap.Modal(modalElement);
+
+                if (modalInstance) {
+                    modalInstance.hide(); // Cerrar el modal
+                    modalInstance.dispose(); // Destruir la instancia
+                } else {
+                    // Si no hay una instancia activa, la creamos para poder cerrarla
+                    modalInstance = new bootstrap.Modal(modalElement);
+                    modalInstance.hide();
+                    modalInstance.dispose();
+                }
+
+                // Eliminar el backdrop si persiste
+                let backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+
+                // Eliminar clase modal-open del body
+                if (document.body.classList.contains('modal-open')) {
+                    document.body.classList.remove('modal-open');
+                }
+
+                // Resetear cualquier estilo en el body que pudo haber quedado
+                document.body.style = '';
+            });
+
+            Livewire.on('openModal', (data) => {
+                let modalElement = document.getElementById(data[0].id);
+                let modalInstance = new bootstrap.Modal(modalElement);
+
+                if (modalInstance) {
+                    modalInstance.show(); // Mostrar el modal
+                } else {
+                    // Si no hay una instancia activa, la creamos para poder mostrarla
+                    modalInstance = new bootstrap.Modal(modalElement);
+                    modalInstance.show();
+                }
+
+                // Agregar clase modal-open al body
+                if (!document.body.classList.contains('modal-open')) {
+                    document.body.classList.add('modal-open');
+                }
+
+                // Agregar estilos al body para evitar el scroll
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = '17px'; // Ancho del scrollbar
+            });
+     
+    </script>
+@endscript

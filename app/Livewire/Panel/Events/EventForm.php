@@ -15,7 +15,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\Livewire;
 
 class EventForm extends Component
 {
@@ -55,10 +57,18 @@ class EventForm extends Component
         'date' => 'required'
     ];
 
-    public function updatedPackageId($packageId) {}
+    public function updatedPackageId($packageId) {
+        if ($packageId == -1) {
+            $this->dispatch('openModal', ['id' => 'new-package']);
+        }
+    }
 
     public function updatedEmployeeId($employeeId)
     {
+        if ($employeeId == -1) {
+            $this->dispatch('openModal', ['id' => 'new-employee']);
+            return;
+        }
         $employee = Employee::find($employeeId);
         //Validate if employe has a experience in the event by packages
         //$maxExperience = Package::whereIn('id', $this->package_id)->where('experience_level_id', $employee->experience_level_id)->count();
@@ -82,6 +92,20 @@ class EventForm extends Component
                 return redirect()->route('packages.create');
             }
         }
+    }
+
+    #[On('packageCreated')]
+    public function savePackageAndUpdate($package)
+    {
+        $this->packages = Package::all();
+        $this->dispatch('closeModal',['id' => 'new-package']);
+    }
+
+    #[On('employeeCreated')]
+    public function saveEmployeeAndUpdate($employee)
+    {
+        $this->employees = Employee::all();
+        $this->dispatch('closeModal',['id' => 'new-employee']);
     }
 
     public function render()
@@ -223,13 +247,13 @@ class EventForm extends Component
             $event->packages()->attach($this->package_id);
         }
 
-        
+
 
         if ($addEmployee) {
             // if event date is less than 3 days send reminder now only new employees else send reminder 3 days before only new employees
             $event->employees = $event->employees->whereIn('id', $newEmployees);
         }
-        
+
         // event date - 4 days send to admin reminder
         if (!$this->isEditMode) {
             Reminder::send($event, 'whatsapp', 4, true);

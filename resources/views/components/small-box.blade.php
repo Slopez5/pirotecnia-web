@@ -1,5 +1,5 @@
 <!-- resources/views/components/small-box.blade.php -->
-<div class="col-lg-3 col-6">
+<div class="col">
     <!-- small box -->
     <div class="small-box {{ $color }}">
         <div class="inner">

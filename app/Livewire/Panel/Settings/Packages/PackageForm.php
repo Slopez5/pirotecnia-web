@@ -8,23 +8,26 @@ use Livewire\Component;
 
 class PackageForm extends Component
 {
-    
-   
+
+
     public $name;
     public $description;
     public $price;
     public $duration;
     public $video_url;
     public $experience_id;
-    
+
     public $experienceLevels;
     public $package;
     public $enableNextTab = false;
 
+    public $isTabs = true;
+
     //packege is optional
 
-    public function mount($package = null)
+    public function mount($package = null, $isTabs = true)
     {
+        $this->isTabs = $isTabs;
         $this->experienceLevels = ExperienceLevel::all();
         if ($package == null) {
             return;
@@ -46,7 +49,6 @@ class PackageForm extends Component
 
     public function save()
     {
-
         $this->validate([
             'name' => 'required',
             'price' => 'required',

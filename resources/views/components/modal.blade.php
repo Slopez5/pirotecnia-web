@@ -1,16 +1,31 @@
-<div {{ $attributes->merge(['class' => 'modal fade']) }} tabindex="-1" aria-labelledby="{{ $attributes['id'] }}Label"
-    aria-hidden="true">
+<div {{ $attributes->merge(['class' => 'modal fade']) }} id="{{ $attributes['id'] }}">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="{{ $attributes['id'] }}Label">{{ $title }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                @isset($body)
+            @if (isset($header))
+                <div class="modal-header">
+                    {{ $header }}
+                </div>
+            @else
+                <div class="modal-header">
+                    <h4 class="modal-title">{{ $title }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+
+            @isset($body)
+                <div {{ $body->attributes->merge(['class' => 'modal-body']) }}>
                     {{ $body }}
-                @endisset
-            </div>
+                </div>
+            @endisset
+            @isset($footer)
+                <div {{ $footer->attributes->merge(['class' => 'modal-footer justify-content-between']) }}>
+                    {{ $footer }}
+                </div>
+            @endisset
         </div>
+        <!-- /.modal-content -->
     </div>
+    <!-- /.modal-dialog -->
 </div>

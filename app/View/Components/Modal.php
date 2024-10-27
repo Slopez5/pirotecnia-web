@@ -10,13 +10,15 @@ class Modal extends Component
 {
 
     public $title;
+    public $action;
     /**
      * Create a new component instance.
      */
-    public function __construct($title)
+    public function __construct($title, $action = null)
     {
         //
         $this->title = $title;
+        $this->action = $action;
     }
 
     /**
