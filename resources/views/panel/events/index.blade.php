@@ -31,67 +31,23 @@
                             </a>
                         </x-slot>
                         <x-slot:body>
-                            <div id="calendar"></div>
+                            <livewire:panel.events.event-calendar />
                         </x-slot>
                     </x-card>
 
 
                 </section>
                 <section class="col-lg-6">
-                    {{-- <x-card title="Eventos" icon="fas fa-calendar-alt">
+                    <x-card title="Eventos" icon="fas fa-calendar-alt">
                         <x-slot:tools>
                             <a href="{{ route('events.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                             </a>
                         </x-slot>
                         <x-slot:body class="card-body table-responsive p-0">
-                            <table class="table table-bordered table-hover text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>Paquete</th>
-                                        <th>Fecha</th>
-                                        <th>Teléfono</th>
-                                        <th>Cliente</th>
-                                        <th>Dirección</th>
-                                        <th>Dirección del evento</th>
-                                        <th>Fecha del evento</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($events as $event)
-                                        <tr>
-                                            <td>{{ $event->package->name }}</td>
-                                            <td>{{ $event->date }}</td>
-                                            <td>{{ $event->phone }}</td>
-                                            <td>{{ $event->client_name }}</td>
-                                            <td>{{ $event->client_address }}</td>
-                                            <td>{{ $event->event_address }}</td>
-                                            <td>{{ $event->event_date }}</td>
-                                            <td>
-                                                <a href="{{ route('events.show', $event) }}" class="btn btn-info btn-sm">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('events.edit', $event) }}" class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form id="deleteForm-{{ $event->id }}"
-                                                    action="{{ route('events.destroy', $event) }}" method="POST"
-                                                    style="display: inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-danger btn-sm" type="button"
-                                                        onclick="confirmDelete({{ $event->id }})">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                            <livewire:panel.events.event-list />
                         </x-slot>
-                    </x-card> --}}
+                    </x-card>
                 </section>
             </div>
             <!-- /.row (main row) -->
@@ -144,29 +100,6 @@
 
 @section('extra-script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                height: 'auto',
-                events: [
-                    @foreach ($events as $event)
-                        {
-                            id: '{{ $event->id }}',
-                            title: ' - {{ $event->event_address }}',
-                            start: '{{ $event->event_date }}',
-                            end: '{{ $event->event_date }}',
-                            url: '{{ route('events.show', $event) }}'
-                        },
-                    @endforeach
-                ],
-                dateClick: function(info) {
-                   console.log(info);
-                }
-            });
-            calendar.render();
-        });
-
         function confirmDelete(id) {
             Swal.fire({
                 title: '¿Estás seguro?',

@@ -98,7 +98,6 @@ class EventController extends Controller
     public function showByWhatsapp($id)
     {
         $event = Event::with(['typeEvent', 'packages'])->where('id', $id)->get()->first();
-        logger($event);
         $price = 0;
         // verify if exist packages key
         if ($event) {
