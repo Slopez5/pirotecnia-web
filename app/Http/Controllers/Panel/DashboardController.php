@@ -27,7 +27,7 @@ class DashboardController extends Controller
                 $event->package = $package;
                 return $event;
             }
-        });
+        })->whereBetween('event_date', [Carbon::now(), Carbon::now()->addWeek()])->sortBy('event_date', SORT_REGULAR, false);
         $itemActive = 1;
         return view('panel.dashboard', compact('events', 'itemActive', 'evdntsInWeek', 'employees'));
     }

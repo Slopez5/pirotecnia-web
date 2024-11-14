@@ -155,6 +155,7 @@
                             id: '{{ $event->id }}',
                             title: ' - {{ $event->event_address }}',
                             start: '{{ $event->event_date }}',
+                            end: '{{ $event->event_date }}',
                             url: '{{ route('events.show', $event) }}'
                         },
                     @endforeach

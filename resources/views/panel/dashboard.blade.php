@@ -28,13 +28,6 @@
                 <!-- ./col -->
                 <x-small-box color="bg-success" number="{{$employees}}" text="Empleados" icon="ion ion-stats-bars" url="#"
                     footerText="Mas Información" />
-                <!-- ./col -->
-                {{-- <x-small-box color="bg-warning" number="44" text="User Registrations" icon="ion ion-person-add"
-                    url="#" footerText="Mas Información" />
-                <!-- ./col -->
-                <x-small-box color="bg-danger" number="65" text="Unique Visitors" icon="ion ion-pie-graph" url="#"
-                    footerText="Mas Información" /> --}}
-                <!-- ./col -->
             </div>
             <!-- /.row -->
             <!-- Main row -->
@@ -51,28 +44,24 @@
                             <table class="table table-bordered table-hover text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>Package</th>
-                                        <th>Date</th>
-                                        <th>Phone</th>
-                                        <th>Cliente</th>
-                                        <th>Dirección</th>
-                                        <th>Direccion del evento</th>
                                         <th>Fecha del evento</th>
-                                        <th>Tipo de evento</th>
+                                        <th>Paquete</th>
+                                        <th>Direccion del evento</th>
+                                        <th>Teléfono</th>
+                                        <th>Cliente</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($events as $event)
                                         <tr>
+                                            {{-- Fecha del evento en formato dia mes año  Miercoles 25 de Febrero de 2025 8:00pm idioma español--}}
+                                            <td>{{ Carbon\Carbon::parse($event->event_date)->locale('es')->isoFormat('dddd D/M/YYYY h:mma') }}</td>
+                                            {{-- <td>{{ $event->event_date }}</td> --}}
                                             <td>{{ $event->package->name }}</td>
-                                            <td>{{ $event->date }}</td>
+                                            <td>{{ $event->event_address }}</td>
                                             <td>{{ $event->phone }}</td>
                                             <td>{{ $event->client_name }}</td>
-                                            <td>{{ $event->client_address }}</td>
-                                            <td>{{ $event->event_address }}</td>
-                                            <td>{{ $event->event_date }}</td>
-                                            <td>{{ $event->event_type }}</td>
                                             <td>
                                                 <a href="{{ route('events.show', $event) }}" class="btn btn-info btn-sm">
                                                     <i
