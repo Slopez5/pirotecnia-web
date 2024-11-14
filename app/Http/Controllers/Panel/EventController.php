@@ -80,6 +80,7 @@ class EventController extends Controller
         $event->equipments = $event->packages->map(function ($package) {
             return $package->equipments;
         })->flatten();
+        $event->load('employees');
         // $event->products = $event->packages->map(function ($package) {
         //     return $package->materials;
         // })->flatten();

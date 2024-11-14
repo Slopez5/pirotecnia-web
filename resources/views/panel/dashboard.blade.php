@@ -23,7 +23,7 @@
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                <x-small-box color="bg-info" number="{{$evdntsInWeek}}" text="Eventos" icon="ion ion-bag" url="#"
+                <x-small-box color="bg-info" number="{{$evdntsInWeek}}" text="Eventos en la semana" icon="ion ion-bag" url="#"
                     footerText="Mas Información" />
                 <!-- ./col -->
                 <x-small-box color="bg-success" number="{{$employees}}" text="Empleados" icon="ion ion-stats-bars" url="#"
@@ -48,7 +48,7 @@
                                         <th>Paquete</th>
                                         <th>Direccion del evento</th>
                                         <th>Teléfono</th>
-                                        <th>Cliente</th>
+                                        <th>Encargado</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -61,7 +61,7 @@
                                             <td>{{ $event->package->name }}</td>
                                             <td>{{ $event->event_address }}</td>
                                             <td>{{ $event->phone }}</td>
-                                            <td>{{ $event->client_name }}</td>
+                                            <td>{{ $event->employees->first()->name }}</td>
                                             <td>
                                                 <a href="{{ route('events.show', $event) }}" class="btn btn-info btn-sm">
                                                     <i

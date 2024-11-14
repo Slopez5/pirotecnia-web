@@ -51,7 +51,7 @@
                             <a href="{{ route('events.edit', $event) }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-edit"></i> Editar
                             </a>
-                           
+
                         </x-slot>
                         <x-slot:body>
                             <div class="row">
@@ -63,6 +63,9 @@
                                     <p><strong>Lugar del evento:</strong> {{ $event->event_address }}</p>
                                     <p><strong>Fecha y hora del evento:</strong> {{ $event->event_date }}</p>
                                     <p><strong>Tipo de evento:</strong> {{ $event->event_type }}</p>
+                                    @foreach ($event->employees as $index => $employee)
+                                        <p><strong>Responsable {{ $index + 1 }}:</strong> {{ $employee->name }}</p>
+                                    @endforeach
                                 </div>
                             </div>
                             {{-- send reminder --}}
@@ -75,8 +78,9 @@
                                 </div>
                                 {{-- Show pdf with event --}}
                                 <div class="col">
-                                    <a class="btn btn-primary" href="{{ route('showByWhatsapp', $event->id) }}" class="btn btn-primary">Ver PDF</a>
-                            </div>
+                                    <a class="btn btn-primary" href="{{ route('showByWhatsapp', $event->id) }}"
+                                        class="btn btn-primary">Ver PDF</a>
+                                </div>
                         </x-slot>
                     </x-card>
                 </div>
@@ -96,8 +100,10 @@
                                     <tbody>
                                         @foreach ($event->products as $material)
                                             <tr>
-                                                
-                                                <td>{{ $material->name }} {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }} {{ $material->shape}} </td>
+
+                                                <td>{{ $material->name }}
+                                                    {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }}
+                                                    {{ $material->shape }} </td>
                                                 <td>{{ $material->pivot->quantity }}</td>
                                             </tr>
                                         @endforeach
