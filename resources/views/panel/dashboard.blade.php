@@ -23,11 +23,11 @@
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                <x-small-box color="bg-info" number="{{$evdntsInWeek}}" text="Eventos en la semana" icon="ion ion-bag" url="#"
-                    footerText="Mas Información" />
+                <x-small-box color="bg-info" number="{{ $evdntsInWeek }}" text="Eventos en la semana" icon="ion ion-bag"
+                    url="#" footerText="Mas Información" />
                 <!-- ./col -->
-                <x-small-box color="bg-success" number="{{$employees}}" text="Empleados" icon="ion ion-stats-bars" url="#"
-                    footerText="Mas Información" />
+                <x-small-box color="bg-success" number="{{ $employees }}" text="Empleados" icon="ion ion-stats-bars"
+                    url="#" footerText="Mas Información" />
             </div>
             <!-- /.row -->
             <!-- Main row -->
@@ -55,21 +55,26 @@
                                 <tbody>
                                     @foreach ($events as $event)
                                         <tr>
-                                            {{-- Fecha del evento en formato dia mes año  Miercoles 25 de Febrero de 2025 8:00pm idioma español--}}
-                                            <td>{{ Carbon\Carbon::parse($event->event_date)->locale('es')->isoFormat('dddd D/M/YYYY h:mma') }}</td>
+                                            {{-- Fecha del evento en formato dia mes año  Miercoles 25 de Febrero de 2025 8:00pm idioma español --}}
+                                            <td>{{ Carbon\Carbon::parse($event->event_date)->locale('es')->isoFormat('dddd D/M/YYYY h:mma') }}
+                                            </td>
                                             {{-- <td>{{ $event->event_date }}</td> --}}
                                             <td>{{ $event->package->name }}</td>
                                             <td>{{ $event->event_address }}</td>
                                             <td>{{ $event->phone }}</td>
-                                            <td>{{ $event->employees->first()->name }}</td>
+                                            @if ($event->employees->count() > 1)
+                                                <td>{{ $event->employees->first()->name }}</td>
+                                            @else
+                                                <td>N/A</td>
+                                            @endif
+
                                             <td>
                                                 <a href="{{ route('events.show', $event) }}" class="btn btn-info btn-sm">
                                                     <i
                                                         class="fas fa-eye
                                                 "></i>
                                                 </a>
-                                                <a href="{{ route('events.edit', $event) }}"
-                                                    class="btn btn-warning btn-sm">
+                                                <a href="{{ route('events.edit', $event) }}" class="btn btn-warning btn-sm">
                                                     <i
                                                         class="fas fa-edit
                                                 "></i>

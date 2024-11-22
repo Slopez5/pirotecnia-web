@@ -304,8 +304,19 @@ class EventForm extends Component
         if ($this->discountString == '') {
             $this->discount = 0;
         } else {
+            // validate discount % or $
 
-            $this->discount = str_replace('%', '', $this->discountString) / 100;
+            if (is_numeric($this->discount)) {
+                $this->discount = $this->discount;
+            } else if (strpos($this->discount, '%') !== false) {
+                $this->discount = str_replace('%', '', $this->discount);
+                $this->discount = $this->discount / 100;
+            } else if (strpos($this->discount, '$') !== false) {
+                $this->discount = str_replace('$', '', $this->discount);
+            } else {
+                $this->discount = null;
+            }
+            // $this->discount = str_replace('%', '', $this->discountString) / 100;
         }
 
         //Verificar existencia de productos en inventario
