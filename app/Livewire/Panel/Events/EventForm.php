@@ -225,7 +225,7 @@ class EventForm extends Component
 
         $event->discount = $this->discount;
         $event->advance = $this->deposit;
-        $event->travel_expenses = $this->viatic;
+        $event->travel_expenses = number_format($this->viatic, 2, '.', '');
         $event->notes = $this->notes;
         $event->save();
 
