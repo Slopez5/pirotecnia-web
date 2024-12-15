@@ -225,7 +225,10 @@ class EventForm extends Component
 
         $event->discount = $this->discount;
         $event->advance = $this->deposit;
-        $event->travel_expenses = number_format($this->viatic, 2, '.', '');
+        // convert 1,000 to decimal with 2 decimals 1000.00
+        $viatic = str_replace(',', '', $this->viatic);
+        $viatic = str_replace('$', '', $viatic);
+        $event->travel_expenses = number_format($viatic, 2, '.', '');
         $event->notes = $this->notes;
         $event->save();
 
