@@ -27,19 +27,9 @@ class DashboardController extends Controller
                 $event->package = $package;
                 return $event;
             }
-        })->whereBetween('event_date', [Carbon::now(), Carbon::now()->addWeek()])->sortBy('event_date', SORT_REGULAR, false);
+        })->sortBy('event_date', SORTDATE, true);
         $itemActive = 1;
         return view('panel.dashboard', compact('events', 'itemActive', 'evdntsInWeek', 'employees'));
-    }
-
-    public function test()
-    {
-        // Convert date to UTC
-        $date = '2024-10-15 21:46:00';
-        // now date in UTC format 2024-10-19 20:11:00
-        $now = Carbon::now('America/Mexico_City');
-        $days = Carbon::parse($now)->diffInDays($date);
-        return $days;
     }
     
 }

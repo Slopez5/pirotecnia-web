@@ -56,7 +56,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/event-types', [EventTypeController::class, 'index'])->name('settings.event_types.index');
     Route::get('/settings/experience-levels', [ExperienceLevelController::class, 'index'])->name('settings.experience-levels.index');
 
-
     //Users
     Route::get('panel/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('panel/users', [UserController::class, 'store'])->name('users.store');
@@ -78,6 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::get('panel/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
     Route::delete('panel/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::get('panel/events/{id}', [EventController::class, 'show'])->name('events.show');
+
     // Send reminder
     Route::post('panel/events/{id}/reminder', [EventController::class, 'reminder'])->name('events.send-reminder');
 

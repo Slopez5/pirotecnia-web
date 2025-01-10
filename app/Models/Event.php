@@ -13,6 +13,22 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'date',
+        'phone',
+        'client_name',
+        'client_address',
+        'event_address',
+        'event_date',
+        'event_time',
+        'event_type_id',
+        'package_id',
+        'discount',
+        'deposit',
+        'viatic',
+        'notes',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -32,6 +48,11 @@ class Event extends Model
     public function packages(): BelongsToMany
     {
         return $this->belongsToMany(Package::class);
+    }
+
+    public function equipments(): BelongsToMany
+    {
+        return $this->belongsToMany(Equipment::class)->withPivot('quantity')->withTimestamps();
     }
 
     public function employees(): BelongsToMany

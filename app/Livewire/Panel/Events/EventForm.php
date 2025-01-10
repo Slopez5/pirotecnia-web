@@ -228,6 +228,8 @@ class EventForm extends Component
         // convert 1,000 to decimal with 2 decimals 1000.00
         $viatic = str_replace(',', '', $this->viatic);
         $viatic = str_replace('$', '', $viatic);
+        // validate if viatic is empty 
+        $viatic = $viatic == '' ? 0 : $viatic;
         $event->travel_expenses = number_format($viatic, 2, '.', '');
         $event->notes = $this->notes;
         $event->save();
