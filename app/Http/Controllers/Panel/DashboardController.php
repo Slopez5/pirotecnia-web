@@ -27,7 +27,7 @@ class DashboardController extends Controller
                 $event->package = $package;
                 return $event;
             }
-        })->sortBy('event_date', SORTDATE, true);
+        })->sortBy('event_date', SORT_REGULAR, true);
         $itemActive = 1;
         return view('panel.dashboard', compact('events', 'itemActive', 'evdntsInWeek', 'employees'));
     }
