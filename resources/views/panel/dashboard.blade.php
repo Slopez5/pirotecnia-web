@@ -62,7 +62,7 @@
                                             <td>{{ $event->package->name }}</td>
                                             <td>{{ $event->event_address }}</td>
                                             <td>{{ $event->phone }}</td>
-                                            @if ($event->employees->count() > 1)
+                                            @if ($event->employees->count() >= 1)
                                                 <td>{{ $event->employees->first()->name }}</td>
                                             @else
                                                 <td>N/A</td>
