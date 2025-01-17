@@ -2,6 +2,7 @@
 
 namespace App\Core\Data\Services;
 
-class ReminderSchedulerServiceInterface {
+class EquipmentService
+{
 
 }

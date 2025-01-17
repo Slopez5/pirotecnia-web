@@ -98,7 +98,9 @@ class Whatsapp
      */
     public function send()
     {
-        
+        logger("$this->to");
+        logger("$this->type");
+        logger($this->payload);
         if (!$this->payload) {
             return;
         }
