@@ -88,13 +88,13 @@
     <p><strong>Fecha del evento:</strong> {{ date('j \d\e F \d\e Y \a \l\a\s g:ia', strtotime($event->event_date)) }}
     </p>
     <p><strong>Total de Paquete:</strong> ${{ $event->full_price }}</p>
-    <p><strong>Saldo:</strong> ${{ $event->balance }}</p>
     @if ($event->discount <= 1)
         <p><strong>Descuento:</strong> ${{ $event->discount * $event->full_price }}</p>
     @else
         <p><strong>Descuento:</strong> ${{ $event->discount }}</p>
-        <p><strong>Descuento:</strong> ${{ $event->full_price - $event->discount }}</p>
     @endif
+    <p><strong>Saldo:</strong> ${{ $event->balance }}</p>
+
     @foreach ($event->employees as $index => $employee)
         <p><strong>Responsable {{ $index + 1 }}:</strong> {{ $employee->name }}</p>
     @endforeach

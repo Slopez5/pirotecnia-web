@@ -107,12 +107,17 @@ class EventController extends Controller
             $event->full_price = $price;
             // Faltante a pagar
             // $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
-            $event->balance = $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
+            // Verify if % or $
+            if ($event->discount > 1) {
+                $event->balance = $price + $event->travel_expenses - $event->discount - $event->advance;
+            } else {
+                $event->balance = $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
+            }
         }
 
 
 
-        
+
         // Build PDF
         $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));
         return $pdf->stream('event_details.pdf');
