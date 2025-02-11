@@ -89,7 +89,11 @@
     </p>
     <p><strong>Total de Paquete:</strong> ${{ $event->full_price }}</p>
     <p><strong>Saldo:</strong> ${{ $event->balance }}</p>
-    <p><strong>Descuento:</strong> ${{ $event->discount * $event->full_price }}</p>
+    @if ($event->discount > 0)
+        <p><strong>Descuento:</strong> ${{ $event->discount * $event->full_price }}</p>
+    @else
+        <p><strong>Descuento:</strong> ${{ $event->full_price - $event->discount }}</p>
+    @endif
     @foreach ($event->employees as $index => $employee)
         <p><strong>Responsable {{ $index + 1 }}:</strong> {{ $employee->name }}</p>
     @endforeach
