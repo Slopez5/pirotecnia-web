@@ -109,9 +109,9 @@ class EventController extends Controller
             // $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
             // Verify if % or $
             if ($event->discount > 1) {
-                $event->balance = $price + $event->travel_expenses - $event->discount - $event->advance;
+                $event->balance = ($price - $event->discount) - $event->advance + $event->travel_expenses  ;
             } else {
-                $event->balance = $price + $event->travel_expenses - ($price * $event->discount) - $event->advance;
+                $event->balance = ($price - ($price * $event->discount)) - $event->advance + $event->travel_expenses  ;
             }
         }
 
