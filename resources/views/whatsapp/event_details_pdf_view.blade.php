@@ -89,7 +89,7 @@
     </p>
     <p><strong>Total de Paquete:</strong> ${{ $event->full_price }}</p>
     <p><strong>Saldo:</strong> ${{ $event->balance }}</p>
-    @if ($event->discount > 0)
+    @if ($event->discount <= 1)
         <p><strong>Descuento:</strong> ${{ $event->discount * $event->full_price }}</p>
     @else
         <p><strong>Descuento:</strong> ${{ $event->full_price - $event->discount }}</p>
