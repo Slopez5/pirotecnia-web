@@ -57,7 +57,8 @@ class EventForm extends Component
         'date' => 'required'
     ];
 
-    public function updatedPackageId($packageId) {
+    public function updatedPackageId($packageId)
+    {
         if ($packageId == -1) {
             $this->dispatch('openModal', ['id' => 'new-package']);
         }
@@ -70,8 +71,6 @@ class EventForm extends Component
             return;
         }
         $employee = Employee::find($employeeId);
-        //Validate if employe has a experience in the event by packages
-        //$maxExperience = Package::whereIn('id', $this->package_id)->where('experience_level_id', $employee->experience_level_id)->count();
     }
 
     public function mount($event = null)
@@ -98,14 +97,14 @@ class EventForm extends Component
     public function savePackageAndUpdate($package)
     {
         $this->packages = Package::all();
-        $this->dispatch('closeModal',['id' => 'new-package']);
+        $this->dispatch('closeModal', ['id' => 'new-package']);
     }
 
     #[On('employeeCreated')]
     public function saveEmployeeAndUpdate($employee)
     {
         $this->employees = Employee::all();
-        $this->dispatch('closeModal',['id' => 'new-employee']);
+        $this->dispatch('closeModal', ['id' => 'new-employee']);
     }
 
     public function render()
@@ -170,133 +169,130 @@ class EventForm extends Component
 
     private function getProductsLowInventory($packageId)
     {
-        $package = Package::with(['materials'])->where('id', $packageId)->get()->first();
-        $products  = Product::with(['inventories']);
-        $products = $products->where(function ($query) use ($package) {
-            $query = $query->WhereIn('id', $package->materials->where('product_role_id', 1)->pluck('id'));
-            $products = $package->materials->where('product_role_id', 2);
-            foreach ($products as $product) {
-                $query->orWhereIn('id', $product->products->pluck('id'));
-            }
-        });
-        $products = $products->where(function (Builder $query) {
-            $query->whereHas('inventories', function ($query) {
-                $query->where('quantity', '<=', Inventory::MIN_STOCK)->orWhereNull('quantity');
-            });
-        });
-        return $products->get();
+        $package = Package::with('materials')->whereIn('id', $packageId)->get();
+
+        if (!$package) {
+            return collect();
+        }
+
+        $productIds = $package->map(function ($item) {
+            return $item->materials->where('product_role_id', 2)->pluck('id')->toArray();
+        })->flatten()->toArray();
+
+        $products = Product::with('inventories')
+            ->whereIn('id', $productIds)
+            ->whereHas('inventories', function ($query) {
+                $query->where('quantity', '<=', Inventory::MIN_STOCK)
+                    ->orWhereNull('quantity');
+            })
+            ->get();
+
+        return $products;
     }
 
     private function validateStock(): bool
     {
         $productsLowInventory = $this->getProductsLowInventory($this->package_id);
-        // Verify if radio selected products are in low inventory
-        $productsDiff = array_diff($this->radioSelected, $productsLowInventory->pluck('id')->toArray());
-        return count($productsDiff) > 0;
+
+        // Verificar si los productos seleccionados están en bajo inventario
+        $lowInventoryProductIds = $productsLowInventory->pluck('id')->toArray();
+        $productsDiff = array_diff($this->radioSelected, $lowInventoryProductIds);
+
+        return empty($productsDiff);
     }
+
 
     private function saveEvent(): Event
     {
+        $event = $this->isEditMode ? Event::find($this->event->id) : new Event();
         $addEmployee = false;
         $newEmployees = [];
-        if ($this->isEditMode) {
-            $event = Event::find($this->event->id);
 
-            if ($event->employees->count() != count($this->employee_id)) {
-                $addEmployee = true;
-                // get new employees
-                $newEmployees = array_diff($this->employee_id, $event->employees->pluck('id')->toArray());
-            }
-        } else {
-            $event = new Event();
+        if ($this->isEditMode && $event->employees->count() != count($this->employee_id)) {
+            $addEmployee = true;
+            $newEmployees = array_diff($this->employee_id, $event->employees->pluck('id')->toArray());
         }
-        $event->date = $this->date;
-        $event->phone = $this->phone;
-        $event->client_name = $this->client_name;
-        $event->client_address = $this->client_address;
-        $event->event_address = $this->event_address;
-        $event->event_date = $this->event_date . ' ' . $this->event_time;
-        $event->event_type_id = $this->event_type_id;
-        // save first package as main package
-        if (count($this->package_id) >= 1) {
 
+        $event->fill([
+            'date' => $this->date,
+            'phone' => $this->phone,
+            'client_name' => $this->client_name,
+            'client_address' => $this->client_address,
+            'event_address' => $this->event_address,
+            'event_date' => $this->event_date . ' ' . $this->event_time,
+            'event_type_id' => $this->event_type_id,
+            'discount' => $this->discount,
+            'advance' => $this->deposit,
+            'travel_expenses' => $this->formatViatic($this->viatic),
+            'notes' => $this->notes,
+        ]);
+
+        if (!empty($this->package_id)) {
             $event->package()->associate($this->package_id[0]);
         }
 
-        $event->discount = $this->discount;
-        $event->advance = $this->deposit;
-        // convert 1,000 to decimal with 2 decimals 1000.00
-        $viatic = str_replace(',', '', $this->viatic);
-        $viatic = str_replace('$', '', $viatic);
-        // validate if viatic is empty 
-        $viatic = $viatic == '' ? 0 : $viatic;
-        $event->travel_expenses = number_format($viatic, 2, '.', '');
-        $event->notes = $this->notes;
         $event->save();
 
-        if (count($this->employee_id) >= 1) {
-            // Detach all employees
-            $event->employees()->detach();
-            // Verify duplicate employees
-            $this->employee_id = array_unique($this->employee_id);
-            // Attach employees
-            $event->employees()->attach($this->employee_id);
-        }
-
-        if (is_array($this->package_id) && count($this->package_id) >= 1) {
-            // Detach all packages
-            $event->packages()->detach();
-            // Verify duplicate packages
-            $this->package_id = array_unique($this->package_id);
-            // Attach packages
-            $event->packages()->attach($this->package_id);
-        }
-
-
+        $this->syncEmployees($event);
+        $this->syncPackages($event);
 
         if ($addEmployee) {
-            // if event date is less than 3 days send reminder now only new employees else send reminder 3 days before only new employees
             $event->employees = $event->employees->whereIn('id', $newEmployees);
         }
 
-        // event date - 4 days send to admin reminder
-        if (!$this->isEditMode) {
-            Reminder::send($event, 'whatsapp', 4, true);
-        }
-        // event date - 3 days send to employee reminder
-        if ($event->employees->count() > 0) {
-            Reminder::send($event, 'whatsapp', 3);
-        }
+        $this->sendReminders($event);
 
         return $event;
     }
 
+    private function formatViatic($viatic): string
+    {
+        $viatic = str_replace(['$', ','], '', $viatic);
+        logger($viatic);
+        return number_format(empty($viatic) ? 0 : $viatic, 2, '.', '');
+    }
+
+    private function syncEmployees(Event $event)
+    {
+        if (!empty($this->employee_id)) {
+            $event->employees()->sync(array_unique($this->employee_id));
+        }
+    }
+
+    private function syncPackages(Event $event)
+    {
+        if (!empty($this->package_id)) {
+            $event->packages()->sync(array_unique($this->package_id));
+        }
+    }
+
+    private function sendReminders(Event $event)
+    {
+        // if (!$this->isEditMode) {
+        //     Reminder::send($event, 'whatsapp', 4, true);
+        // }
+
+        // if ($event->employees->count() > 0) {
+        //     Reminder::send($event, 'whatsapp', 3);
+        // }
+    }
+
+
     private function saveProductsInEvent(Event $event): Event
     {
-        // reset Products
+        // Reset Products
         $event->products()->detach();
-        $packages = Package::with(['materials', 'materials.inventories', 'materials.products.inventories'])->whereIn('id', $this->package_id)->get();
+        $packages = Package::with(['materials', 'materials.inventories', 'materials.products.inventories'])
+            ->whereIn('id', $this->package_id)
+            ->get();
         $selectedProducts = collect($this->radioSelected);
+
         foreach ($packages as $package) {
             foreach ($package->materials as $product) {
                 if ($product->product_role_id == 2) {
-                    foreach ($selectedProducts as $i => $selectedProduct) {
-                        //Verificar si el producto ya fue agregado
-                        $existingProduct = $event->products()->where('product_id', $selectedProduct)->first();
-                        if ($existingProduct) {
-                            $event->products()->updateExistingPivot($selectedProduct, ['quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity]);
-                        } else {
-                            $event->products()->attach($selectedProduct, ['quantity' => $product->pivot->quantity, 'price' => 0]);
-                        }
-                    }
+                    $this->attachSelectedProducts($event, $selectedProducts, $product);
                 } else {
-                    //Verificar si el producto ya fue agregado
-                    $existingProduct = $event->products()->where('product_id', $product->id)->first();
-                    if ($existingProduct) {
-                        $event->products()->updateExistingPivot($product->id, ['quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity]);
-                    } else {
-                        $event->products()->attach($product->id, ['quantity' => $product->pivot->quantity, 'price' => 0]);
-                    }
+                    $this->attachProduct($event, $product);
                 }
             }
         }
@@ -304,39 +300,81 @@ class EventForm extends Component
         return $event;
     }
 
+    private function attachSelectedProducts(Event $event, $selectedProducts, $product)
+    {
+        foreach ($selectedProducts as $selectedProduct) {
+            $existingProduct = $event->products()->where('product_id', $selectedProduct)->first();
+            if ($existingProduct) {
+                $event->products()->updateExistingPivot($selectedProduct, [
+                    'quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity
+                ]);
+            } else {
+                $event->products()->attach($selectedProduct, [
+                    'quantity' => $product->pivot->quantity,
+                    'price' => 0
+                ]);
+            }
+        }
+    }
+
+    private function attachProduct(Event $event, $product)
+    {
+        $existingProduct = $event->products()->where('product_id', $product->id)->first();
+        if ($existingProduct) {
+            $event->products()->updateExistingPivot($product->id, [
+                'quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity
+            ]);
+        } else {
+            $event->products()->attach($product->id, [
+                'quantity' => $product->pivot->quantity,
+                'price' => 0
+            ]);
+        }
+    }
+
+
     public function save()
     {
-        if ($this->discountString == '') {
-            $this->discount = 0;
-        } else {
-            // validate discount % or $
+        $this->processDiscount();
 
-            if (is_numeric($this->discount)) {
-                $this->discount = $this->discount;
-            } else if (strpos($this->discount, '%') !== false) {
-                $this->discount = str_replace('%', '', $this->discount);
-                $this->discount = $this->discount / 100;
-            } else if (strpos($this->discount, '$') !== false) {
-                $this->discount = str_replace('$', '', $this->discount);
-            } else {
-                $this->discount = null;
-            }
-            // $this->discount = str_replace('%', '', $this->discountString) / 100;
-        }
-
-        //Verificar existencia de productos en inventario
         if (!$this->validateStock()) {
-            //show alert
             $this->showAlert = true;
             $this->enableSave = false;
             return;
         }
+
         $this->validate();
         $event = $this->saveEvent();
-        $event = $this->saveProductsInEvent($event);
+        $this->saveProductsInEvent($event);
         $this->reset();
 
         return redirect()->route('events.index');
+    }
+
+    private function processDiscount()
+    {
+        if ($this->discountString == '') {
+            $this->discount = 0;
+        } else {
+            if (is_numeric($this->discountString)) {
+                $this->discount = $this->discountString;
+            } else if (strpos($this->discountString, '%') !== false) {
+                $this->discount = str_replace('%', '', $this->discountString) / 100;
+            } else if (strpos($this->discountString, '$') !== false) {
+                $this->discount = str_replace('$', '', $this->discountString);
+            } else {
+                $this->discount = 0;
+            }
+        }
+        if (is_numeric($this->discount)) {
+            $this->discount = $this->discount;
+        } else if (strpos($this->discount, '%') !== false) {
+            $this->discount = str_replace('%', '', $this->discount) / 100;
+        } else if (strpos($this->discount, '$') !== false) {
+            $this->discount = str_replace('$', '', $this->discount);
+        } else {
+            $this->discount = null;
+        }
     }
 
     public function closeAlert()
