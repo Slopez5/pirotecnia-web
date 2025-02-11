@@ -92,6 +92,7 @@
     @if ($event->discount <= 1)
         <p><strong>Descuento:</strong> ${{ $event->discount * $event->full_price }}</p>
     @else
+        <p><strong>Descuento:</strong> ${{ $event->discount }}</p>
         <p><strong>Descuento:</strong> ${{ $event->full_price - $event->discount }}</p>
     @endif
     @foreach ($event->employees as $index => $employee)
