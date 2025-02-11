@@ -2,6 +2,90 @@
 
 namespace App\Core\Data\Services;
 
-class PackageService {
+use App\Core\Data\Entities\Package;
+use App\Models\Package as ModelsPackage;
+use Illuminate\Support\Collection;
 
+class PackageService {
+    public function all(): Collection
+    {
+        try {
+            $eloquentPackages = ModelsPackage::all();
+            $packages = $eloquentPackages->map(function ($eloquentPackage) {
+                return Package::fromPackage($eloquentPackage);
+            });
+
+            return $packages;
+        } catch (\Exception $e) {
+            return new Collection();
+        }
+    }
+
+    public function find(int $packageId): ?Package
+    {
+        try {
+            $eloquentPackage = ModelsPackage::find($packageId);
+            $package = Package::fromPackage($eloquentPackage);
+            return $package;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function create(Package $package): ?Package
+    {
+        try {
+            $eloquentPackage = new ModelsPackage();
+            $eloquentPackage->fill([
+                'name' => $package->name,
+                'description' => $package->description,
+                'price' => $package->price,
+                'duration' => $package->duration,
+                'video_url' => $package->video_url,
+                'experience_level_id' => $package->experience_level_id,
+            ]);
+            $eloquentPackage->save();
+            $package->id = $eloquentPackage->id;
+            return $package;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function update(Package $package): ?Package {
+        try {
+            $eloquentPackage = ModelsPackage::find($package->id);
+            $eloquentPackage->fill([
+                'name' => $package->name,
+                'description' => $package->description,
+                'price' => $package->price,
+                'duration' => $package->duration,
+                'video_url' => $package->video_url,
+                'experience_level_id' => $package->experience_level_id,
+            ]);
+            $eloquentPackage->save();
+            return $package;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function delete(int $packageId): bool {
+        try {
+            $eloquentPackage = ModelsPackage::find($packageId);
+            $eloquentPackage->delete();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function searchPackages(string $searchTerm): Collection {
+        try {
+            // TODO: Implement searchPackages() method
+            return new Collection();
+        } catch (\Exception $e) {
+            return new Collection();
+        }
+    }
 }

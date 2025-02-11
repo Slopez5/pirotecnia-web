@@ -8,6 +8,7 @@ class Equipment {
     public $name;
     public $description;
     public $unit;
+    public $quantity;
 
     public function __construct(array $attributes = [])
     {
@@ -17,5 +18,15 @@ class Equipment {
                 $this->$key = $value;
             }
         }
+    }
+
+    static function fromEquipment($equipment) {
+        return new Equipment([
+            'id' => $equipment->id,
+            'name' => $equipment->name,
+            'description' => $equipment->description,
+            'unit' => $equipment->unit,
+            'quantity' => $equipment->pivot->quantity
+        ]);
     }
 }

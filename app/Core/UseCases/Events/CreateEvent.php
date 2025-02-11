@@ -4,48 +4,50 @@ namespace App\Core\UseCases\Events;
 
 use App\Core\Data\Entities\Event;
 use App\Core\Data\Repositories\EventRepositoryInterface;
-use App\Core\Data\Services\ReminderSchedulerServiceInterface;
+use App\Core\Data\Services\ReminderSchedulerService;
+use App\Core\UseCases\Inventories\CheckLowInventoryByProducts;
+use App\Core\UseCases\Reminders\SendReminderToAdmin;
+use App\Core\UseCases\Reminders\SendReminderToEmployee;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CreateEvent
 {
     public function __construct(
-        private EventRepositoryInterface $eventRepository,
+        private StoreEvent $storeEvent,
         private AssignPackagesToEvent $assignPackagesToEvent,
         private AssignEquipmentsToEvent $assignEquipmentsToEvent,
         private AssignProductsToEvent $assignProductsToEvent,
         private AssignEmployeesToEvent $assignEmployeesToEvent,
-        private UpdateProductsOfInventory $updateProductsOfInventory,
-        private ReminderSchedulerServiceInterface $reminderSchedulerService
+        private SendReminderToEmployee $sendReminderToEmployee,
+        private SendReminderToAdmin $sendReminderToAdmin,
+        private CheckLowInventoryByProducts $checkLowInventoryByProducts
     ) {}
 
-    public function execute(Event $event): Event
+    public function execute(Event $event, bool $validateInventory = true): ?Event
     {
-        // create event
-        $event = $this->eventRepository->create($event);
+        try {
+            return DB::transaction(function () use ($event, $validateInventory) {
+                logger('Creating event');
+                logger($event);
+                $event = $this->storeEvent->execute($event)
+                ->withPackages($this->assignPackagesToEvent->execute($event)->packages ?? new Collection())
+                ->withProducts($this->assignProductsToEvent->execute($event)->products)
+                ->withEquipments($this->assignEquipmentsToEvent->execute($event)->equipments)
+                ->withEmployees($this->assignEmployeesToEvent->execute($event)->employees);
+              
+                
+                if ($validateInventory) {
+                    $lowInventory = $this->checkLowInventoryByProducts->execute($event->products);                
+                    $event->lowInventoryProducts = $lowInventory;
+                }
+                throw new \Exception('Event could not be created (Simulated error)');
 
-        if (!$event) {
-            logger('Event could not be created');
-            throw new \Exception('Event could not be created');
+                return $event;
+            });
+        } catch (\Exception $e) {
+            logger($e->getMessage());
+            return null;
         }
-
-        // save packages of event
-        $event = $this->assignPackagesToEvent->execute($event->id, $event->packages);
-
-        // save products of event (from packages)
-        $event = $this->assignProductsToEvent->execute($event->id, $event->products);
-
-        // save equipment of event (from packages)
-        $event = $this->assignEquipmentsToEvent->execute($event->id, $event->equipments);
-
-        // save employees of event
-        $event = $this->assignEmployeesToEvent->execute($event->id, $event->employees);
-
-        // schedule reminder to send whatsapp message to admin (4 day before event)
-        $this->reminderSchedulerService->scheduleReminderToAdmin($event, 4);
-
-        // schedule reminder to send whatsapp message to employees (3 day before event)
-        $this->reminderSchedulerService->scheduleReminderToEmployees($event, 3);
-
-        return $event;
     }
 }

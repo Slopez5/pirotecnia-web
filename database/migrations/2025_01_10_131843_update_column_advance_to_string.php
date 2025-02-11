@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('events', function (Blueprint $table) {
             //
-            $table->string('advance')->change();
+            $table->string('advance')->nullable()->change();
         });
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\UseCases\Events;
+namespace App\Core\UseCases\Inventories;
 
 class UpdateProductsOfInventory
 {

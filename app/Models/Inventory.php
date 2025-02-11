@@ -22,11 +22,8 @@ class Inventory extends Model
         $inventory = Inventory::with('products')->find(1);
         // updateExistingPivot (inventory->products() - event->products())
         foreach ($event->products as $product) {
-
             $quantityInventory = $inventory->products->find($product->id)->pivot->quantity;
             $quantityEvent = $product->pivot->quantity;
-
-
             $inventory->products()->updateExistingPivot($product->id, ['quantity' => $quantityInventory - $quantityEvent]);
         }
     }

@@ -2,6 +2,8 @@
 
 namespace App\Core\Data\Entities;
 
+use Illuminate\Support\Collection;
+
 class Product {
     public $id;
     public $product_role_id;
@@ -10,9 +12,10 @@ class Product {
     public $unit;
     public $duration;
     public $shots;
-    public $caliebr;
+    public $caliber;
     public $shape;
     public $quantity;
+    public Collection $inventory;
 
     public function __construct(array $attributes = [])
     {
@@ -21,6 +24,35 @@ class Product {
             if (property_exists($this, $key)) {
                 $this->$key = $value;
             }
+        }
+    }
+
+    public function __toString()
+    {
+        return json_encode($this);
+    }
+
+    static function fromProduct($product, $from = 'package') {
+
+        return new Product([
+            'id' => $product->id,
+            'product_role_id' => $product->product_role_id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'unit' => $product->unit,
+            'duration' => $product->duration,
+            'shots' => $product->shots,
+            'caliber' => $product->caliber,
+            'shape' => $product->shape,
+            'quantity' => self::extractQuantityFrom($product, $from),
+        ]);
+    }
+
+    private static function extractQuantityFrom($product, $from) {
+        if ($from === 'package') {
+            return $product->pivot->quantity;
+        } else {
+            return $product->inventories->first()->pivot->quantity;
         }
     }
 }

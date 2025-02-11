@@ -49,7 +49,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        auth()->login($user);
+        Auth::login($user);
 
         return redirect()->route('dashboard');
     }

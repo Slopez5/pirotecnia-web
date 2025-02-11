@@ -36,6 +36,8 @@ Route::get('legal/terms_of_service', function () {
 Route::get('/webhook', [ChatbotWaController::class, 'webhook']);
 Route::post('/webhook', [ChatbotWaController::class, 'recibe']);
 
+Route::post("/test/event", [EventController::class, 'test'])->name('test.event');
+
 Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 

@@ -1,72 +1,67 @@
 <?php
 
-namespace App\Core\Repositories;
+namespace App\Core\Domains\Repositories;
 
 use App\Core\Data\Entities\Product;
 use App\Core\Data\Repositories\ProductRepositoryInterface;
+use App\Core\Data\Services\ProductService;
 use App\Models\Product as ModelsProduct;
 use Illuminate\Support\Collection;
 
 class EloquentProductRepository implements ProductRepositoryInterface
 {
-    public function create(Product $product): Product
+
+    public function __construct(
+        private ProductService $productService
+    ) {}
+
+    public function all(): Collection
     {
-        logger('Product created');
-        return $product;
+        return $this->productService->all();
     }
 
-    public function update(Product $product): Product
+    public function find(int $id): ?Product
     {
-        return $product;
+        return $this->productService->find($id);
     }
 
-    public function delete(Product $product): bool
+    public function findByInventoryId(int $inventoryId): Collection
     {
-        return true;
+        return $this->productService->findByInventoryId($inventoryId);
     }
 
-    public function findById(int $id): ?Product
+    public function findByPackageId(int $packageId): Collection
     {
-        return null;
+        return $this->productService->findByPackageId($packageId);
     }
 
-    public function getByPackageIds(array $packageIds): Collection
+    public function create(Product $product): ?Product
     {
-        $products = ModelsProduct::with(['packages' => function ($query) use ($packageIds) {
-            $query->whereIn('id', $packageIds)
-                ->select('id', 'name') // Selecciona solo las columnas necesarias
-                ->withPivot('quantity'); // Carga la cantidad directamente desde el pivote
-        }])
-            ->whereHas('packages', function ($query) use ($packageIds) {
-                $query->whereIn('id', $packageIds);
-            })
-            ->select('id', 'name') // Selecciona solo las columnas necesarias
-            ->get();
-            
-        $products = $products->flatMap(function ($product) {
-            return $product->packages->map(function ($package) use ($product) {
-                return [
-                    'quantity' => $package->pivot->quantity,
-                    'product' => new Product([
-                        'id' => $product->id,
-                        'product_role_id' => $product->product_role_id,
-                        'name' => $product->name,
-                        'description' => $product->description ?? null,
-                        'unit' => $product->unit ?? null,
-                        'duration' => $product->duration ?? null,
-                        'shots' => $product->shots ?? null,
-                        'caliebr' => $product->caliebr ?? null,
-                        'shape' => $product->shape ?? null,
-                    ]),
-                ];
-            });
-        });
-        return $products;
+        return $this->productService->create($product);
+    }
+
+    public function update(int $productId, Product $product): ?Product
+    {
+        return $this->productService->update($product);
+    }
+
+    public function delete(int $productId): bool
+    {
+        return $this->productService->delete($productId);
+    }
+
+    public function searchProducts($searchTerm): Collection
+    {
+        return $this->productService->searchProducts($searchTerm);
+    }
+
+    public function getByPackageIds(Collection $packageIds): Collection
+    {
+        return $this->productService->getByPackageIds($packageIds);
     }
 
     public function getByEventId(int $eventId): Collection
     {
-        $packages = new Collection();
-        return $packages;
+        return $this->productService->getByEventId($eventId);
     }
 }

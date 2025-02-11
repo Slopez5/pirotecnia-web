@@ -1,140 +1,97 @@
 <?php
 
-namespace App\Core\Repositories;
+namespace App\Core\Domains\Repositories;
+
 
 use App\Core\Data\Entities\Event;
 use App\Core\Data\Repositories\EventRepositoryInterface;
+use App\Core\Data\Services\EventService;
 use App\Models\Event as ModelsEvent;
 use Illuminate\Support\Collection;
 
 class EloquentEventRepository implements EventRepositoryInterface
 {
+    public function __construct(
+        private EventService $eventService
+    ) {}
+
     public function all(): Collection
     {
-        $eloquentEvents = ModelsEvent::all();
-        $events = $eloquentEvents->map(function ($eloquentEvent) {
-            $event = new Event([
-                'id' => $eloquentEvent->id,
-                'event_type_id' => $eloquentEvent->event_type_id,
-                'package_id' => $eloquentEvent->package_id,
-                'date' => $eloquentEvent->date,
-                'phone' => $eloquentEvent->phone,
-                'client_name' => $eloquentEvent->client_name,
-                'client_address' => $eloquentEvent->client_address,
-                'event_address' => $eloquentEvent->event_address,
-                'event_date' => $eloquentEvent->event_date,
-                'disscount' => $eloquentEvent->disscount,
-                'advance' => $eloquentEvent->advance,
-                'travel_expenses' => $eloquentEvent->travel_expenses,
-                'notes' => $eloquentEvent->notes,
-                'reminder_send_date' => $eloquentEvent->reminder_send_date,
-                'reminder_send' => $eloquentEvent->reminder_sent,
-            ]);
-            return $event;
-        });
-        return $events;
+        return $this->eventService->all();
     }
 
-    public function find($id): ?Event
+    public function find(int $eventId): ?Event
     {
-        $eloquentEvent = ModelsEvent::find($id);
-        $event = new Event([
-            'id' => $eloquentEvent->id,
-            'event_type_id' => $eloquentEvent->event_type_id,
-            'package_id' => $eloquentEvent->package_id,
-            'date' => $eloquentEvent->date,
-            'phone' => $eloquentEvent->phone,
-            'client_name' => $eloquentEvent->client_name,
-            'client_address' => $eloquentEvent->client_address,
-            'event_address' => $eloquentEvent->event_address,
-            'event_date' => $eloquentEvent->event_date,
-            'disscount' => $eloquentEvent->disscount,
-            'advance' => $eloquentEvent->advance,
-            'travel_expenses' => $eloquentEvent->travel_expenses,
-            'notes' => $eloquentEvent->notes,
-            'reminder_send_date' => $eloquentEvent->reminder_send_date,
-            'reminder_send' => $eloquentEvent->reminder_sent,
-        ]);
-        return $event;
+        return $this->eventService->find($eventId);
     }
 
     public function create(Event $event): ?Event
     {
-        logger('Creating event');
-        // Validate event packages > 0
-        if (count($event->packages) === 0) {
-            logger('Event must have at least one package');
-            throw new \Exception('Event must have at least one package');
-        }
-
-        $eloquentEvent = new ModelsEvent();
-        $eloquentEvent->fill([
-            'event_type_id' => $event->event_type_id,
-            'package_id' => $event->package_id,
-            'date' => $event->date,
-            'phone' => $event->phone,
-            'client_name' => $event->client_name,
-            'client_address' => $event->client_address,
-            'event_address' => $event->event_address,
-            'event_date' => $event->event_date,
-            'disscount' => $event->disscount,
-            'advance' => $event->advance,
-            'travel_expenses' => $event->travel_expenses,
-            'notes' => $event->notes,
-            'reminder_send_date' => $event->reminder_send_date,
-            'reminder_sent' => $event->reminder_send,
-        ]);
-        $eloquentEvent->save();
-        $event->id = $eloquentEvent->id;
-        return $event;
+        return $this->eventService->create($event);
     }
 
-    public function update(Event $event, $id): Event
+    public function update(Event $event): ?Event
     {
-        $eloquentEvent = ModelsEvent::find($id);
-        $eloquentEvent->fill([
-            'event_type_id' => $event->event_type_id,
-            'package_id' => $event->package_id,
-            'date' => $event->date,
-            'phone' => $event->phone,
-            'client_name' => $event->client_name,
-            'client_address' => $event->client_address,
-            'event_address' => $event->event_address,
-            'event_date' => $event->event_date,
-            'disscount' => $event->disscount,
-            'advance' => $event->advance,
-            'travel_expenses' => $event->travel_expenses,
-            'notes' => $event->notes,
-            'reminder_send_date' => $event->reminder_send_date,
-            'reminder_sent' => $event->reminder_send,
-        ]);
-        $eloquentEvent->save();
-        return $event;
+        return $this->eventService->update($event);
     }
 
-    public function delete($id): void
+    public function delete(int $eventId): bool
     {
-        ModelsEvent::destroy($id);
+        return $this->eventService->delete($eventId);
     }
 
-    public function assignProducts(Event $event, array $products): void
+    public function searchEvents(string $searchTerm): Collection
     {
-       
+        return $this->eventService->searchEvents($searchTerm);
     }
 
-    public function assignEmployees(Event $event, array $employees): void
+    public function assignEventType($eventId, $eventTypeId): ?Event
     {
-       
+        return $this->eventService->assignEventType($eventId, $eventTypeId);
     }
 
-    public function assignEquipment(Event $event, array $equipment): void
+    public function unassignEventType($eventId, $eventTypeId): ?Event
     {
-       
+        return $this->eventService->unassignEventType($eventId, $eventTypeId);
     }
 
-    public function assignPackages(Event $event, array $packages): void
+    public function assignEmployeesToEvent(int $eventId, Collection $employees): ?Event
     {
-        $eloquentEvent = ModelsEvent::find($event->id);
-        $eloquentEvent->packages()->sync($packages);
+        return $this->eventService->assignEmployeesToEvent($eventId, $employees);
+    }
+
+    public function unassignEmployeesFromEvent(int $eventId, Collection $employees): ?Event
+    {
+        return $this->eventService->unassignEmployeesFromEvent($eventId, $employees);
+    }
+
+    public function assignEquipmentsToEvent(int $eventId, Collection $equipment): ?Event
+    {
+        return $this->eventService->assignEquipmentsToEvent($eventId, $equipment);
+    }
+
+    public function unassignEquipmentsFromEvent(int $eventId, Collection $equipment): ?Event
+    {
+        return $this->eventService->unassignEquipmentsFromEvent($eventId, $equipment);
+    }
+
+    public function assignProductsToEvent(int $eventId, Collection $products): ?Event
+    {
+        return $this->eventService->assignProductsToEvent($eventId, $products);
+    }
+
+    public function unassignProductsFromEvent(int $eventId, Collection $products): ?Event
+    {
+        return $this->eventService->unassignProductsFromEvent($eventId, $products);
+    }
+
+    public function assignPackagesToEvent(int $eventId, Collection $packages): ?Event
+    {
+        return $this->eventService->assignPackagesToEvent($eventId, $packages);
+    }
+
+    public function unassignPackagesFromEvent(int $eventId, Collection $packages): ?Event
+    {
+        return $this->eventService->unassignPackagesFromEvent($eventId, $packages);
     }
 }

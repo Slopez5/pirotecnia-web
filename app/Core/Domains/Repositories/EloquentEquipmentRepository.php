@@ -1,72 +1,55 @@
 <?php
 
-namespace App\Core\Repositories;
+namespace App\Core\Domains\Repositories;
 
 use App\Core\Data\Entities\Equipment;
 use App\Core\Data\Repositories\EquipmentRepositoryInterface;
+use App\Core\Data\Services\EquipmentService;
 use App\Models\Equipment as ModelsEquipment;
 use Illuminate\Support\Collection;
 
 class EloquentEquipmentRepository implements EquipmentRepositoryInterface
 {
-    public function create(Equipment $equipment): Equipment
+
+    public function __construct(private EquipmentService $equipmentService) {}
+
+    public function all(): Collection
     {
-        logger('Equipment created');
-        return $equipment;
+        return $this->equipmentService->all();
     }
 
-    public function update(Equipment $equipment): Equipment
+    public function find(int $id): ?Equipment
     {
-        return $equipment;
+        return $this->equipmentService->find($id);
     }
 
-    public function delete(Equipment $equipment): bool
+    public function findByEventId(int $eventId): Collection
     {
-        return true;
+        return $this->equipmentService->findByEventId($eventId);
     }
 
-    public function findById(int $id): ?Equipment
+    public function create(Equipment $equipment): ?Equipment
     {
-        return null;
+        return $this->equipmentService->create($equipment);
     }
 
-    public function getByEventId(int $eventId): Collection
+    public function update(int $id, Equipment $equipment): ?Equipment
     {
-        $equipments = new Collection();
-        return $equipments;
+        return $this->equipmentService->update($id, $equipment);
     }
 
-    public function getByPackageIds(array $packageIds): Collection
+    public function delete(int $id): bool
     {
-        $equipments = ModelsEquipment::with(['packages' => function ($query) use ($packageIds) {
-            $query->whereIn('id', $packageIds)
-                ->select('id', 'name') // Selecciona solo las columnas necesarias
-                ->withPivot('quantity'); // Carga la cantidad directamente desde el pivote
-        }])
-            ->whereHas('packages', function ($query) use ($packageIds) {
-                $query->whereIn('id', $packageIds);
-            })
-            ->select('id', 'name', 'equipment_type_id') // Selecciona solo las columnas necesarias
-            ->get();
+        return $this->equipmentService->delete($id);
+    }
 
-        $equipments = $equipments->flatMap(function ($equipment) {
-            return $equipment->packages->map(function ($package) use ($equipment) {
-                return [
-                    'quantity' => $package->pivot->quantity,
-                    'equipment' => new Equipment([
-                        'id' => $equipment->id,
-                        'equipment_type_id' => $equipment->equipment_type_id,
-                        'name' => $equipment->name,
-                        'description' => $equipment->description ?? null,
-                        'unit' => $equipment->unit ?? null,
-                        'duration' => $equipment->duration ?? null,
-                        'shots' => $equipment->shots ?? null,
-                        'caliebr' => $equipment->caliebr ?? null,
-                        'shape' => $equipment->shape ?? null,
-                    ]),
-                ];
-            });
-        });
-        return $equipments;
+    public function getByPackageIds(Collection $packageIds): Collection
+    {
+        return $this->equipmentService->getByPackageIds($packageIds);
+    }
+
+    public function searchEquipments($searchTerm): Collection
+    {
+        return $this->equipmentService->searchEquipments($searchTerm);
     }
 }

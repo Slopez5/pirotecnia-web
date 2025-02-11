@@ -22,4 +22,18 @@ class Employee
             }
         }
     }
+
+    static function fromEmployee($employee)
+    {
+        return new Employee([
+            'id' => $employee->id,
+            'name' => $employee->name,
+            'email' => $employee->email,
+            'phone' => $employee->phone,
+            'address' => $employee->address,
+            'salary' => $employee->salary,
+            'photo' => $employee->photo,
+            'experience_level_id' => $employee->experience_level_id
+        ]);
+    }
 }
