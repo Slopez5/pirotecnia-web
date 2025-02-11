@@ -93,6 +93,7 @@
     @else
         <p><strong>Descuento:</strong> ${{ $event->discount }}</p>
     @endif
+    <p><strong>Anticipo:</strong> ${{ $event->advance }}</p>
     <p><strong>Saldo:</strong> ${{ $event->balance }}</p>
 
     @foreach ($event->employees as $index => $employee)
