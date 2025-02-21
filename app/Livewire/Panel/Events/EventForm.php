@@ -22,12 +22,10 @@ use Livewire\Livewire;
 class EventForm extends Component
 {
     public $event;
-
     public $packages;
     public $employees;
     public $eventTypes;
     public $products = [];
-
     public $date;
     public $phone;
     public $client_name;
@@ -43,7 +41,6 @@ class EventForm extends Component
     public $deposit = 0;
     public $viatic = 0;
     public $notes = "";
-
     public $radioSelected = [];
     public $showAlert = false;
     public $enableSave = true;
@@ -51,8 +48,6 @@ class EventForm extends Component
     public $countPackageInputs = 1;
     public $countEmployeeInputs = 1;
 
-
-    //Reglas
     protected $rules = [
         'date' => 'required'
     ];
@@ -78,16 +73,13 @@ class EventForm extends Component
         $this->packages = Package::all();
         $this->eventTypes = EventType::all();
         $this->employees = Employee::all();
-        // if event == null date now in format Y-m-d to utc    
         $this->isEditMode = $event != null;
         if ($this->isEditMode) {
             $this->event = $event;
             $this->loadEventInputs();
         } else {
-
             $this->date = Carbon::now()->format('Y-m-d');
             if ($this->packages->count() == 0) {
-                // Redirect to create package
                 return redirect()->route('packages.create');
             }
         }
@@ -109,9 +101,9 @@ class EventForm extends Component
 
     public function render()
     {
-        $query = Package::with(['materials', 'materials.products', 'materials.products.inventories', 'materials.inventories']);
-        $query = $query->whereIn('id', $this->package_id);
-        $query = $query->first();
+        $query = Package::with(['materials', 'materials.products', 'materials.products.inventories', 'materials.inventories'])
+            ->whereIn('id', $this->package_id)
+            ->first();
         if ($query) {
             $this->products = $query->materials->where('product_role_id', 2) ?? [];
         }
@@ -128,7 +120,7 @@ class EventForm extends Component
     public function removePackageInput($index)
     {
         unset($this->package_id[$index]);
-        $this->package_id = array_values($this->package_id); // Reindexar el array
+        $this->package_id = array_values($this->package_id);
         $this->countPackageInputs -= 1;
     }
 
@@ -141,7 +133,7 @@ class EventForm extends Component
     public function removeEmployeeInput($index)
     {
         unset($this->employee_id[$index]);
-        $this->employee_id = array_values($this->employee_id); // Reindexar el array
+        $this->employee_id = array_values($this->employee_id);
         $this->countEmployeeInputs -= 1;
     }
 
@@ -158,14 +150,13 @@ class EventForm extends Component
         $this->package_id = $this->event->packages->pluck('id')->toArray();
         $this->employee_id = $this->event->employees->pluck('id')->toArray();
         $this->countPackageInputs = $this->event->packages->count();
-        $this->countEmployeeInputs =  $this->event->employees->count() > 0 ? $this->event->employees->count() : 1;
+        $this->countEmployeeInputs = $this->event->employees->count() > 0 ? $this->event->employees->count() : 1;
         $this->discount = $this->event->discount;
         $this->discountString = $this->event->discount * 100 . '%';
         $this->deposit = $this->event->advance;
         $this->viatic = $this->event->travel_expenses;
         $this->notes = $this->event->notes;
     }
-
 
     private function getProductsLowInventory($packageId)
     {
@@ -194,13 +185,11 @@ class EventForm extends Component
     {
         $productsLowInventory = $this->getProductsLowInventory($this->package_id);
 
-        // Verificar si los productos seleccionados están en bajo inventario
         $lowInventoryProductIds = $productsLowInventory->pluck('id')->toArray();
         $productsDiff = array_diff($this->radioSelected, $lowInventoryProductIds);
 
         return empty($productsDiff);
     }
-
 
     private function saveEvent(): Event
     {
@@ -248,7 +237,6 @@ class EventForm extends Component
     private function formatViatic($viatic): string
     {
         $viatic = str_replace(['$', ','], '', $viatic);
-        logger($viatic);
         return number_format(empty($viatic) ? 0 : $viatic, 2, '.', '');
     }
 
@@ -277,10 +265,8 @@ class EventForm extends Component
         // }
     }
 
-
     private function saveProductsInEvent(Event $event): Event
     {
-        // Reset Products
         $event->products()->detach();
         $packages = Package::with(['materials', 'materials.inventories', 'materials.products.inventories'])
             ->whereIn('id', $this->package_id)
@@ -332,7 +318,6 @@ class EventForm extends Component
         }
     }
 
-
     public function save()
     {
         $this->processDiscount();
@@ -353,27 +338,14 @@ class EventForm extends Component
 
     private function processDiscount()
     {
+        $discountString = str_replace(['$', '%'], '', $this->discountString);
+
         if ($this->discountString == '') {
             $this->discount = 0;
+        } elseif (is_numeric($discountString)) {
+            $this->discount = strpos($this->discountString, '%') !== false ? $discountString / 100 : $discountString;
         } else {
-            if (is_numeric($this->discountString)) {
-                $this->discount = $this->discountString;
-            } else if (strpos($this->discountString, '%') !== false) {
-                $this->discount = str_replace('%', '', $this->discountString) / 100;
-            } else if (strpos($this->discountString, '$') !== false) {
-                $this->discount = str_replace('$', '', $this->discountString);
-            } else {
-                $this->discount = 0;
-            }
-        }
-        if (is_numeric($this->discount)) {
-            $this->discount = $this->discount;
-        } else if (strpos($this->discount, '%') !== false) {
-            $this->discount = str_replace('%', '', $this->discount) / 100;
-        } else if (strpos($this->discount, '$') !== false) {
-            $this->discount = str_replace('$', '', $this->discount);
-        } else {
-            $this->discount = null;
+            $this->discount = 0;
         }
     }
 
@@ -389,10 +361,9 @@ class EventForm extends Component
 
     public function saveAndContinue()
     {
-        //Verificar existencia de productos en inventario
         $this->validate();
         $event = $this->saveEvent();
-        $event = $this->saveProductsInEvent($event);
+        $this->saveProductsInEvent($event);
         $this->reset();
         $this->showAlert = false;
         return redirect()->route('events.index');
