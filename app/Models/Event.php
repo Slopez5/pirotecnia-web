@@ -14,19 +14,20 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date',
-        'phone',
-        'client_name',
-        'client_address',
-        'event_address',
-        'event_date',
-        'event_time',
-        'event_type_id',
-        'package_id',
-        'discount',
-        'deposit',
-        'viatic',
-        'notes',
+        "event_type_id",
+        "package_id",
+        "date",
+        "phone",
+        "client_name",
+        "client_address",
+        "event_address",
+        "event_date",
+        "discount",
+        "advance",
+        "travel_expenses",
+        "notes",
+        "reminder_send_date",
+        "reminder_sent",
     ];
 
     protected static function boot()
