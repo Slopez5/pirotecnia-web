@@ -9,9 +9,6 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 
 class ProductsImport implements ToCollection
 {
-    /**
-     * @param Collection $collection
-     */
     public function collection(Collection $collection)
     {
         //
@@ -19,17 +16,17 @@ class ProductsImport implements ToCollection
         if (count($collection) > 0) {
             $productsExcel = $collection;
             foreach ($productsExcel as $index => $productExcel) {
-                //First row is the header
+                // First row is the header
                 if ($index > 0) {
-                    //add product to collection
+                    // add product to collection
                     $product = collect([
-                        "name" => $productExcel[0],
-                        "shape" => $productExcel[1],
-                        "Duration" => $productExcel[2],
-                        "Shots" => $productExcel[3],
-                        "Caliber" => $productExcel[4],
-                        "Price" => $productExcel[5],
-                        "Stock" => $productExcel[6] ?? 0,
+                        'name' => $productExcel[0],
+                        'shape' => $productExcel[1],
+                        'Duration' => $productExcel[2],
+                        'Shots' => $productExcel[3],
+                        'Caliber' => $productExcel[4],
+                        'Price' => $productExcel[5],
+                        'Stock' => $productExcel[6] ?? 0,
 
                     ]);
                     if ($product['name'] != null) {
@@ -42,16 +39,17 @@ class ProductsImport implements ToCollection
                 }
             }
         }
+
         return $products;
     }
 
     private function addProductToDB($product)
     {
-        $productDB = new Product();
+        $productDB = new Product;
         $productDB->product_role_id = 1;
-        $productDB->name = $product['name'] ?? "";
+        $productDB->name = $product['name'] ?? '';
         $productDB->description = $product['name'];
-        $productDB->unit = "pza";
+        $productDB->unit = 'pza';
         $productDB->duration = $product['Duration'];
         $productDB->shots = $product['Shots'];
         $productDB->caliber = $product['Caliber'];

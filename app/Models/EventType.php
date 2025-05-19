@@ -10,7 +10,7 @@ class EventType extends Model
 {
     use HasFactory;
 
-    protected $table = "event_types";
+    protected $table = 'event_types';
 
     public function events(): HasMany
     {

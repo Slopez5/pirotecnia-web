@@ -7,11 +7,11 @@ use App\Core\Data\Repositories\EmployeeRepositoryInterface;
 use App\Core\Data\Services\EmployeeService;
 use Illuminate\Support\Collection;
 
-class EloquentEmployeeRepository implements EmployeeRepositoryInterface {
-
+class EloquentEmployeeRepository implements EmployeeRepositoryInterface
+{
     public function __construct(
         private EmployeeService $employeeService
-    ){}
+    ) {}
 
     public function all(): Collection
     {

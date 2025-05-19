@@ -15,6 +15,7 @@ class EventTypeController extends Controller
         $parentItemActive = 8;
         $itemActive = 4;
         $eventTypes = EventType::all();
+
         return view('panel.settings.event_types.index', compact('itemActive', 'parentItemActive', 'eventTypes'));
     }
 
@@ -25,10 +26,11 @@ class EventTypeController extends Controller
 
     public function store(Request $request)
     {
-        $eventType = new EventType();
+        $eventType = new EventType;
         $eventType->name = $request->name;
         $eventType->description = $request->description;
         $eventType->save();
+
         return redirect()->route('settings.event_types.index');
     }
 
@@ -51,6 +53,7 @@ class EventTypeController extends Controller
     {
         $eventType = EventType::find($id);
         $eventType->delete();
+
         return redirect()->route('settings.event_types.index');
     }
 }

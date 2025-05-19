@@ -8,22 +8,27 @@ use Livewire\Component;
 
 class PackageForm extends Component
 {
-
-
     public $name;
+
     public $description;
+
     public $price;
+
     public $duration;
+
     public $video_url;
+
     public $experience_id;
 
     public $experienceLevels;
+
     public $package;
+
     public $enableNextTab = false;
 
     public $isTabs = true;
 
-    //packege is optional
+    // packege is optional
 
     public function mount($package = null, $isTabs = true)
     {
@@ -40,7 +45,6 @@ class PackageForm extends Component
         $this->experience_id = $package->experience_level_id;
         $this->video_url = $package->video_url;
     }
-
 
     public function render()
     {
@@ -73,6 +77,7 @@ class PackageForm extends Component
             $this->package->save();
             $this->dispatch('packageCreated', $this->package);
             $this->enableNextTab = true;
+
             return;
         }
 

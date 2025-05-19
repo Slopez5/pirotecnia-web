@@ -14,10 +14,6 @@ class Reminder
 
         $now = Carbon::now('America/Mexico_City');
         $diffDays = Carbon::parse($now)->diffInDays($event->event_date);
-        logger('Diff days: ' . $diffDays);
-        logger('Days: ' . $days);
-        // Carbon::parse($event->event_date)->subDays($days)
-        logger('Reminder date: ' . Carbon::parse($event->event_date)->subDays($days));
         if (($diffDays <= $days) || $days == 0) {
             SendReminder::dispatch($method, $event, $sendToOwner);
         } else {

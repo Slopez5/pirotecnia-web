@@ -2,11 +2,16 @@
 
 namespace App\Core\Data\Entities;
 
-class ProductInventory {
+class ProductInventory
+{
     public $id;
+
     public $name;
+
     public $description;
+
     public $quantity;
+
     public $price;
 
     public function __construct(array $attributes = [])
@@ -24,7 +29,8 @@ class ProductInventory {
         return json_encode($this);
     }
 
-    static function fromProduct($product) {
+    public static function fromProduct($product)
+    {
         return new ProductInventory([
             'id' => $product->id,
             'name' => $product->name,

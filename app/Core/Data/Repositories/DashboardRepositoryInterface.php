@@ -2,6 +2,4 @@
 
 namespace App\Core\Data\Repositories;
 
-interface DashboardRepositoryInterface {
-   
-}
+interface DashboardRepositoryInterface {}

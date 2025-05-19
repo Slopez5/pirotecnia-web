@@ -8,8 +8,8 @@ use Illuminate\View\Component;
 
 class equipmentTable extends Component
 {
-
     public $equipments;
+
     /**
      * Create a new component instance.
      */

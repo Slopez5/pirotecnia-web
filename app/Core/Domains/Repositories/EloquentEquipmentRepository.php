@@ -5,12 +5,10 @@ namespace App\Core\Domains\Repositories;
 use App\Core\Data\Entities\Equipment;
 use App\Core\Data\Repositories\EquipmentRepositoryInterface;
 use App\Core\Data\Services\EquipmentService;
-use App\Models\Equipment as ModelsEquipment;
 use Illuminate\Support\Collection;
 
 class EloquentEquipmentRepository implements EquipmentRepositoryInterface
 {
-
     public function __construct(private EquipmentService $equipmentService) {}
 
     public function all(): Collection

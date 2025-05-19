@@ -19,8 +19,10 @@ class AssignEquipmentsToEvent
         $equipments = $this->validateEquipaents($equipments);
         if ($event) {
             $event = $this->eventRepository->assignEquipmentsToEvent($eventId, $equipments);
+
             return $event;
         }
+
         return null;
     }
 
@@ -29,8 +31,10 @@ class AssignEquipmentsToEvent
         $equipments = $equipments->map(function ($equipment) use ($equipments) {
             $quantity = $equipments->where('id', $equipment->id)->sum('quantity');
             $equipment->quantity = $quantity;
+
             return $equipment;
         })->unique('id')->values();
+
         return $equipments;
     }
 }

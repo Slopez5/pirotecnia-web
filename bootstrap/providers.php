@@ -2,7 +2,9 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    'PDF' => Barryvdh\DomPDF\ServiceProvider::class,
-    Maatwebsite\Excel\ExcelServiceProvider::class,
+    App\Providers\FailureResponseProvider::class,
+    App\Providers\SuccessResponseProvider::class,
+    Barryvdh\DomPDF\ServiceProvider::class,
     Laravel\Passport\PassportServiceProvider::class,
+    Maatwebsite\Excel\ExcelServiceProvider::class,
 ];

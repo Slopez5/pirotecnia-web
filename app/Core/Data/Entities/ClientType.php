@@ -2,9 +2,12 @@
 
 namespace App\Core\Data\Entities;
 
-class ClientType {
+class ClientType
+{
     public $id;
+
     public $name;
+
     public $description;
 
     public function __construct(array $attributes = [])
@@ -17,11 +20,12 @@ class ClientType {
         }
     }
 
-    static function fromClientType($clientType) {
+    public static function fromClientType($clientType)
+    {
         return new ClientType([
             'id' => $clientType->id,
             'name' => $clientType->name,
-            'description' => $clientType->description
+            'description' => $clientType->description,
         ]);
     }
 }

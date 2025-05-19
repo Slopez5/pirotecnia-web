@@ -2,6 +2,4 @@
 
 namespace App\Core\UseCases\Events;
 
-class DeleteEvent {
-    
-}
+class DeleteEvent {}

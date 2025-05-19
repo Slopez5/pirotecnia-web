@@ -17,7 +17,9 @@ class SendReminder implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $method;
+
     protected $event;
+
     protected $sendToOwner;
 
     /**
@@ -51,26 +53,16 @@ class SendReminder implements ShouldQueue
         }
     }
 
-    private function sendSms()
-    {
-        //Send SMS
-        logger('SMS sent');
-    }
+    private function sendSms() {}
 
-    private function sendEmail()
-    {
-        //Send Email
-        logger('Email sent');
-    }
+    private function sendEmail() {}
 
     private function sendWhatsapp()
     {
-        //Send Whatsapp
-        logger('Whatsapp sent');
 
         $event = $this->event;
 
-        $eventType = $event["typeEvent"]["name"];
+        $eventType = $event['typeEvent']['name'];
         // get event date and time
         $eventDate = date('d/m/Y', strtotime($event->event_date));
         $eventTime = date('H:i', strtotime($event->event_date));
@@ -78,39 +70,38 @@ class SendReminder implements ShouldQueue
         if ($event->employees->count() >= 1) {
             $eventCoordinator = $event->employees->first()->name;
         } else {
-            $eventCoordinator = "No asignado";
+            $eventCoordinator = 'No asignado';
         }
-        $eventComments = $event->notes ?? "N/A";
+        $eventComments = $event->notes ?? 'N/A';
         if ($this->sendToOwner) {
             $user = Auth::user();
             if ($user == null) {
-                $phoneOwner = "3121034666";
+                $phoneOwner = '3121034666';
                 $phone = "52$phoneOwner";
             } else {
                 $phoneOwner = Auth::user()->phone;
                 $phone = "52$phoneOwner";
             }
             // Verify if event commnts is empty
-            if ($eventComments == "") {
-                $eventComments = "N/A";
+            if ($eventComments == '') {
+                $eventComments = 'N/A';
             }
 
             $response = Whatsapp::templateMessage($phone)
-                ->setName("pirotecnia_san_rafael_reminder")
-                ->setLanguage("es")
+                ->setName('pirotecnia_san_rafael_reminder')
+                ->setLanguage('es')
                 ->addComponent(WhatsappComponent::bodyComponent()
-                    ->addParameter("text", $eventType ?? "Otro", null)
-                    ->addParameter("text", $eventDate ?? "N/A", null)
-                    ->addParameter("text", $eventTime ?? "00:00", null)
-                    ->addParameter("text", $eventAddress ?? "N/A", null)
-                    ->addParameter("text", $eventCoordinator ?? "N/A", null)
-                    ->addParameter("text", $eventComments ?? "N/A", null))
+                    ->addParameter('text', $eventType ?? 'Otro', null)
+                    ->addParameter('text', $eventDate ?? 'N/A', null)
+                    ->addParameter('text', $eventTime ?? '00:00', null)
+                    ->addParameter('text', $eventAddress ?? 'N/A', null)
+                    ->addParameter('text', $eventCoordinator ?? 'N/A', null)
+                    ->addParameter('text', $eventComments ?? 'N/A', null))
                 ->addComponent(WhatsappComponent::buttonComponent()
-                    ->setSubType("url")
-                    ->setIndex("0")
-                    ->addParameter("text", "$event->id", null))
+                    ->setSubType('url')
+                    ->setIndex('0')
+                    ->addParameter('text', "$event->id", null))
                 ->send();
-            logger($response);
         } else {
             foreach ($event->employees as $employee) {
                 if ($employee->pivot->is_send_message == 0) {
@@ -118,30 +109,25 @@ class SendReminder implements ShouldQueue
                     $phone = "52$phoneEmployee";
 
                     $response = Whatsapp::templateMessage($phone)
-                        ->setName("pirotecnia_san_rafael_reminder")
-                        ->setLanguage("es")
+                        ->setName('pirotecnia_san_rafael_reminder')
+                        ->setLanguage('es')
                         ->addComponent(WhatsappComponent::bodyComponent()
-                            ->addParameter("text", $eventType ?? "Otro", null)
-                            ->addParameter("text", $eventDate ?? "N/A", null)
-                            ->addParameter("text", $eventTime ?? "00:00", null)
-                            ->addParameter("text", $eventAddress ?? "N/A", null)
-                            ->addParameter("text", $eventCoordinator ?? "N/A", null)
-                            ->addParameter("text", $eventComments ?? "N/A", null))
+                            ->addParameter('text', $eventType ?? 'Otro', null)
+                            ->addParameter('text', $eventDate ?? 'N/A', null)
+                            ->addParameter('text', $eventTime ?? '00:00', null)
+                            ->addParameter('text', $eventAddress ?? 'N/A', null)
+                            ->addParameter('text', $eventCoordinator ?? 'N/A', null)
+                            ->addParameter('text', $eventComments ?? 'N/A', null))
                         ->addComponent(WhatsappComponent::buttonComponent()
-                            ->setSubType("url")
-                            ->setIndex("0")
-                            ->addParameter("text", "$event->id", null))
+                            ->setSubType('url')
+                            ->setIndex('0')
+                            ->addParameter('text', "$event->id", null))
                         ->send();
 
                     $event->employees()->updateExistingPivot($employee->id, ['is_send_message' => 1]);
-
-                    logger($response);
                 } else {
-                    logger("Message already sent");
                 }
             }
         }
-        // Update inventory
-        // UpdateInventory::dispatch($event);
     }
 }

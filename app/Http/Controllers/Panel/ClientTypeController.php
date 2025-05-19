@@ -13,6 +13,7 @@ class ClientTypeController extends Controller
     {
         $parentItemActive = 8;
         $itemActive = 3;
+
         return view('panel.settings.client_types.index', compact('itemActive', 'parentItemActive'));
     }
 

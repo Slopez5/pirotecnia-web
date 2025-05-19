@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ProductRole;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ProductRoleSeeder extends Seeder
@@ -17,13 +16,13 @@ class ProductRoleSeeder extends Seeder
 
         $productRoles = [
             [
-                "name" => "Productos"
+                'name' => 'Productos',
             ],
             [
-                "name" => "Materiales"
+                'name' => 'Materiales',
             ],
             [
-                "name" => "Productos Paquete"
+                'name' => 'Productos Paquete',
             ],
         ];
 

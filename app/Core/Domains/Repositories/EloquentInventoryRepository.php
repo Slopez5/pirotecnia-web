@@ -5,10 +5,10 @@ namespace App\Core\Domains\Repositories;
 use App\Core\Data\Entities\Inventory;
 use App\Core\Data\Repositories\InventoryRepositoryInterface;
 use App\Core\Data\Services\InventoryService;
-use App\Models\Inventory as ModelsInventory;
 use Illuminate\Support\Collection;
 
-class EloquentInventoryRepository implements InventoryRepositoryInterface {
+class EloquentInventoryRepository implements InventoryRepositoryInterface
+{
     public function __construct(
         private InventoryService $inventoryService
     ) {}
@@ -41,7 +41,7 @@ class EloquentInventoryRepository implements InventoryRepositoryInterface {
 
     public function searchInventories($searchTerm): Collection
     {
-       
+
         return $this->inventoryService->searchInventories($searchTerm);
     }
 
@@ -49,6 +49,4 @@ class EloquentInventoryRepository implements InventoryRepositoryInterface {
     {
         return $this->inventoryService->checkLowInventoryByProducts($products);
     }
-
-
 }

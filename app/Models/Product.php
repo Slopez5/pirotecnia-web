@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Product extends Model
@@ -19,7 +18,7 @@ class Product extends Model
         'duration',
         'shots',
         'caliber',
-        'shape'
+        'shape',
     ];
 
     protected static function boot()
@@ -46,11 +45,12 @@ class Product extends Model
 
     public function events(): MorphToMany
     {
-        return $this->morphedByMany(Event::class,'productable');
+        return $this->morphedByMany(Event::class, 'productable');
     }
 
-    public function inventories(): MorphToMany {
-        return $this->morphedByMany(Inventory::class,'productable')->withPivot(['quantity','price']);
+    public function inventories(): MorphToMany
+    {
+        return $this->morphedByMany(Inventory::class, 'productable')->withPivot(['quantity', 'price']);
     }
 
     public function packages(): MorphToMany

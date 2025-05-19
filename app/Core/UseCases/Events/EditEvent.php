@@ -2,8 +2,4 @@
 
 namespace App\Core\UseCases\Events;
 
-class EditEvent
-{
-    
-
-}
+class EditEvent {}

@@ -2,9 +2,12 @@
 
 namespace App\Core\Data\Entities;
 
-class EventType {
+class EventType
+{
     public $id;
+
     public $name;
+
     public $description;
 
     public function __construct(array $attributes = [])
@@ -17,11 +20,12 @@ class EventType {
         }
     }
 
-    static function fromEventType($eventType) {
+    public static function fromEventType($eventType)
+    {
         return new EventType([
             'id' => $eventType->id,
             'name' => $eventType->name,
-            'description' => $eventType->description
+            'description' => $eventType->description,
         ]);
     }
 }

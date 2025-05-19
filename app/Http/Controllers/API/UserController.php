@@ -9,18 +9,9 @@ class UserController extends Controller
 {
     //
 
-    public function profile(Request $request)
-    {
-        
-    }
+    public function profile(Request $request) {}
 
-    public function changePassword(Request $request)
-    {
-        
-    }
+    public function changePassword(Request $request) {}
 
-    public function updateProfile(Request $request)
-    {
-        
-    }
+    public function updateProfile(Request $request) {}
 }

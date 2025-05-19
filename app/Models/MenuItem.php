@@ -19,18 +19,21 @@ class MenuItem extends Model
         'url',
         'icon',
         'active',
-        'order'
+        'order',
     ];
 
-    public function menu() : BelongsTo {
+    public function menu(): BelongsTo
+    {
         return $this->belongsTo(Menu::class);
     }
 
-    public function menuItems() : HasMany {
+    public function menuItems(): HasMany
+    {
         return $this->hasMany(MenuItem::class, 'parent_id');
     }
 
-    public function parent() : BelongsTo {
+    public function parent(): BelongsTo
+    {
         return $this->belongsTo(MenuItem::class, 'parent_id');
     }
 }

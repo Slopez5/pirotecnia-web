@@ -16,6 +16,7 @@ class PackageController extends Controller
 
         $parentItemActive = 8;
         $itemActive = 0;
+
         return view('panel.settings.packages.index', compact('packages', 'parentItemActive', 'itemActive'));
     }
 
@@ -32,12 +33,12 @@ class PackageController extends Controller
             'price' => 'required',
         ]);
 
-        $package = new Package();
+        $package = new Package;
         $package->name = $request->name;
         $package->description = $request->description;
         $amount = $request->price;
         $amount = preg_replace('/[^\d.]/', '', $amount);
-        $amountDouble = (double) $amount;
+        $amountDouble = (float) $amount;
         $package->price = $amountDouble;
         if ($request->duration) {
             $package->duration = $request->duration;
@@ -53,6 +54,7 @@ class PackageController extends Controller
     public function edit($id)
     {
         $package = Package::find($id);
+
         return view('panel.settings.packages.edit', compact('package'));
     }
 
@@ -61,7 +63,7 @@ class PackageController extends Controller
         $request->validate([
             'name' => 'required',
             'description' => 'required',
-            'price' => 'required'
+            'price' => 'required',
         ]);
 
         $package = Package::find($id);
@@ -79,17 +81,18 @@ class PackageController extends Controller
         return redirect()->route('packages.show', ['id' => $package->id]);
     }
 
-
     public function destroy($id)
     {
         $package = Package::find($id);
         $package->delete();
+
         return redirect()->route('settings.packages.index');
     }
 
     public function show($id)
     {
         $package = Package::find($id);
+
         return view('panel.settings.packages.show', compact('package'));
     }
 }

@@ -8,24 +8,43 @@ use Illuminate\Support\Collection;
 class Event
 {
     public $id;
+
     public $event_type_id;
+
     public $package_id;
+
     public $date;
+
     public $phone;
+
     public $client_name;
+
     public $client_address;
+
     public $event_address;
+
     public $event_date;
-    public $disscount;
-    public $advance;
-    public $travel_expenses;
+
+    public $disscount = 0;
+
+    public $advance = 0;
+
+    public $travel_expenses = 0;
+
     public $notes;
-    public $reminder_send_date;
-    public $reminder_send;
+
+    public $reminder_send_date = null;
+
+    public $reminder_send = false;
+
     public Collection $employees;
+
     public Collection $packages;
+
     public Collection $products;
+
     public Collection $equipments;
+
     public Collection $lowInventoryProducts;
 
     public function __construct(array $attributes = [])
@@ -38,7 +57,7 @@ class Event
         }
     }
 
-    static function fromArray(array $attributes)
+    public static function fromArray(array $attributes)
     {
         // convert employees, packages, products, equipments to collections
         $employees = (new Collection($attributes['employess'] ?? []))->map(function ($employee) {
@@ -57,16 +76,17 @@ class Event
         unset($attributes['packages']);
         unset($attributes['products']);
         unset($attributes['equipments']);
-        
+
         $newEvent = (new self($attributes))
             ->withPackages($packages)
             ->withProducts($products)
             ->withEquipments($equipments)
             ->withEmployees($employees);
+
         return $newEvent;
     }
 
-    static function fromEvent(ModelsEvent $event)
+    public static function fromEvent(ModelsEvent $event)
     {
         $event->load('employees', 'packages', 'products', 'equipments');
         $newEvent = new self(self::extractAttributes($event));
@@ -78,6 +98,7 @@ class Event
         $newEvent->packages = $newEvent->packages->map(function ($package) {
             unset($package->products);
             unset($package->equipments);
+
             return $package;
         });
 
@@ -101,38 +122,42 @@ class Event
             'travel_expenses' => $event->travel_expenses,
             'notes' => $event->notes,
             'reminder_send_date' => $event->reminder_send_date,
-            'reminder_send' => $event->reminder_send
+            'reminder_send' => $event->reminder_send,
         ];
     }
 
     private static function mapEmployees($employees)
     {
-        return $employees->count() > 0 ? $employees->map(fn($employee) => Employee::fromEmployee($employee)) : new Collection();
+        return $employees->count() > 0 ? $employees->map(fn ($employee) => Employee::fromEmployee($employee)) : new Collection;
     }
 
     private static function mapPackages($packages)
     {
-        return $packages->count() > 0 ? $packages->map(fn($package) => Package::fromPackage($package)) : new Collection();
+        return $packages->count() > 0 ? $packages->map(fn ($package) => Package::fromPackage($package)) : new Collection;
     }
 
     private static function mapProducts($packages, $products)
     {
-        $products = $packages->flatMap(fn($package) => $package->products->map(fn($product) => Product::fromProduct($product)))
-            ->merge($products->map(fn($product) => Product::fromProduct($product)));
+        $products = $packages->flatMap(fn ($package) => $package->products->map(fn ($product) => Product::fromProduct($product)))
+            ->merge($products->map(fn ($product) => Product::fromProduct($product)));
+
         return $products->map(function ($product) use ($products) {
             $sameProduct = $products->where('id', $product->id);
             $product->quantity = $sameProduct->sum('quantity');
+
             return $product;
         })->unique('id')->values();
     }
 
     private static function mapEquipments($packages, $equipments)
     {
-        $equipments = $packages->flatMap(fn($package) => $package->equipments->map(fn($equipment) => Equipment::fromEquipment($equipment)))
-            ->merge($equipments->map(fn($equipment) => Equipment::fromEquipment($equipment)));
+        $equipments = $packages->flatMap(fn ($package) => $package->equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)))
+            ->merge($equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)));
+
         return $equipments->map(function ($equipment) use ($equipments) {
             $sameEquipment = $equipments->where('id', $equipment->id);
             $equipment->quantity = $sameEquipment->sum('quantity');
+
             return $equipment;
         })->unique('id')->values();
     }
@@ -150,24 +175,28 @@ class Event
     public function withPackages(Collection $packages): self
     {
         $this->packages = $packages;
+
         return $this;
     }
 
     public function withProducts(Collection $products): self
     {
         $this->products = $products;
+
         return $this;
     }
 
     public function withEquipments(Collection $equipments): self
     {
         $this->equipments = $equipments;
+
         return $this;
     }
 
     public function withEmployees(Collection $employees): self
     {
         $this->employees = $employees;
+
         return $this;
     }
 }

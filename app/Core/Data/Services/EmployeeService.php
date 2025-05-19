@@ -15,9 +15,10 @@ class EmployeeService
             $employees = $eloquentEmployees->map(function ($eloquentEmployee) {
                 return Employee::fromEmployee($eloquentEmployee);
             });
+
             return $employees;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 
@@ -26,6 +27,7 @@ class EmployeeService
         try {
             $eloquentEmployee = ModelsEmployee::find($employeeId);
             $employee = Employee::fromEmployee($eloquentEmployee);
+
             return $employee;
         } catch (\Exception $e) {
             return null;
@@ -41,16 +43,17 @@ class EmployeeService
             $employees = $eloquentEmployees->map(function ($eloquentEmployee) {
                 return Employee::fromEmployee($eloquentEmployee);
             });
+
             return $employees;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 
     public function create(Employee $employee): ?Employee
     {
         try {
-            $eloquentEmployee = new ModelsEmployee();
+            $eloquentEmployee = new ModelsEmployee;
             $eloquentEmployee->fill([
                 'name' => $employee->name,
                 'email' => $employee->email,
@@ -62,6 +65,7 @@ class EmployeeService
             ]);
             $eloquentEmployee->save();
             $employee->id = $eloquentEmployee->id;
+
             return $employee;
         } catch (\Exception $e) {
             return null;
@@ -82,6 +86,7 @@ class EmployeeService
                 'experience_level_id' => $employee->experience_level_id,
             ]);
             $eloquentEmployee->save();
+
             return $employee;
         } catch (\Exception $e) {
             return null;
@@ -93,22 +98,24 @@ class EmployeeService
         try {
             $eloquentEmployee = ModelsEmployee::find($employeeId);
             $eloquentEmployee->delete();
+
             return true;
         } catch (\Exception $e) {
             return false;
         }
     }
 
-    public function searchEmployees(String $searchTerm): Collection
+    public function searchEmployees(string $searchTerm): Collection
     {
         try {
             $eloquentEmployees = ModelsEmployee::where('name', 'like', "%$searchTerm%")->get();
             $employees = $eloquentEmployees->map(function ($eloquentEmployee) {
                 return Employee::fromEmployee($eloquentEmployee);
             });
+
             return $employees;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 }

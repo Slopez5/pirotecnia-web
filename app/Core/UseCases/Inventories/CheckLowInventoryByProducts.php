@@ -2,8 +2,6 @@
 
 namespace App\Core\UseCases\Inventories;
 
-use App\Core\Data\Entities\Inventory;
-use App\Core\Data\Entities\Product;
 use App\Core\Data\Repositories\InventoryRepositoryInterface;
 use App\Models\Inventory as ModelsInventory;
 use Illuminate\Support\Collection;
@@ -20,19 +18,21 @@ class CheckLowInventoryByProducts
         try {
             $products = DB::transaction(function () use ($products) {
                 $products = $this->inventoryRepository
-                ->checkLowInventoryByProducts($products)
-                ->map(function ($product) use ($products) {
-                    $product->quantity -= $products->where('id', $product->id)->first()->quantity;
-                    return $product;
-                })
-                ->where('quantity', '<', ModelsInventory::MIN_STOCK)
-                ->values();
+                    ->checkLowInventoryByProducts($products)
+                    ->map(function ($product) use ($products) {
+                        $product->quantity -= $products->where('id', $product->id)->first()->quantity;
+
+                        return $product;
+                    })
+                    ->where('quantity', '<', ModelsInventory::MIN_STOCK)
+                    ->values();
+
                 return $products;
             });
+
             return $products;
         } catch (\Exception $e) {
-            logger($e->getMessage());
-            return new Collection();
+            return new Collection;
         }
     }
 }

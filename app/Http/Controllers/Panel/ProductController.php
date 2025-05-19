@@ -16,6 +16,7 @@ class ProductController extends Controller
         $products = Product::with(['inventories'])->where('product_role_id', '!=', 3)->orderBy('name', 'ASC')->get();
         $parentItemActive = 8;
         $itemActive = 1;
+
         return view('panel.settings.products.index', compact('products', 'itemActive', 'parentItemActive'));
     }
 
@@ -28,10 +29,10 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ]);
 
-        $product = new Product();
+        $product = new Product;
         $product->product_role_id = 1;
         $product->name = $request->name;
         $product->description = $request->description;
@@ -51,6 +52,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::find($id);
+
         return view('panel.settings.products.edit', compact('product'));
     }
 
@@ -58,7 +60,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ]);
 
         $product = Product::find($id);
@@ -76,6 +78,7 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::find($id);
+
         return view('panel.settings.products.show', compact('product'));
     }
 
@@ -83,6 +86,7 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $product->delete();
+
         return redirect()->route('settings.products.index');
     }
 
@@ -94,13 +98,14 @@ class ProductController extends Controller
     public function importSubmit(Request $request)
     {
         $request->validate([
-            'file' => 'required'
+            'file' => 'required',
         ]);
 
         $file = $request->file('file');
         $path = $file->storeAs('public/uploads', 'updatedProducts.xlsx');
-        $fullPath = storage_path('app/' . $path);
+        $fullPath = storage_path('app/'.$path);
         Excel::import(new ProductsImport, $fullPath);
+
         return redirect()->route('settings.products.index');
     }
 }

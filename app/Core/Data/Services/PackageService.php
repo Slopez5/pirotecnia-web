@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Core\Data\Services;
 
@@ -6,7 +6,8 @@ use App\Core\Data\Entities\Package;
 use App\Models\Package as ModelsPackage;
 use Illuminate\Support\Collection;
 
-class PackageService {
+class PackageService
+{
     public function all(): Collection
     {
         try {
@@ -17,7 +18,7 @@ class PackageService {
 
             return $packages;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 
@@ -26,6 +27,7 @@ class PackageService {
         try {
             $eloquentPackage = ModelsPackage::find($packageId);
             $package = Package::fromPackage($eloquentPackage);
+
             return $package;
         } catch (\Exception $e) {
             return null;
@@ -35,7 +37,7 @@ class PackageService {
     public function create(Package $package): ?Package
     {
         try {
-            $eloquentPackage = new ModelsPackage();
+            $eloquentPackage = new ModelsPackage;
             $eloquentPackage->fill([
                 'name' => $package->name,
                 'description' => $package->description,
@@ -46,13 +48,15 @@ class PackageService {
             ]);
             $eloquentPackage->save();
             $package->id = $eloquentPackage->id;
+
             return $package;
         } catch (\Exception $e) {
             return null;
         }
     }
 
-    public function update(Package $package): ?Package {
+    public function update(Package $package): ?Package
+    {
         try {
             $eloquentPackage = ModelsPackage::find($package->id);
             $eloquentPackage->fill([
@@ -64,28 +68,32 @@ class PackageService {
                 'experience_level_id' => $package->experience_level_id,
             ]);
             $eloquentPackage->save();
+
             return $package;
         } catch (\Exception $e) {
             return null;
         }
     }
 
-    public function delete(int $packageId): bool {
+    public function delete(int $packageId): bool
+    {
         try {
             $eloquentPackage = ModelsPackage::find($packageId);
             $eloquentPackage->delete();
+
             return true;
         } catch (\Exception $e) {
             return false;
         }
     }
 
-    public function searchPackages(string $searchTerm): Collection {
+    public function searchPackages(string $searchTerm): Collection
+    {
         try {
             // TODO: Implement searchPackages() method
-            return new Collection();
+            return new Collection;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 }

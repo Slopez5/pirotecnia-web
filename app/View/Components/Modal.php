@@ -8,9 +8,10 @@ use Illuminate\View\Component;
 
 class Modal extends Component
 {
-
     public $title;
+
     public $action;
+
     /**
      * Create a new component instance.
      */

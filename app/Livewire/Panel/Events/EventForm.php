@@ -3,8 +3,6 @@
 namespace App\Livewire\Panel\Events;
 
 use App\Helper\Reminder;
-use App\Jobs\SendReminder;
-use App\Jobs\UpdateInventory;
 use App\Models\Employee;
 use App\Models\Event;
 use App\Models\EventType;
@@ -12,44 +10,65 @@ use App\Models\Inventory;
 use App\Models\Package;
 use App\Models\Product;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\Livewire;
 
 class EventForm extends Component
 {
     public $event;
+
     public $packages;
+
     public $employees;
+
     public $eventTypes;
+
     public $products = [];
+
     public $date;
+
     public $phone;
+
     public $client_name;
+
     public $client_address;
+
     public $event_address;
+
     public $event_date;
+
     public $event_time;
+
     public $event_type_id = 1;
+
     public $package_id = [];
+
     public $employee_id = [];
+
     public $discountString = '';
+
     public $discount = 0;
+
     public $deposit = 0;
+
     public $viatic = 0;
-    public $notes = "";
+
+    public $notes = '';
+
     public $radioSelected = [];
+
     public $showAlert = false;
+
     public $enableSave = true;
+
     public $isEditMode = false;
+
     public $countPackageInputs = 1;
+
     public $countEmployeeInputs = 1;
 
     protected $rules = [
-        'date' => 'required'
+        'date' => 'required',
     ];
 
     public function updatedPackageId($packageId)
@@ -63,6 +82,7 @@ class EventForm extends Component
     {
         if ($employeeId == -1) {
             $this->dispatch('openModal', ['id' => 'new-employee']);
+
             return;
         }
         $employee = Employee::find($employeeId);
@@ -108,7 +128,7 @@ class EventForm extends Component
             $this->products = $query->materials->where('product_role_id', 2) ?? [];
         }
 
-        return view('livewire.panel.events.event-form', ["products" => $this->products]);
+        return view('livewire.panel.events.event-form', ['products' => $this->products]);
     }
 
     public function addPackageInput()
@@ -152,7 +172,7 @@ class EventForm extends Component
         $this->countPackageInputs = $this->event->packages->count();
         $this->countEmployeeInputs = $this->event->employees->count() > 0 ? $this->event->employees->count() : 1;
         $this->discount = $this->event->discount;
-        $this->discountString = $this->event->discount * 100 . '%';
+        $this->discountString = $this->event->discount * 100 .'%';
         $this->deposit = $this->event->advance;
         $this->viatic = $this->event->travel_expenses;
         $this->notes = $this->event->notes;
@@ -162,7 +182,7 @@ class EventForm extends Component
     {
         $package = Package::with('materials')->whereIn('id', $packageId)->get();
 
-        if (!$package) {
+        if (! $package) {
             return collect();
         }
 
@@ -193,7 +213,7 @@ class EventForm extends Component
 
     private function saveEvent(): Event
     {
-        $event = $this->isEditMode ? Event::find($this->event->id) : new Event();
+        $event = $this->isEditMode ? Event::find($this->event->id) : new Event;
         $addEmployee = false;
         $newEmployees = [];
 
@@ -208,7 +228,7 @@ class EventForm extends Component
             'client_name' => $this->client_name,
             'client_address' => $this->client_address,
             'event_address' => $this->event_address,
-            'event_date' => $this->event_date . ' ' . $this->event_time,
+            'event_date' => $this->event_date.' '.$this->event_time,
             'event_type_id' => $this->event_type_id,
             'discount' => $this->discount,
             'advance' => $this->deposit,
@@ -216,7 +236,7 @@ class EventForm extends Component
             'notes' => $this->notes,
         ]);
 
-        if (!empty($this->package_id)) {
+        if (! empty($this->package_id)) {
             $event->package()->associate($this->package_id[0]);
         }
 
@@ -237,19 +257,20 @@ class EventForm extends Component
     private function formatViatic($viatic): string
     {
         $viatic = str_replace(['$', ','], '', $viatic);
+
         return number_format(empty($viatic) ? 0 : $viatic, 2, '.', '');
     }
 
     private function syncEmployees(Event $event)
     {
-        if (!empty($this->employee_id)) {
+        if (! empty($this->employee_id)) {
             $event->employees()->sync(array_unique($this->employee_id));
         }
     }
 
     private function syncPackages(Event $event)
     {
-        if (!empty($this->package_id)) {
+        if (! empty($this->package_id)) {
             $event->packages()->sync(array_unique($this->package_id));
         }
     }
@@ -292,12 +313,12 @@ class EventForm extends Component
             $existingProduct = $event->products()->where('product_id', $selectedProduct)->first();
             if ($existingProduct) {
                 $event->products()->updateExistingPivot($selectedProduct, [
-                    'quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity
+                    'quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity,
                 ]);
             } else {
                 $event->products()->attach($selectedProduct, [
                     'quantity' => $product->pivot->quantity,
-                    'price' => 0
+                    'price' => 0,
                 ]);
             }
         }
@@ -308,12 +329,12 @@ class EventForm extends Component
         $existingProduct = $event->products()->where('product_id', $product->id)->first();
         if ($existingProduct) {
             $event->products()->updateExistingPivot($product->id, [
-                'quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity
+                'quantity' => $existingProduct->pivot->quantity + $product->pivot->quantity,
             ]);
         } else {
             $event->products()->attach($product->id, [
                 'quantity' => $product->pivot->quantity,
-                'price' => 0
+                'price' => 0,
             ]);
         }
     }
@@ -322,9 +343,10 @@ class EventForm extends Component
     {
         $this->processDiscount();
 
-        if (!$this->validateStock()) {
+        if (! $this->validateStock()) {
             $this->showAlert = true;
             $this->enableSave = false;
+
             return;
         }
 
@@ -366,6 +388,7 @@ class EventForm extends Component
         $this->saveProductsInEvent($event);
         $this->reset();
         $this->showAlert = false;
+
         return redirect()->route('events.index');
     }
 }

@@ -23,18 +23,8 @@ class EventList extends Component
     #[On('selectDate')]
     public function selectDate($date)
     {
-        // get the date from the info
-        logger($date);
-
-        // split date and time
-       
-
-
-        //  Get the events of the selected date between 00:00:00 and 23:59:59
         $dateWithoutTime = $date;
-        $this->events = Event::all()->where('event_date', '>', $dateWithoutTime . ' 00:00:00')->where('event_date', '<', $dateWithoutTime . ' 23:59:59');
+        $this->events = Event::all()->where('event_date', '>', $dateWithoutTime.' 00:00:00')->where('event_date', '<', $dateWithoutTime.' 23:59:59');
 
-
-        
     }
 }

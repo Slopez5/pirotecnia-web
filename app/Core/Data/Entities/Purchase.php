@@ -2,9 +2,12 @@
 
 namespace App\Core\Data\Entities;
 
-class Purchase {
+class Purchase
+{
     public $id;
+
     public $user_id;
+
     public $date;
 
     public function __construct(array $attributes = [])
@@ -17,11 +20,12 @@ class Purchase {
         }
     }
 
-    static function fromPurchase($purchase) {
+    public static function fromPurchase($purchase)
+    {
         return new Purchase([
             'id' => $purchase->id,
             'user_id' => $purchase->user_id,
-            'date' => $purchase->date
+            'date' => $purchase->date,
         ]);
     }
 }

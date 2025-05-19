@@ -5,12 +5,10 @@ namespace App\Core\Domains\Repositories;
 use App\Core\Data\Entities\Product;
 use App\Core\Data\Repositories\ProductRepositoryInterface;
 use App\Core\Data\Services\ProductService;
-use App\Models\Product as ModelsProduct;
 use Illuminate\Support\Collection;
 
 class EloquentProductRepository implements ProductRepositoryInterface
 {
-
     public function __construct(
         private ProductService $productService
     ) {}

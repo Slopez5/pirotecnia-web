@@ -8,8 +8,8 @@ use Illuminate\View\Component;
 
 class MaterialsTable extends Component
 {
-
     public $materials;
+
     /**
      * Create a new component instance.
      */

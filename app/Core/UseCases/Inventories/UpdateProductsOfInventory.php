@@ -2,6 +2,4 @@
 
 namespace App\Core\UseCases\Inventories;
 
-class UpdateProductsOfInventory
-{
-}
+class UpdateProductsOfInventory {}

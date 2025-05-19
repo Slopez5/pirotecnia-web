@@ -7,20 +7,23 @@ use Livewire\Component;
 
 class ProductsTable extends Component
 {
-
     public $productId;
+
     public $product;
+
     public $materials;
+
     public $materialId;
-    
+
     public $isAddProduct = false;
+
     public $isEditMode = false;
 
     public function mount($product)
     {
         $this->product = $product;
 
-        $this->materials = Product::where('product_role_id', 1)->where('id','!=',$product->id)->get();
+        $this->materials = Product::where('product_role_id', 1)->where('id', '!=', $product->id)->get();
     }
 
     public function render()
@@ -28,25 +31,19 @@ class ProductsTable extends Component
         return view('livewire.panel.settings.products.show.products-table');
     }
 
-    //switch to add product mode
+    // switch to add product mode
     public function switchToAddProductMode()
     {
-        $this->isAddProduct = !$this->isAddProduct;
+        $this->isAddProduct = ! $this->isAddProduct;
     }
 
-    //switch to add new product mode
-    public function switchToAddNewMaterialMode($value = true)
-    {
-       
-    }
+    // switch to add new product mode
+    public function switchToAddNewMaterialMode($value = true) {}
 
-    //switch to edit mode
-    public function switchToEditMode($materialId)
-    {
-        
-    }
+    // switch to edit mode
+    public function switchToEditMode($materialId) {}
 
-    //add product to package
+    // add product to package
     public function addMaterialToProduct()
     {
         if ($this->product->products->contains($this->materialId)) {
@@ -62,7 +59,7 @@ class ProductsTable extends Component
         $this->clearNewMaterialForm();
     }
 
-    //remove product from package
+    // remove product from package
     public function removeMaterialFromPackage($materialId)
     {
         $this->product->products()->detach($materialId);
@@ -74,35 +71,35 @@ class ProductsTable extends Component
         $this->product->refresh();
     }
 
-    //edit product in package
+    // edit product in package
     public function editMaterialInPackage($materialId)
     {
-        
+
         $this->clearNewMaterialForm();
     }
 
-    //add new product to package
+    // add new product to package
     public function addNewMaterialToPackage()
     {
-        
+
         $this->clearNewMaterialForm();
     }
 
-    //cancel add product
+    // cancel add product
     public function cancelAddMaterial()
     {
-        
+
         $this->clearNewMaterialForm();
     }
 
-    //cancel edit product
+    // cancel edit product
     public function cancelEditMaterial()
     {
-        
+
         $this->clearNewMaterialForm();
     }
 
-    //clear new product form
+    // clear new product form
     public function clearNewMaterialForm()
     {
         $this->materialId = null;

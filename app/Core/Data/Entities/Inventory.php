@@ -2,9 +2,12 @@
 
 namespace App\Core\Data\Entities;
 
-class Inventory {
+class Inventory
+{
     public $id;
+
     public $name;
+
     public $products;
 
     public function __construct(array $attributes = [])
@@ -17,13 +20,14 @@ class Inventory {
         }
     }
 
-    static function fromInventory($inventories) {
-        return $inventories->map(function($inventory) {
+    public static function fromInventory($inventories)
+    {
+        return $inventories->map(function ($inventory) {
             return new Inventory([
                 'id' => $inventory->id,
                 'name' => $inventory->name,
                 'products' => $inventory->products,
-                'quantity' => $inventory->pivot->quantity
+                'quantity' => $inventory->pivot->quantity,
             ]);
         });
     }

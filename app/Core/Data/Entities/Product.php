@@ -4,17 +4,28 @@ namespace App\Core\Data\Entities;
 
 use Illuminate\Support\Collection;
 
-class Product {
+class Product
+{
     public $id;
+
     public $product_role_id;
+
     public $name;
+
     public $description;
+
     public $unit;
+
     public $duration;
+
     public $shots;
+
     public $caliber;
+
     public $shape;
+
     public $quantity;
+
     public Collection $inventory;
 
     public function __construct(array $attributes = [])
@@ -32,7 +43,8 @@ class Product {
         return json_encode($this);
     }
 
-    static function fromProduct($product, $from = 'package') {
+    public static function fromProduct($product, $from = 'package')
+    {
 
         return new Product([
             'id' => $product->id,
@@ -48,7 +60,8 @@ class Product {
         ]);
     }
 
-    private static function extractQuantityFrom($product, $from) {
+    private static function extractQuantityFrom($product, $from)
+    {
         if ($from === 'package') {
             return $product->pivot->quantity;
         } else {

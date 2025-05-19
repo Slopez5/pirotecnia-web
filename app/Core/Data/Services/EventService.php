@@ -4,7 +4,6 @@ namespace App\Core\Data\Services;
 
 use App\Core\Data\Entities\Event;
 use App\Models\Event as ModelsEvent;
-use Illuminate\Log\Logger;
 use Illuminate\Support\Collection;
 
 class EventService
@@ -16,9 +15,26 @@ class EventService
             $events = $eloquentEvents->map(function ($event) {
                 return Event::fromEvent($event);
             });
+
             return $events;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
+        }
+    }
+
+    public function getEventsByEmployee(int $employeeId): Collection
+    {
+        try {
+            $eloquentEvents = ModelsEvent::whereHas('employees', function ($query) use ($employeeId) {
+                $query->where('employee_id', $employeeId);
+            })->get();
+            $events = $eloquentEvents->map(function ($event) {
+                return Event::fromEvent($event);
+            });
+
+            return $events;
+        } catch (\Exception $e) {
+            return new Collection;
         }
     }
 
@@ -27,6 +43,7 @@ class EventService
         try {
             $eloquentEvent = ModelsEvent::find($eventId);
             $event = Event::fromEvent($eloquentEvent);
+
             return $event;
         } catch (\Exception $e) {
             return null;
@@ -36,7 +53,7 @@ class EventService
     public function create(Event $event): ?Event
     {
         try {
-            $eloquentEvent = new ModelsEvent();
+            $eloquentEvent = new ModelsEvent;
             $eloquentEvent->fill([
                 'package_id' => $event->package_id,
                 'date' => $event->date,
@@ -54,9 +71,11 @@ class EventService
             ]);
             $eloquentEvent->save();
             $event->id = $eloquentEvent->id;
+
             return $event;
         } catch (\Exception $e) {
             logger($e->getMessage());
+
             return null;
         }
     }
@@ -64,23 +83,24 @@ class EventService
     public function update(Event $event): ?Event
     {
         try {
-        $eloquentEvent = ModelsEvent::find($event->id);
-        $eloquentEvent->fill([
-            'date' => $event->date,
-            'phone' => $event->phone,
-            'client_name' => $event->client_name,
-            'client_address' => $event->client_address,
-            'event_address' => $event->event_address,
-            'event_date' => $event->event_date,
-            'disscount' => $event->disscount,
-            'advance' => $event->advance,
-            'travel_expenses' => $event->travel_expenses,
-            'notes' => $event->notes,
-            'reminder_send_date' => $event->reminder_send_date,
-            'reminder_sent' => $event->reminder_send,
-        ]);
-        $eloquentEvent->save();
-        return $event;
+            $eloquentEvent = ModelsEvent::find($event->id);
+            $eloquentEvent->fill([
+                'date' => $event->date,
+                'phone' => $event->phone,
+                'client_name' => $event->client_name,
+                'client_address' => $event->client_address,
+                'event_address' => $event->event_address,
+                'event_date' => $event->event_date,
+                'disscount' => $event->disscount,
+                'advance' => $event->advance,
+                'travel_expenses' => $event->travel_expenses,
+                'notes' => $event->notes,
+                'reminder_send_date' => $event->reminder_send_date,
+                'reminder_sent' => $event->reminder_send,
+            ]);
+            $eloquentEvent->save();
+
+            return $event;
         } catch (\Exception $e) {
             return null;
         }
@@ -90,29 +110,31 @@ class EventService
     {
         try {
             ModelsEvent::destroy($eventId);
+
             return true;
         } catch (\Exception $e) {
             return false;
         }
     }
 
-    public function searchEvents(string $searchTerm) {
+    public function searchEvents(string $searchTerm)
+    {
         try {
             // TODO: Implement searchEvents() method.
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 
     public function assignEventType(int $eventId, int $eventTypeId): ?Event
     {
         try {
-        $eventEloquent = ModelsEvent::find($eventId);
-        $eventEloquent->typeEvent()->associate($eventTypeId);
+            $eventEloquent = ModelsEvent::find($eventId);
+            $eventEloquent->typeEvent()->associate($eventTypeId);
 
-        $event = Event::fromEvent($eventEloquent);
+            $event = Event::fromEvent($eventEloquent);
 
-        return $event;
+            return $event;
         } catch (\Exception $e) {
             return null;
         }
@@ -138,7 +160,6 @@ class EventService
 
             return $event;
         } catch (\Exception $e) {
-            logger($e->getMessage());
             return null;
         }
     }
@@ -169,7 +190,6 @@ class EventService
 
             return $event;
         } catch (\Exception $e) {
-            logger($e->getMessage());
             return null;
         }
     }
@@ -198,9 +218,9 @@ class EventService
             })->toArray());
             $eventEloquent->load('products');
             $event = Event::fromEvent($eventEloquent);
+
             return $event;
         } catch (\Exception $e) {
-            logger($e->getMessage());
             return null;
         }
     }
@@ -226,6 +246,7 @@ class EventService
             $eventEloquent->packages()->attach($packages->pluck('id'));
             $eventEloquent->load('packages');
             $event = Event::fromEvent($eventEloquent);
+
             return $event;
         } catch (\Exception $e) {
             return null;

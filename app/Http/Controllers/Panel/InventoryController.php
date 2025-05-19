@@ -18,13 +18,14 @@ class InventoryController extends Controller
         if ($inventory) {
             $products = $inventory->products->sortBy('name');
         } else {
-            $inventory = new Inventory();
+            $inventory = new Inventory;
             $inventory->name = 'Polvorin 1';
             $inventory->location = 'Rancho el Tequeque';
             $inventory->save();
-            
+
         }
         $itemActive = 5;
+
         return view('panel.inventory.index', compact('products', 'itemActive', 'clientTypes'));
     }
 
@@ -43,7 +44,7 @@ class InventoryController extends Controller
             'image' => 'required',
         ]);
 
-        $inventory = new Inventory();
+        $inventory = new Inventory;
         $inventory->name = $request->name;
         $inventory->description = $request->description;
         $inventory->price = $request->price;
@@ -57,6 +58,7 @@ class InventoryController extends Controller
     public function edit($id)
     {
         $inventory = Inventory::find($id);
+
         return view('panel.inventory.edit', compact('inventory'));
     }
 
@@ -85,12 +87,14 @@ class InventoryController extends Controller
     {
         $inventory = Inventory::find($id);
         $inventory->delete();
+
         return redirect()->route('inventory.index');
     }
 
     public function show($id)
     {
         $inventory = Inventory::find($id);
+
         return view('panel.inventory.show', compact('inventory'));
     }
 }

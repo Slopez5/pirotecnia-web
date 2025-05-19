@@ -2,18 +2,30 @@
 
 namespace App\Core\Data\Entities;
 
-class Sale {
+class Sale
+{
     public $id;
+
     public $client_id;
+
     public $client_name;
+
     public $client_email;
+
     public $client_phone;
+
     public $client_address;
+
     public $client_city;
+
     public $client_state;
+
     public $client_zip;
+
     public $client_country;
+
     public $client_rfc;
+
     public $client_type_id;
 
     public function __construct(array $attributes = [])
@@ -26,7 +38,8 @@ class Sale {
         }
     }
 
-    static function fromSale($sales) {
+    public static function fromSale($sales)
+    {
         return new Sale([
             'id' => $sales->id,
             'client_id' => $sales->client_id,
@@ -39,7 +52,7 @@ class Sale {
             'client_zip' => $sales->client_zip,
             'client_country' => $sales->client_country,
             'client_rfc' => $sales->client_rfc,
-            'client_type_id' => $sales->client_type_id
+            'client_type_id' => $sales->client_type_id,
         ]);
     }
 }

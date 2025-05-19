@@ -15,9 +15,10 @@ class EquipmentService
             $equipments = $eloquentEquipments->map(function ($equipment) {
                 return Equipment::fromEquipment($equipment);
             });
+
             return $equipments;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 
@@ -26,6 +27,7 @@ class EquipmentService
         try {
             $eloquentEquipment = ModelsEquipment::find($equipmentId);
             $equipment = Equipment::fromEquipment($eloquentEquipment);
+
             return $equipment;
         } catch (\Exception $e) {
             return null;
@@ -39,23 +41,25 @@ class EquipmentService
             $equipments = $eloquentEquipments->map(function ($equipment) {
                 return Equipment::fromEquipment($equipment);
             });
+
             return $equipments;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 
     public function create(Equipment $equipment): ?Equipment
     {
         try {
-            $eloquentEquipment = new ModelsEquipment();
+            $eloquentEquipment = new ModelsEquipment;
             $eloquentEquipment->fill([
                 'name' => $equipment->name,
                 'description' => $equipment->description,
-                'unit' => $equipment->unit
+                'unit' => $equipment->unit,
             ]);
             $eloquentEquipment->save();
             $equipment->id = $eloquentEquipment->id;
+
             return $equipment;
         } catch (\Exception $e) {
             return null;
@@ -69,9 +73,10 @@ class EquipmentService
             $eloquentEquipment->fill([
                 'name' => $equipment->name,
                 'description' => $equipment->description,
-                'unit' => $equipment->unit
+                'unit' => $equipment->unit,
             ]);
             $eloquentEquipment->save();
+
             return $equipment;
         } catch (\Exception $e) {
             return null;
@@ -83,6 +88,7 @@ class EquipmentService
         try {
             $eloquentEquipment = ModelsEquipment::find($equipmentId);
             $eloquentEquipment->delete();
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -96,9 +102,10 @@ class EquipmentService
             $equipments = $eloquentEquipments->map(function ($equipment) {
                 return Equipment::fromEquipment($equipment);
             });
+
             return $equipments;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 
@@ -106,9 +113,9 @@ class EquipmentService
     {
         try {
             // TODO: Implement searchEquipments() method.
-            return new Collection();
+            return new Collection;
         } catch (\Exception $e) {
-            return new Collection();
+            return new Collection;
         }
     }
 }

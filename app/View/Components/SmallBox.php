@@ -8,18 +8,22 @@ use Illuminate\View\Component;
 
 class SmallBox extends Component
 {
-
     public $color;
+
     public $number;
+
     public $text;
+
     public $icon;
+
     public $url;
+
     public $footerText;
 
     /**
      * Create a new component instance.
      */
-    public function __construct( $color, $number, $text, $icon, $url, $footerText )
+    public function __construct($color, $number, $text, $icon, $url, $footerText)
     {
         $this->color = $color;
         $this->number = $number;

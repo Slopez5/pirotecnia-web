@@ -10,7 +10,8 @@ class Menu extends Model
 {
     use HasFactory;
 
-    public function menuItems() : HasMany {
+    public function menuItems(): HasMany
+    {
         return $this->hasMany(MenuItem::class);
     }
 }

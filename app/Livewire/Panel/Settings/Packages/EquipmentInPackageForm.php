@@ -4,19 +4,23 @@ namespace App\Livewire\Panel\Settings\Packages;
 
 use App\Models\Equipment;
 use App\Models\Package;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
-use Livewire\Attributes\On;
 
 class equipmentInPackageForm extends Component
 {
-    use WithPagination, WithoutUrlPagination;
+    use WithoutUrlPagination, WithPagination;
 
     public $package;
+
     public $equipments;
+
     public $equipment_id;
+
     public $quantity = 1;
+
     public $perPage = 10;
 
     public function mount($package = null)
@@ -31,6 +35,7 @@ class equipmentInPackageForm extends Component
         if ($this->package != null) {
             $equipmentsInPackage = $this->package->equipments()->orderBy('name', 'ASC')->paginate($this->perPage);
         }
+
         return view('livewire.panel.settings.packages.equipment-in-package-form',
             [
                 'package' => $this->package,
@@ -75,7 +80,7 @@ class equipmentInPackageForm extends Component
 
     public function finish()
     {
-        //Redirect to index
+        // Redirect to index
         return redirect()->route('settings.packages.index');
     }
 }

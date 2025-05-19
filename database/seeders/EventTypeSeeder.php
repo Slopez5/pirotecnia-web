@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\EventType;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class EventTypeSeeder extends Seeder
@@ -47,7 +46,6 @@ class EventTypeSeeder extends Seeder
         foreach ($eventTypes as $eventType) {
             EventType::create($eventType);
         }
-
 
     }
 }

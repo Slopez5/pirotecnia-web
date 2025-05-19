@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Inventory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class InventorySeeder extends Seeder
@@ -15,9 +14,9 @@ class InventorySeeder extends Seeder
     {
         $inventories = [
             [
-                "name" => "Inventario Polvorin 1",
-                "location" => "Polvorin 1"
-            ]
+                'name' => 'Inventario Polvorin 1',
+                'location' => 'Polvorin 1',
+            ],
         ];
 
         Inventory::insert($inventories);

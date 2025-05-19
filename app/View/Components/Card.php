@@ -9,10 +9,15 @@ use Illuminate\View\Component;
 class Card extends Component
 {
     public $isBorder;
+
     public $icon;
+
     public $title;
+
     public $tools;
+
     public $footer;
+
     /**
      * Create a new component instance.
      */

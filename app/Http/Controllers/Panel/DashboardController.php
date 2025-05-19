@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\Event;
-use App\Models\Menu;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -25,11 +23,12 @@ class DashboardController extends Controller
                 $package = $event->packages->first();
                 unset($event->package);
                 $event->package = $package;
+
                 return $event;
             }
         })->sortBy('event_date', SORT_REGULAR, true);
         $itemActive = 1;
+
         return view('panel.dashboard', compact('events', 'itemActive', 'evdntsInWeek', 'employees'));
     }
-    
 }

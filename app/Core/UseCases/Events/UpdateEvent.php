@@ -2,6 +2,4 @@
 
 namespace App\Core\UseCases\Events;
 
-class UpdateEvent
-{
-}
+class UpdateEvent {}

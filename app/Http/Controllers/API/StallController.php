@@ -7,28 +7,13 @@ use Illuminate\Http\Request;
 
 class StallController extends Controller
 {
-    public function index()
-    {
+    public function index() {}
 
-    }
+    public function show($id) {}
 
-    public function show($id)
-    {
+    public function store(Request $request) {}
 
-    }
+    public function update(Request $request, $id) {}
 
-    public function store(Request $request)
-    {
-
-    }
-
-    public function update(Request $request, $id)
-    {
-
-    }
-
-    public function destroy($id)
-    {
-
-    }
+    public function destroy($id) {}
 }

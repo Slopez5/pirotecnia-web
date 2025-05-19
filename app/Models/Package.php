@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Package extends Model
@@ -33,32 +32,34 @@ class Package extends Model
         });
     }
 
-    public function materials(): MorphToMany {
+    public function materials(): MorphToMany
+    {
         return $this->morphToMany(Product::class, 'productable')
-        ->withPivot(['quantity','price'])
-        ->withTimestamps()
-        ->where(function($query){
-            $query->where('product_role_id', 1)
-            ->orWhere('product_role_id', 2);
-        });
+            ->withPivot(['quantity', 'price'])
+            ->withTimestamps()
+            ->where(function ($query) {
+                $query->where('product_role_id', 1)
+                    ->orWhere('product_role_id', 2);
+            });
     }
 
     public function products(): MorphToMany
     {
         return $this->morphToMany(Product::class, 'productable')
-        ->withPivot(['quantity','price'])
-        ->withTimestamps()
-        ->where('product_role_id', 1);
+            ->withPivot(['quantity', 'price'])
+            ->withTimestamps()
+            ->where('product_role_id', 1);
     }
 
     public function equipments(): BelongsToMany
     {
         return $this->belongsToMany(Equipment::class)
-        ->withPivot(['quantity'])
-        ->withTimestamps();
+            ->withPivot(['quantity'])
+            ->withTimestamps();
     }
 
-    public function events(): BelongsToMany {
+    public function events(): BelongsToMany
+    {
         return $this->belongsToMany(Event::class);
     }
 
@@ -66,5 +67,4 @@ class Package extends Model
     {
         return $this->belongsTo(ExperienceLevel::class, 'experience_level_id');
     }
-    
 }

@@ -2,21 +2,25 @@
 
 namespace App\Helper;
 
-class CurlHelper {
+class CurlHelper
+{
     private $ch;
 
     // Constructor que inicializa la sesión cURL
-    public function __construct() {
+    public function __construct()
+    {
         $this->ch = curl_init();
     }
 
     // Destructor que cierra la sesión cURL
-    public function __destruct() {
+    public function __destruct()
+    {
         curl_close($this->ch);
     }
 
     // Método para realizar una solicitud GET
-    public static function get($url, $headers = [], $verifySsl = true) {
+    public static function get($url, $headers = [], $verifySsl = true)
+    {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -25,16 +29,18 @@ class CurlHelper {
 
         $response = curl_exec($ch);
 
-        if(curl_errno($ch)) {
+        if (curl_errno($ch)) {
             $response = curl_error($ch);
         }
 
         curl_close($ch);
+
         return $response;
     }
 
     // Método para realizar una solicitud POST
-    public static function post($url, $data = [], $headers = [], $verifySsl = true) {
+    public static function post($url, $data = [], $headers = [], $verifySsl = true)
+    {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -46,11 +52,12 @@ class CurlHelper {
 
         $response = curl_exec($ch);
 
-        if(curl_errno($ch)) {
+        if (curl_errno($ch)) {
             $response = curl_error($ch);
         }
 
         curl_close($ch);
+
         return $response;
     }
 }

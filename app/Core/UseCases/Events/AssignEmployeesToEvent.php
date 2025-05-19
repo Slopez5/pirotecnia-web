@@ -4,15 +4,15 @@ namespace App\Core\UseCases\Events;
 
 use App\Core\Data\Entities\Event;
 use App\Core\Data\Repositories\EventRepositoryInterface;
-use Illuminate\Support\Collection;
 
-class AssignEmployeesToEvent 
+class AssignEmployeesToEvent
 {
     public function __construct(
         private EventRepositoryInterface $eventRepository
     ) {}
 
-    public function execute(Event $event): ?Event {
+    public function execute(Event $event): ?Event
+    {
         $eventId = $event->id;
         $employees = $event->employees;
 
@@ -20,6 +20,7 @@ class AssignEmployeesToEvent
         if ($event) {
             return $this->eventRepository->assignEmployeesToEvent($eventId, $employees);
         }
+
         return null;
     }
 }

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Equipment;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class EquipmentSeeder extends Seeder
@@ -18,77 +17,77 @@ class EquipmentSeeder extends Seeder
             [
                 'name' => 'Base para cakes',
                 'description' => 'Base para cakes',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Base para candil',
                 'description' => 'Base para candil',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Cerillos',
                 'description' => 'Cerillos',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Chincho plástico',
                 'description' => 'Chincho plástico',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Cincho matraca',
                 'description' => 'Cincho matraca',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Cinta papel',
                 'description' => 'Cinta papel',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Cinta plástico ancha',
                 'description' => 'Cinta plástico ancha',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Cutter',
                 'description' => 'Cutter',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Encendedor',
                 'description' => 'Encendedor',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Extintor PQS',
                 'description' => 'Extintor PQS',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Kit Módulo 12 Ch',
                 'description' => 'Kit Módulo 12 Ch',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Tubo 4"',
                 'description' => 'Tubo 4"',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Tubo 5"',
                 'description' => 'Tubo 5"',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Tubo 6"',
                 'description' => 'Tubo 6"',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'name' => 'Tubo 8"',
                 'description' => 'Tubo 8"',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
         ];
 

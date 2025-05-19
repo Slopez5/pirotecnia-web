@@ -14,6 +14,7 @@ class SaleController extends Controller
     {
         $sales = Sale::all();
         $itemActive = 7;
+
         return view('panel.sales.index', compact('sales', 'itemActive'));
     }
 
@@ -33,7 +34,7 @@ class SaleController extends Controller
             'products_quantity' => 'required',
         ]);
 
-        $sale = new Sale();
+        $sale = new Sale;
         $sale->date = $request->date;
         $sale->client_name = $request->client_name;
         $sale->client_address = $request->client_address;
@@ -52,6 +53,7 @@ class SaleController extends Controller
     public function edit($id)
     {
         $sale = Sale::find($id);
+
         return view('panel.sales.edit', compact('sale'));
     }
 
@@ -94,6 +96,7 @@ class SaleController extends Controller
     public function show($id)
     {
         $sale = Sale::find($id);
+
         return view('panel.sales.show', compact('sale'));
     }
 }

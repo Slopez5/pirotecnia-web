@@ -20,6 +20,7 @@ class UserController extends Controller
             ->where('id', '!=', $user->id)
             ->get();
         $itemActive = 2;
+
         return view('panel.users.index', compact('users', 'itemActive'));
     }
 
@@ -37,12 +38,14 @@ class UserController extends Controller
             'role_id' => 2,
             'password' => bcrypt($request->password),
         ]);
+
         return redirect()->route('users.index');
     }
 
     public function edit($id)
     {
         $user = User::find($id);
+
         return view('panel.users.edit', compact('user'));
     }
 
@@ -74,6 +77,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::find($id);
+
         return view('panel.users.show', compact('user'));
     }
 
@@ -81,12 +85,14 @@ class UserController extends Controller
     {
         $employees = Employee::all();
         $itemActive = 3;
+
         return view('panel.employees.index', compact('employees', 'itemActive'));
     }
 
     public function createEmployee()
     {
         $experienceLevels = ExperienceLevel::all();
+
         return view('panel.employees.create', compact('experienceLevels'));
     }
 
@@ -98,14 +104,14 @@ class UserController extends Controller
             'experience_level' => 'required',
         ]);
 
-        $employee = new Employee();
+        $employee = new Employee;
         $employee->name = $request->name;
         $employee->email = $request->email;
         $employee->phone = $request->phone;
         if ($request->address) {
             $employee->address = $request->address;
         } else {
-            $employee->address = "";
+            $employee->address = '';
         }
         if ($request->salary) {
             $employee->salary = $request->salary;
@@ -114,21 +120,23 @@ class UserController extends Controller
         }
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = time() . $file->getClientOriginalName();
+            $fileName = time().$file->getClientOriginalName();
             // save to storage/app/public/employee_id/image_profile.jpg
-            $file->storeAs('public/employees/' . $employee->id, $fileName);
+            $file->storeAs('public/employees/'.$employee->id, $fileName);
             $employee->image = $fileName;
         }
-        if ($request->experience_level != "") {
+        if ($request->experience_level != '') {
             $employee->experienceLevel()->associate($request->experience_level);
         }
         $employee->save();
+
         return redirect()->route('employees.index');
     }
 
     public function editEmployee($id)
     {
         $employee = Employee::find($id);
+
         return view('panel.employees.edit', compact('employee'));
     }
 
@@ -160,6 +168,7 @@ class UserController extends Controller
     public function showEmployee($id)
     {
         $employee = Employee::find($id);
+
         return view('panel.employees.show', compact('employee'));
     }
 }

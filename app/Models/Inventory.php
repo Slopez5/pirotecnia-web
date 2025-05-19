@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 class Inventory extends Model
 {
     const MAX_STOCK = 1000;
+
     const MIN_STOCK = 10;
+
     use HasFactory;
 
     public function products(): MorphToMany
@@ -17,7 +19,7 @@ class Inventory extends Model
         return $this->morphToMany(Product::class, 'productable')->withPivot(['quantity', 'price'])->withTimestamps();
     }
 
-    static function updateQuantityProducts($event)
+    public static function updateQuantityProducts($event)
     {
         $inventory = Inventory::with('products')->find(1);
         // updateExistingPivot (inventory->products() - event->products())

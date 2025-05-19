@@ -10,8 +10,11 @@ use Illuminate\View\Component;
 class Menu extends Component
 {
     public $items;
+
     public $itemActive;
+
     public $parentItemActive = null;
+
     /**
      * Create a new component instance.
      */
@@ -19,7 +22,7 @@ class Menu extends Component
     {
         $this->itemActive = $itemActive;
         $this->parentItemActive = $parentItemActive;
-        $this->items = ModelsMenu::with('menuItems')->where('name','web')->first()->menuItems()->where('active',1)->where('parent_id', null)->orderBy('order')->get();
+        $this->items = ModelsMenu::with('menuItems')->where('name', 'web')->first()->menuItems()->where('active', 1)->where('parent_id', null)->orderBy('order')->get();
     }
 
     /**

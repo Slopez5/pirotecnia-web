@@ -2,11 +2,9 @@
 
 namespace App\Core\Domains\Repositories;
 
-
 use App\Core\Data\Entities\Event;
 use App\Core\Data\Repositories\EventRepositoryInterface;
 use App\Core\Data\Services\EventService;
-use App\Models\Event as ModelsEvent;
 use Illuminate\Support\Collection;
 
 class EloquentEventRepository implements EventRepositoryInterface
@@ -18,6 +16,11 @@ class EloquentEventRepository implements EventRepositoryInterface
     public function all(): Collection
     {
         return $this->eventService->all();
+    }
+
+    public function getEventsByEmployee(int $employeeId): Collection
+    {
+        return $this->eventService->getEventsByEmployee($employeeId);
     }
 
     public function find(int $eventId): ?Event

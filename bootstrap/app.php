@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         //
         $middleware->validateCsrfTokens(except: [
-            '/print-ticket'
+            '/print-ticket',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

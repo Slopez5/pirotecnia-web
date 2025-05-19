@@ -16,28 +16,30 @@ class PurchaseController extends Controller
     {
         $purchases = Purchase::all();
         $itemActive = 6;
-        return view('panel.purchases.index',compact('purchases','itemActive'));
+
+        return view('panel.purchases.index', compact('purchases', 'itemActive'));
     }
 
     public function create()
     {
         $products = Product::all();
-        return view('panel.purchases.create',compact('products'));
+
+        return view('panel.purchases.create', compact('products'));
     }
 
     public function store(Request $request)
     {
-        //create purchase and update inventory
-        //create purchase
+        // create purchase and update inventory
+        // create purchase
         $purchase = Purchase::create([
             'user_id' => Auth::user()->id,
-            'date' => $request->date
+            'date' => $request->date,
         ]);
-        //update inventory
+        // update inventory
         foreach ($request->products as $product) {
             $purchase->products()->attach($product['product_id'], [
                 'quantity' => $product['quantity'],
-                'price' => $product['price']
+                'price' => $product['price'],
             ]);
         }
     }
@@ -55,22 +57,22 @@ class PurchaseController extends Controller
 
     public function update(Request $request, $id)
     {
-        //update purchase and inventory
-        //update purchase
+        // update purchase and inventory
+        // update purchase
         $purchase = Purchase::find($id);
         $purchase->update([
-            'date' => $request->date
+            'date' => $request->date,
         ]);
-        //update inventory
+        // update inventory
         $purchase->products()->updateExistingPivot($request->product_id, [
             'quantity' => $request->quantity,
-            'price' => $request->price
+            'price' => $request->price,
         ]);
     }
 
     public function destroy($id)
     {
         //
-        
+
     }
 }

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/recovery', [AuthController::class, 'recovery']);
-
+Route::get('/import-from-employees', [AuthController::class, 'importFromEmployees']);
 
 Route::middleware(['auth:api'])->group(function () {
     // Auth
@@ -50,7 +50,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Settings - Equipment
     Route::get('/equipments', [EquipmentController::class, 'index']);
     Route::get('/equipment/{id}', [EquipmentController::class, 'show']);
-    Route::post('/equipment', [EquipmentController::class, 'store']);   
+    Route::post('/equipment', [EquipmentController::class, 'store']);
     Route::put('/equipment/{id}', [EquipmentController::class, 'update']);
     Route::delete('/equipment/{id}', [EquipmentController::class, 'destroy']);
 
@@ -74,6 +74,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/event', [EventController::class, 'store']);
     Route::put('/event/{id}', [EventController::class, 'update']);
     Route::delete('/event/{id}', [EventController::class, 'destroy']);
+    Route::get('/employee-events', [EventController::class, 'getEventsByEmployee']);
 
     // Inventory
     Route::get('/inventory', [InventoryController::class, 'index']);
@@ -102,6 +103,5 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/stall', [StallController::class, 'store']);
     Route::put('/stall/{id}', [StallController::class, 'update']);
     Route::delete('/stall/{id}', [StallController::class, 'destroy']);
-
 
 });

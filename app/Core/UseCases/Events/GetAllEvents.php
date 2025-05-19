@@ -10,20 +10,21 @@ class GetAllEvents
 {
     public function __construct(
         private EventRepositoryInterface $eventRepository
-    ) {
-    }
+    ) {}
 
-    public function execute(int $page): Collection {
+    public function execute(int $page): Collection
+    {
         $perPage = 10;
-        $events = $this->eventRepository->all();
-        $slicedEvents = $events->slice(($page - 1) *  $perPage,  $perPage)->values();
-        $paginator = new LengthAwarePaginator($slicedEvents, $events->count(),  $perPage, $page);
+        $events = $this->eventRepository->all()->sortByDesc('date');
+        $slicedEvents = $events->slice(($page - 1) * $perPage, $perPage)->values();
+        $paginator = new LengthAwarePaginator($slicedEvents, $events->count(), $perPage, $page);
+
         return new Collection([
-            "total" => $events->count(),
-            "total_pages" => $paginator->lastPage(),
-            "current_page" => $page,
-            "per_page" => $perPage,
-            "events" => $paginator->values()
+            'total' => $events->count(),
+            'total_pages' => $paginator->lastPage(),
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'events' => $paginator->values(),
         ]);
     }
 }

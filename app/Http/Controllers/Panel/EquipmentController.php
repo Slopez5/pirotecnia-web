@@ -14,6 +14,7 @@ class EquipmentController extends Controller
         $equipments = Equipment::all();
         $parentItemActive = 8;
         $itemActive = 2;
+
         return view('panel.settings.equipments.index', compact('equipments', 'itemActive', 'parentItemActive'));
     }
 
@@ -30,7 +31,7 @@ class EquipmentController extends Controller
             'description' => 'required',
         ]);
 
-        $equipment = new Equipment();
+        $equipment = new Equipment;
         $equipment->name = $request->name;
         $equipment->description = $request->description;
         $equipment->unit = 'pz';
@@ -44,6 +45,7 @@ class EquipmentController extends Controller
     {
         //
         $equipment = Equipment::find($id);
+
         return view('panel.settings.equipments.show', compact('equipment'));
     }
 
@@ -51,6 +53,7 @@ class EquipmentController extends Controller
     {
         //
         $equipment = Equipment::find($id);
+
         return view('panel.settings.equipments.edit', compact('equipment'));
     }
 
@@ -79,6 +82,4 @@ class EquipmentController extends Controller
 
         return redirect()->route('settings.equipments.index');
     }
-
-
 }

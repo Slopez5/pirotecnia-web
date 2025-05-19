@@ -29,5 +29,4 @@ class Employee extends Model
     {
         return $this->belongsTo(ExperienceLevel::class);
     }
-    
 }

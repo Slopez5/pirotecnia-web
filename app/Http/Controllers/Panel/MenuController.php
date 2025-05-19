@@ -14,6 +14,7 @@ class MenuController extends Controller
     public function index()
     {
         $menu = Menu::find(1)->menuItems->where('url', '!=', '');
+
         return view('panel.settings.menu.index', compact('menu'));
     }
 
@@ -21,6 +22,7 @@ class MenuController extends Controller
     {
 
         $menus = Menu::find(1)->menuItems->where('parent_id', null);
+
         return view('panel.settings.menu.create', compact('menus'));
     }
 
@@ -54,6 +56,7 @@ class MenuController extends Controller
     public function edit($id)
     {
         $menu = Menu::find($id);
+
         return view('panel.settings.menu.edit', compact('menu'));
     }
 
@@ -83,6 +86,7 @@ class MenuController extends Controller
     public function show($id)
     {
         $menu = Menu::find($id);
+
         return view('panel.settings.menu.show', compact('menu'));
     }
 

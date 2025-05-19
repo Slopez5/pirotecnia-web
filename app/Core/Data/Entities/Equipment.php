@@ -2,12 +2,16 @@
 
 namespace App\Core\Data\Entities;
 
-
-class Equipment {
+class Equipment
+{
     public $id;
+
     public $name;
+
     public $description;
+
     public $unit;
+
     public $quantity;
 
     public function __construct(array $attributes = [])
@@ -20,13 +24,14 @@ class Equipment {
         }
     }
 
-    static function fromEquipment($equipment) {
+    public static function fromEquipment($equipment)
+    {
         return new Equipment([
             'id' => $equipment->id,
             'name' => $equipment->name,
             'description' => $equipment->description,
             'unit' => $equipment->unit,
-            'quantity' => $equipment->pivot->quantity
+            'quantity' => $equipment->pivot->quantity,
         ]);
     }
 }

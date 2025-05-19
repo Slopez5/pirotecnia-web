@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -13,280 +12,280 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        //add name, description and price
+        // add name, description and price
         $products = [
-            //Products type client
+            // Products type client
             [
                 'product_role_id' => 3,
                 'name' => 'Bazuca especial (diferentes colores)',
                 'description' => 'Bazuca especial (diferentes colores)',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bazuca grande (diferentes colores)',
                 'description' => 'Bazuca grande (diferentes colores)',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bazuca Mega (diferentes colores)',
                 'description' => 'Bazuca Mega (diferentes colores)',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bengalas de azul o rosa',
                 'description' => 'Bengalas de azul o rosa',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bengalas de humo azul o rosa',
                 'description' => 'Bengalas de humo azul o rosa',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Blaster CO2 lanza papel picado azul o rosa',
                 'description' => 'Blaster CO2 lanza papel picado azul o rosa',
-                'unit' => 'Kg'
+                'unit' => 'Kg',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Blaster CO2 Lanza Papel Picado con Papel adicional',
                 'description' => 'Blaster CO2 Lanza Papel Picado con Papel adicional',
-                'unit' => 'Kg'
+                'unit' => 'Kg',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Blaster CO2 lanza papel picado metalico',
                 'description' => 'Blaster CO2 lanza papel picado metalico',
-                'unit' => 'Kg'
+                'unit' => 'Kg',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bomba crisantemo azul o rosa',
                 'description' => 'Bomba crisantemo azul o rosa',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bomba crisantemo de colores Especial',
                 'description' => 'Bomba crisantemo de colores Especial',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bomba crisantemo de colores Grande',
                 'description' => 'Bomba crisantemo de colores Grande',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bomba crisantemo de colores Mega',
                 'description' => 'Bombas crisantemo de colores Mega',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas candil efecto chicos',
                 'description' => 'Bombas candil efecto chicos',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas chicas efecto craker y color',
                 'description' => 'Bombas chicas efecto craker y color',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas crisantemo azul o rosa',
                 'description' => 'Bombas crisantemo azul o rosa',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas crisantemo azul o rosa Grande',
                 'description' => 'Bombas crisantemo azul o rosa Grande',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas crisantemo de colores Especial',
                 'description' => 'Bombas crisantemo de colores Especial',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas crisantemo de colores Grande',
                 'description' => 'Bombas crisantemo de colores Grande',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas crisantemo de colores Mega',
                 'description' => 'Bombas crisantemo de colores Mega',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas crisantemos de colores grande',
                 'description' => 'Bombas crisantemos de colores grande',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas crisantemos de colores Mega',
                 'description' => 'Bombas crisantemos de colores Mega',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombas medianas efecto cracker',
                 'description' => 'Bombas medianas efecto cracker',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Bombet disparos chicos colores',
                 'description' => 'Bombet disparos chicos colores',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Cake abanico diferentes efectos y colores',
                 'description' => 'Cake abanico diferentes efectos y colores',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Cake abanico disparos diferentes colores y efectos',
                 'description' => 'Cake abanico disparos diferentes colores y efectos',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Cake abanico disparos diferentes efectos y colore',
                 'description' => 'Cake abanico disparos diferentes efectos y colore',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Cake disparos diferentes colores y efecto',
                 'description' => 'Cake disparos diferentes colores y efecto',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Cake disparos diferentes efectos y colores',
                 'description' => 'Cake disparos diferentes efectos y colores',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Cake especial abanico disparos medianos',
                 'description' => 'Cake especial abanico disparos medianos',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Candil disparos bombet chicos',
                 'description' => 'Candil disparos bombet chicos',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Castillo basico con o sin buscapies',
                 'description' => 'Castillo basico con o sin buscapies',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Chisperos de luz fria 3 metros x 30 segundos',
                 'description' => 'Chisperos de luz fria 3 metros x 30 segundos',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Chisperos de luz fria 3 mts x 30 segundos',
                 'description' => 'Chisperos de luz fria 3 mts x 30 segundos',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Coheton de luz o trueno',
                 'description' => 'Coheton de luz o trueno',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Crisantemo grande de colores',
                 'description' => 'Crisantemo grande de colores',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Crisantemo Mega de colores',
                 'description' => 'Crisantemo Mega de colores',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Disaparos Chicos diferentes efectos y colores',
                 'description' => 'Disaparos Chicos diferentes efectos y colores',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Disaperos aereos con efecto craker y color azul o rosa',
                 'description' => 'Disaperos aereos con efecto craker y color azul o rosa',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Disapros abanico con craker',
                 'description' => 'Disapros abanico con craker',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Disparos bombet colores',
                 'description' => 'Disparos bombet colores',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Disparos de Diferentes colores con estrobo',
                 'description' => 'Disparos de Diferentes colores con estrobo',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Monotiros tricolor',
                 'description' => 'Monotiros tricolor',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Puntos de disapro de humo azul o rosa con craker y diamantina',
                 'description' => 'Puntos de disapro de humo azul o rosa con craker y diamantina',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Torito pirotecnico',
                 'description' => 'Torito pirotecnico',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
             [
                 'product_role_id' => 3,
                 'name' => 'Torito pirotecnico con o sin buscapies',
                 'description' => 'Torito pirotecnico con o sin buscapies',
-                'unit' => 'pz'
+                'unit' => 'pz',
             ],
-            //Products Type Inventory
+            // Products Type Inventory
             [
                 'product_role_id' => 1,
                 'name' => 'bombas 3"',
@@ -443,7 +442,7 @@ class ProductSeeder extends Seeder
                 'description' => 'candil .8x10',
                 'unit' => 'pz',
             ],
-            //Products type Materials
+            // Products type Materials
         ];
 
         Product::insert($products);

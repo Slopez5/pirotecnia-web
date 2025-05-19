@@ -3,9 +3,9 @@
 namespace App\Livewire\Panel\Events;
 
 use App\Models\Event;
-use Livewire\Component;
 use DateTime;
 use DateTimeZone;
+use Livewire\Component;
 
 class EventCalendar extends Component
 {
@@ -23,12 +23,11 @@ class EventCalendar extends Component
                 return $event;
             });
 
-
         $this->events = $events->map(function ($event) {
             return [
                 'title' => $event->client_name,
                 'start' => $event->event_date,
-                'url' => route('events.show', $event)
+                'url' => route('events.show', $event),
             ];
         });
     }
