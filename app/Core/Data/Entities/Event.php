@@ -3,6 +3,7 @@
 namespace App\Core\Data\Entities;
 
 use App\Models\Event as ModelsEvent;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class Event
@@ -25,7 +26,7 @@ class Event
 
     public $event_date;
 
-    public $disscount = 0;
+    public $discount = 0;
 
     public $advance = 0;
 
@@ -49,7 +50,6 @@ class Event
 
     public function __construct(array $attributes = [])
     {
-        // Asigna los atributos dinámicamente
         foreach ($attributes as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->$key = $value;
@@ -60,7 +60,7 @@ class Event
     public static function fromArray(array $attributes)
     {
         // convert employees, packages, products, equipments to collections
-        $employees = (new Collection($attributes['employess'] ?? []))->map(function ($employee) {
+        $employees = (new Collection($attributes['employees'] ?? []))->map(function ($employee) {
             return new Employee($employee);
         });
         $packages = (new Collection($attributes['packages'] ?? []))->map(function ($package) {
@@ -86,7 +86,7 @@ class Event
         return $newEvent;
     }
 
-    public static function fromEvent(ModelsEvent $event)
+    public static function fromEvent(ModelsEvent|Model $event)
     {
         $event->load('employees', 'packages', 'products', 'equipments');
         $newEvent = new self(self::extractAttributes($event));
@@ -117,7 +117,7 @@ class Event
             'client_address' => $event->client_address,
             'event_address' => $event->event_address,
             'event_date' => $event->event_date,
-            'disscount' => $event->disscount,
+            'discount' => $event->discount,
             'advance' => $event->advance,
             'travel_expenses' => $event->travel_expenses,
             'notes' => $event->notes,

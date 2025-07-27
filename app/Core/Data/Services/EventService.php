@@ -41,7 +41,7 @@ class EventService
     public function find(int $eventId): ?Event
     {
         try {
-            $eloquentEvent = ModelsEvent::find($eventId);
+            $eloquentEvent = ModelsEvent::findOrFail($eventId);
             $event = Event::fromEvent($eloquentEvent);
 
             return $event;
@@ -62,7 +62,7 @@ class EventService
                 'client_address' => $event->client_address,
                 'event_address' => $event->event_address,
                 'event_date' => $event->event_date,
-                'disscount' => $event->disscount,
+                'discount' => $event->discount,
                 'advance' => $event->advance,
                 'travel_expenses' => $event->travel_expenses,
                 'notes' => $event->notes,
@@ -91,7 +91,7 @@ class EventService
                 'client_address' => $event->client_address,
                 'event_address' => $event->event_address,
                 'event_date' => $event->event_date,
-                'disscount' => $event->disscount,
+                'discount' => $event->discount,
                 'advance' => $event->advance,
                 'travel_expenses' => $event->travel_expenses,
                 'notes' => $event->notes,

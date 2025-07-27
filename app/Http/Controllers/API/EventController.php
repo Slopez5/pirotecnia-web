@@ -10,6 +10,7 @@ use App\Core\UseCases\Events\GetEventsByEmployee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Events\StoreEventRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -24,7 +25,7 @@ class EventController extends Controller
 
     public function getEventsByEmployee(Request $request)
     {
-        $id = $request->header('userid');
+        $id = Auth::user()->employee->id;
         $events = app(GetEventsByEmployee::class)->execute($id, $request->get('page', 1));
 
         return response()->success($events, 200);

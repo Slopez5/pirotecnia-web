@@ -32,7 +32,7 @@ class StoreEventRequest extends FormRequest
             'client_address' => 'required|string|max:255',
             'event_address' => 'required|string|max:255',
             'event_date' => 'required|date',
-            'disscount' => 'nullable|numeric',
+            'discount' => 'nullable|numeric',
             'advance' => 'nullable|numeric',
             'travel_expenses' => 'nullable|numeric',
             'notes' => 'nullable|string|max:255',
@@ -41,13 +41,9 @@ class StoreEventRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
     protected function failedAuthorization()
     {
+        logger('Unauthorized access attempt to StoreEventRequest');
         throw new HttpResponseException(
             response()->failure('Unauthorized', 403)
         );
