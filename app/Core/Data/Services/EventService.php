@@ -55,7 +55,7 @@ class EventService
         try {
             $eloquentEvent = new ModelsEvent;
             $eloquentEvent->fill([
-                'package_id' => $event->package_id,
+                'package_id' => $event->packages->first()->id ?? null,
                 'date' => $event->date,
                 'phone' => $event->phone,
                 'client_name' => $event->client_name,

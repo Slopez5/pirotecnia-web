@@ -10,9 +10,9 @@ class Event
 {
     public $id;
 
-    public $event_type_id;
+    public $event_type;
 
-    public $package_id;
+    public $package;
 
     public $date;
 
@@ -107,10 +107,11 @@ class Event
 
     private static function extractAttributes($event)
     {
+
         return [
             'id' => $event->id,
-            'event_type_id' => $event->event_type_id,
-            'package_id' => $event->package_id,
+            'event_type' => $event->typeEvent->name,
+            'package' => $event->packages[0]->name,
             'date' => $event->date,
             'phone' => $event->phone,
             'client_name' => $event->client_name,
@@ -153,6 +154,8 @@ class Event
     {
         $equipments = $packages->flatMap(fn ($package) => $package->equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)))
             ->merge($equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)));
+        logger($packages);
+        logger($equipments);
 
         return $equipments->map(function ($equipment) use ($equipments) {
             $sameEquipment = $equipments->where('id', $equipment->id);

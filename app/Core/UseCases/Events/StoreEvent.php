@@ -13,7 +13,6 @@ class StoreEvent
 
     public function execute(Event $event): ?Event
     {
-        logger('Event data: '.json_encode($event));
         $eventCreated = $this->eventRepository->create($event);
 
         return $eventCreated;

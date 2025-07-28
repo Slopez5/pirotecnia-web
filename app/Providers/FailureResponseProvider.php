@@ -21,7 +21,6 @@ class FailureResponseProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        logger('Booting FailureResponseProvider');
         Response::macro('failure', function ($message = null, $statusCode = 400) {
             return response()->json([
                 'status' => 'failure',

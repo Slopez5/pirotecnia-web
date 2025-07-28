@@ -40,7 +40,7 @@ class EventController extends Controller
         $fileName = 'event_'.$event->id.'.pdf';
         Storage::disk('public')->put('pdf/'.$fileName, $pdf);
         $url = asset('storage/pdf/'.$fileName);
-        $event['pdf_url'] = $url;
+        $event->pdf_url = $url;
 
         return response()->success($event, 200);
     }
@@ -61,7 +61,7 @@ class EventController extends Controller
             }
         }
 
-        $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));
+        $pdf = Pdf::loadView('whatsapp.event_details_pdf_view_api', compact('event'));
 
         return $pdf->output();
     }
