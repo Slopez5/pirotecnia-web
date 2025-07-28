@@ -69,7 +69,7 @@
 
 <body>
     {{-- Event Info --}}
-    {{-- 
+    {{--
     Tienes un evento próximamente
     Hola, este es un recordatorio para el evento Aniversario.
     Detalles del evento:
@@ -77,10 +77,12 @@
     Hora: 17:30
     Lugar: Unidad deportiva Cuauhtemoc
     Responsable: Luis Javier Lopez Ceballos
-    Detalles adicionales: Preguntar al encargado los momentos y secuencias de detonación 
+    Detalles adicionales: Preguntar al encargado los momentos y secuencias de detonación
     --}}
     <h3>Información general</h3>
-    <p><strong>Tipo de Evento</strong>: {{ $event->typeEvent->name }}</p>
+    @if ($event->typeEvent != null)
+        <p><strong>Tipo de Evento:</strong> {{ $event->typeEvent->name }}</p>
+    @endif
     <p><strong>Teléfono:</strong> {{ $event->phone }}</p>
     <p><strong>Cliente:</strong> {{ $event->client_name }}</p>
     <p><strong>Dirección de cliente:</strong> {{ $event->client_address }}</p>
@@ -117,7 +119,8 @@
                 <tr>
                     <td>{{ $material->name }}
                         {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }}
-                        {{ $material->shape }}</td>
+                        {{ $material->shape }}
+                    </td>
                     <td>{{ $material->pivot->quantity }}</td>
                     <td></td>
                 </tr>
