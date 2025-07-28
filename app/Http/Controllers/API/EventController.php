@@ -9,8 +9,10 @@ use App\Core\UseCases\Events\GetEvent;
 use App\Core\UseCases\Events\GetEventsByEmployee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Events\StoreEventRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -34,8 +36,34 @@ class EventController extends Controller
     public function show($id)
     {
         $event = app(GetEvent::class)->execute($id);
+        $pdf = $this->generatePdf($event);
+        $fileName = 'event_'.$event->id.'.pdf';
+        Storage::disk('public')->put('pdf/'.$fileName, $pdf);
+        $url = asset('storage/pdf/'.$fileName);
+        $event['pdf_url'] = $url;
 
         return response()->success($event, 200);
+    }
+
+    private function generatePdf($event)
+    {
+        $price = 0;
+
+        if ($event) {
+            foreach ($event->packages as $package) {
+                $price += $package->price;
+            }
+            $event->full_price = $price;
+            if ($event->discount > 1) {
+                $event->balance = ($price - $event->discount) - $event->advance + $event->travel_expenses;
+            } else {
+                $event->balance = ($price - ($price * $event->discount)) - $event->advance + $event->travel_expenses;
+            }
+        }
+
+        $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));
+
+        return $pdf->output();
     }
 
     public function store(StoreEventRequest $request)
