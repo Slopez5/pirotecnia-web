@@ -11,6 +11,8 @@ interface PackageRepositoryInterface
 
     public function find(int $packageId): ?Package;
 
+    public function findByEventId(int $eventId): Collection;
+
     public function create(Package $package): ?Package;
 
     public function update(int $packageId, Package $package): ?Package;

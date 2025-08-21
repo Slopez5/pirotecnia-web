@@ -34,6 +34,20 @@ class PackageService
         }
     }
 
+    public function findByEventId(int $eventId): Collection
+    {
+        try {
+            $eloquentPackages = ModelsPackage::where('event_id', $eventId)->get();
+            $packages = $eloquentPackages->map(function ($eloquentPackage) {
+                return Package::fromPackage($eloquentPackage);
+            });
+
+            return $packages;
+        } catch (\Exception $e) {
+            return new Collection;
+        }
+    }
+
     public function create(Package $package): ?Package
     {
         try {

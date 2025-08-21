@@ -154,8 +154,6 @@ class Event
     {
         $equipments = $packages->flatMap(fn ($package) => $package->equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)))
             ->merge($equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)));
-        logger($packages);
-        logger($equipments);
 
         return $equipments->map(function ($equipment) use ($equipments) {
             $sameEquipment = $equipments->where('id', $equipment->id);

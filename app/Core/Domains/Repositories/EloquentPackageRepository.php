@@ -21,6 +21,11 @@ class EloquentPackageRepository implements PackageRepositoryInterface
         return $this->packageService->find($packageId);
     }
 
+    public function findByEventId(int $eventId): Collection
+    {
+        return $this->packageService->findByEventId($eventId);
+    }
+
     public function create(Package $package): ?Package
     {
         return $this->packageService->create($package);

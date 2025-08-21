@@ -140,8 +140,8 @@
             @foreach ($event->equipments as $package)
 
                 <tr>
-                    <td>{{ $equipment->name }}</td>
-                    <td>{{ $equipment->quantity }}</td>
+                    <td>{{ $package->name }}</td>
+                    <td>{{ $package->quantity }}</td>
                     <td></td>
                 </tr>
 

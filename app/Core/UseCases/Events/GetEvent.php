@@ -13,6 +13,8 @@ class GetEvent
 
     public function execute(int $eventId): ?Event
     {
-        return $this->eventRepository->find($eventId);
+        $event = $this->eventRepository->find($eventId);
+
+        return $event;
     }
 }
