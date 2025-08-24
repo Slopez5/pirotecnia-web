@@ -21,7 +21,12 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/recovery', [AuthController::class, 'recovery']);
 Route::get('/import-from-employees', [AuthController::class, 'importFromEmployees']);
 
+Route::get('/test-firebase', [AuthController::class, 'testFirebase']);
+
 Route::middleware(['auth:api'])->group(function () {
+    // Firebase
+    Route::post('/fcm-token', [AuthController::class, 'saveFCMToken']);
+
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helper\FirebaseService;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\User;
@@ -10,8 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    //
-
     // Login
     public function login(Request $request)
     {
@@ -37,7 +36,44 @@ class AuthController extends Controller
     // Recovery
     public function recovery(Request $request) {}
 
-    public function logout(Request $request) {}
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+
+        return response()->success([
+            'message' => 'Successfully logged out',
+        ]);
+    }
+
+    public function saveFCMToken(Request $request)
+    {
+        logger($request->all());
+        $user = Auth::user();
+        $user->fcm_token = $request->input('fcm_token');
+        $user->save();
+
+        return response()->success([
+            'message' => 'FCM token saved successfully',
+        ], 200);
+    }
+
+    public function testFirebase()
+    {
+        $firebaseService = new FirebaseService;
+        $accessToken = $firebaseService->sendMessage(
+            'cAyzVSqTT0kfrtjoFKQctq:APA91bEzA6YjIG5QvCzHsSXii_5OB6dvABetSE6tFykgtp_QyTmvTSrHs0EEzjdwvDCqTnXQdvb4v6DXwgDPfOgDdmRmdhFohXVXOa5XQ1bhzuM8kEQcO2g',
+            [
+                'title' => 'Pirotecnia San Rafael',
+                'body' => 'El Ranchito Michoacan - 26/08/2025',
+            ],
+            [
+                'id' => 1,
+                'name' => 'Evento',
+            ]
+        );
+
+        return response()->json(['access_token' => $accessToken]);
+    }
 
     public function importFromEmployees()
     {
