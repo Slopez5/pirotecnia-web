@@ -47,9 +47,8 @@ class AuthController extends Controller
 
     public function saveFCMToken(Request $request)
     {
-        logger($request->all());
         $user = Auth::user();
-        $user->fcm_token = $request->input('fcm_token');
+        $user->fcm_token = $request->input('fcmToken');
         $user->save();
 
         return response()->success([
