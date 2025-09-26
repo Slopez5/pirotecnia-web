@@ -81,8 +81,6 @@ class EventController extends Controller
 
     private function generateContrato($data)
     {
-        logger($data);
-
         $package_names = implode(', ', $data->packages->pluck('name')->toArray());
 
         $items = $data->products->map(fn ($p) => [
@@ -91,6 +89,10 @@ class EventController extends Controller
             'precio' => $p->price,
         ])->toArray();
 
+        $price = 0;
+        foreach ($data->packages as $package) {
+            $price += $package->price;
+        }
         $data = [
             'fecha' => $data->date,
             'telefono' => $data->phone,
@@ -99,12 +101,14 @@ class EventController extends Controller
             'lugar_evento' => $data->event_address,
             'fecha_hora_evento' => $data->event_date,
             'tipo_evento' => $data->event_type,
-            'anticipo' => 3000.00,
-            'saldo' => 7000.00,
+            'anticipo' => $data->advance,
+            'saldo' => $price + $data->travel_expenses,
             'paquete' => $package_names,
             'items' => $items,
-            'viaticos' => 500.00,
+            'viaticos' => $data->travel_expenses,
+            'packages' => $data->packages,
         ];
+        logger($data);
         $pdf = new PdfQuoteFiller;
 
         return $pdf->fill($data);

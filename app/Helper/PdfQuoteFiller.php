@@ -48,18 +48,35 @@ class PdfQuoteFiller
 
         // ⚠️ Coordenadas de ejemplo (ajústalas una sola vez a tu plantilla)
         // Encabezado (fecha, teléfono, nombre, domicilio…)
-        $write(41, 26, $data['fecha'] ?? '');
-        $write(48, 33, $data['telefono'] ?? '');
-        $write(44, 39, $data['nombre'] ?? '');
-        $write(47, 46, $data['domicilio'] ?? '');
+        $date = (string) ($data['fecha'] ?? '');
+        $date = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $date);
+        $phone = (string) ($data['telefono'] ?? '');
+        $phone = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $phone);
+        $name = (string) ($data['nombre'] ?? '');
+        $name = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $name);
+        $address = (string) ($data['domicilio'] ?? '');
+        $address = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $address);
+        $event_place = (string) ($data['lugar_evento'] ?? '');
+        $event_place = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $event_place);
+        $event_datetime = (string) ($data['fecha_hora_evento'] ?? '');
+        $event_datetime = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $event_datetime);
+        $event_type = (string) ($data['tipo_evento'] ?? '');
+        $event_type = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $event_type);
+        $package = (string) ($data['paquete'] ?? '');
+        $package = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $package);
+
+        $write(41, 26, $date ?? '');
+        $write(48, 33, $phone ?? '');
+        $write(44, 39, $name ?? '');
+        $write(47, 46, $address ?? '');
 
         // Datos de evento
-        $write(66, 53, $data['lugar_evento'] ?? '');
-        $write(81, 59, $data['fecha_hora_evento'] ?? '');
-        $write(54, 65.5, $data['tipo_evento'] ?? '');
+        $write(66, 53, $event_place ?? '');
+        $write(81, 59, $event_datetime ?? '');
+        $write(54, 65.5, $event_type ?? '');
 
         // Paquete
-        $write(40, 71, $data['paquete'] ?? '', 12, false);
+        $write(40, 71, $package ?? '', 12, false);
 
         // Tabla: Descripción | Cantidad | Precio
         // Coordenadas base de la tabla (ajústalas a tu diseño)
@@ -72,15 +89,16 @@ class PdfQuoteFiller
         $wPrec = 25;
 
         $pdf->SetFont('Arial', '', 11);
-        $items = $data['items'] ?? [];
+        $items = $data['packages']->toArray() ?? [];
         $lineHeight = 7;
 
         foreach ($items as $item) {
-
-            $desc = (string) ($item['descripcion'] ?? '');
+            logger($item->name);
+            logger($item->price);
+            $desc = (string) ($item->name ?? '');
             $desc = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $desc);
-            $cant = (string) ($item['cantidad'] ?? '');
-            $prec = $this->money($item['precio'] ?? 0);
+            $cant = '1';
+            $prec = $this->money($item->price ?? 0);
 
             //     // Descripción con MultiCell para cortes de línea
             $pdf->SetXY($xDesc, $y);
@@ -100,9 +118,9 @@ class PdfQuoteFiller
         }
 
         // Viáticos y total
-        $subtotal = array_reduce($items, fn ($c, $i) => $c + ((float) $i['precio'] * (float) ($i['cantidad'] ?? 1)), 0.0);
+
         $viaticos = (float) ($data['viaticos'] ?? 0);
-        $total = $subtotal + $viaticos;
+        $total = $data['saldo'] ?? 0;
 
         // // Viáticos (alineado al layout de tu plantilla)
         $write(163, 122, $this->money($viaticos));
@@ -112,7 +130,7 @@ class PdfQuoteFiller
         // Anticipo / Saldo
         $write(55, 175, $this->money($data['anticipo'] ?? 0));
 
-        $saldo = $total - (float) ($data['anticipo'] ?? 0);
+        $saldo = $data['saldo'] - ($data['anticipo'] ?? 0);
         $write(140, 175, $this->money($saldo));
 
         return $pdf->Output('S'); // 'S' = return as string

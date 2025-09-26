@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Panel;
 
+use App\Core\UseCases\Events\GetEvent;
+use App\Helper\PdfQuoteFiller;
 use App\Helper\Reminder;
 use App\Helper\Whatsapp;
 use App\Http\Controllers\Controller;
@@ -10,6 +12,7 @@ use App\Models\Package;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -117,5 +120,54 @@ class EventController extends Controller
 
         return $pdf->stream('event_details.pdf');
         // return view('whatsapp.event_details_pdf_view', compact('event'));
+    }
+
+    public function showContract($id)
+    {
+        $event = app(GetEvent::class)->execute($id);
+        $pdf = $this->generateContrato($event);
+        $fileName = 'event_'.$event->id.'.pdf';
+        Storage::disk('public')->put('pdf/'.$fileName, $pdf);
+        $url = asset('storage/pdf/'.$fileName);
+        $event->pdf_url = $url;
+
+        // redirect to pdf url
+        return redirect($url);
+        // return view('whatsapp.event_details_pdf_view', compact('event'));
+    }
+
+    private function generateContrato($data)
+    {
+        $package_names = implode(', ', $data->packages->pluck('name')->toArray());
+
+        $items = $data->products->map(fn ($p) => [
+            'descripcion' => $p->name,
+            'cantidad' => $p->quantity,
+            'precio' => $p->price,
+        ])->toArray();
+
+        $price = 0;
+        foreach ($data->packages as $package) {
+            $price += $package->price;
+        }
+        $data = [
+            'fecha' => $data->date,
+            'telefono' => $data->phone,
+            'nombre' => $data->client_name,
+            'domicilio' => $data->client_address,
+            'lugar_evento' => $data->event_address,
+            'fecha_hora_evento' => $data->event_date,
+            'tipo_evento' => $data->event_type,
+            'anticipo' => $data->advance,
+            'saldo' => $price + $data->travel_expenses,
+            'paquete' => $package_names,
+            'items' => $items,
+            'viaticos' => $data->travel_expenses,
+            'packages' => $data->packages,
+        ];
+        logger($data);
+        $pdf = new PdfQuoteFiller;
+
+        return $pdf->fill($data);
     }
 }

@@ -47,8 +47,6 @@ class Product
 
     public static function fromProduct($product, $from = 'package')
     {
-        logger($product->inventories);
-
         return new Product([
             'id' => $product->id,
             'product_role_id' => $product->product_role_id,
@@ -66,9 +64,6 @@ class Product
 
     private static function extractPriceFrom($product, $from)
     {
-
-        logger($product);
-
         return $product->inventories->first()->pivot->price ?? 0;
     }
 

@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::get('panel/events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
     Route::delete('panel/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::get('panel/events/{id}', [EventController::class, 'show'])->name('events.show');
+    Route::get('eventDetailsContract/{id}', [EventController::class, 'showContract'])->name('showContract');
 
     // Send reminder
     Route::post('panel/events/{id}/reminder', [EventController::class, 'reminder'])->name('events.send-reminder');

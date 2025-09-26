@@ -52,36 +52,46 @@
                                 <i class="fas fa-edit"></i> Editar
                             </a>
 
-                        </x-slot>
-                        <x-slot:body>
-                            <div class="row">
-                                <div class="col">
-                                    <p><strong>Fecha:</strong> {{ $event->date }}</p>
-                                    <p><strong>Teléfono:</strong> {{ $event->phone }}</p>
-                                    <p><strong>Nombre:</strong> {{ $event->client_name }}</p>
-                                    <p><strong>Domicilio:</strong> {{ $event->client_address }}</p>
-                                    <p><strong>Lugar del evento:</strong> {{ $event->event_address }}</p>
-                                    <p><strong>Fecha y hora del evento:</strong> {{ $event->event_date }}</p>
-                                    <p><strong>Tipo de evento:</strong> {{ $event->event_type }}</p>
-                                    @foreach ($event->employees as $index => $employee)
-                                        <p><strong>Responsable {{ $index + 1 }}:</strong> {{ $employee->name }}</p>
-                                    @endforeach
+                            </x-slot>
+                            <x-slot:body>
+                                <div class="row">
+                                    <div class="col">
+                                        <p><strong>Fecha:</strong> {{ $event->date }}</p>
+                                        <p><strong>Teléfono:</strong> {{ $event->phone }}</p>
+                                        <p><strong>Nombre:</strong> {{ $event->client_name }}</p>
+                                        <p><strong>Domicilio:</strong> {{ $event->client_address }}</p>
+                                        <p><strong>Lugar del evento:</strong> {{ $event->event_address }}</p>
+                                        <p><strong>Fecha y hora del evento:</strong> {{ $event->event_date }}</p>
+                                        <p><strong>Tipo de evento:</strong> {{ $event->event_type }}</p>
+                                        @foreach ($event->employees as $index => $employee)
+                                            <p><strong>Responsable {{ $index + 1 }}:</strong> {{ $employee->name }}</p>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                            {{-- send reminder --}}
-                            <div class="row">
-                                <div class="col">
-                                    <form action="{{ route('events.send-reminder', $event) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="btn btn-primary">Enviar recordatorio</button>
-                                    </form>
-                                </div>
-                                {{-- Show pdf with event --}}
-                                <div class="col">
-                                    <a class="btn btn-primary" href="{{ route('showByWhatsapp', $event->id) }}"
-                                        class="btn btn-primary">Ver PDF</a>
-                                </div>
-                        </x-slot>
+                                {{-- send reminder --}}
+                                <div class="row">
+                                    <div class="col">
+                                        <form action="{{ route('events.send-reminder', $event) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-primary">Enviar recordatorio</button>
+                                        </form>
+                                    </div>
+                                    {{-- Show pdf with event --}}
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col">
+                                                <a class="btn btn-primary" href="{{ route('showByWhatsapp', $event->id) }}"
+                                                    class="btn btn-primary">Ver PDF</a>
+                                            </div>
+                                            <div class="col">
+                                                <a class="btn btn-primary" href="{{ route('showContract', $event->id) }}"
+                                                    class="btn btn-primary">Ver Contrato</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    </x-slot>
                     </x-card>
                 </div>
             </div>
@@ -103,14 +113,15 @@
 
                                                 <td>{{ $material->name }}
                                                     {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }}
-                                                    {{ $material->shape }} </td>
+                                                    {{ $material->shape }}
+                                                </td>
                                                 <td>{{ $material->pivot->quantity }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
-                        </x-slot>
+                            </x-slot>
                     </x-card>
                 </div>
                 <div class="col-md-6">
@@ -134,7 +145,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </x-slot>
+                            </x-slot>
                     </x-card>
 
                 </div>
