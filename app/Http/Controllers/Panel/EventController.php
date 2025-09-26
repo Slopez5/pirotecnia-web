@@ -88,8 +88,10 @@ class EventController extends Controller
     public function reminder($id)
     {
         $event = Event::find($id);
-        Reminder::send($event, 'whatsapp', 0, true);
-        Reminder::send($event, 'whatsapp', 0, false);
+        if ($event->employees->first()->user->fcm_token) {
+            Reminder::send($event, 'pushNotification', 0, true);
+            Reminder::send($event, 'pushNotification', 0, false);
+        }
 
         return redirect()->route('events.show', $id);
     }

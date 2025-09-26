@@ -23,7 +23,29 @@ Route::get('/import-from-employees', [AuthController::class, 'importFromEmployee
 
 Route::get('/test-firebase', [AuthController::class, 'testFirebase']);
 
+Route::get('/pdf-tools-diagnostic', function () {
+    $check = function ($cmd) {
+        $o = [];
+        $c = 0;
+        exec($cmd.' 2>&1', $o, $c);
+
+        return ['exit' => $c, 'out' => implode("\n", $o)];
+    };
+
+    return response()->json([
+        'which_gs' => $check('which gs'),
+        'gs_version' => $check('/opt/homebrew/bin/gs --version'),
+        'which_qpdf' => $check('which qpdf'),
+        'qpdf_version' => $check('/opt/homebrew/bin/qpdf --version'),
+        'which_mutool' => $check('which mutool'),
+        'mutool_v' => $check('/opt/homebrew/bin/mutool -v'),
+        'disable_funcs' => $check('php -i | grep disable_functions'),
+    ]);
+});
+
 Route::middleware(['auth:api'])->group(function () {
+    Route::post('/upload-template', [DashboardController::class, 'uploadTemplate']);
+
     // Firebase
     Route::post('/fcm-token', [AuthController::class, 'saveFCMToken']);
 

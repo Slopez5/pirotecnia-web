@@ -58,31 +58,19 @@ class FirebaseService
         return "$headerEncoded.$claimsEncoded.".$base64UrlEncode($signature);
     }
 
-    public function sendMessage(string $token, array $notification, array $data = [])
+    public function sendMessage(string $token, array $notification, array $data = [], array $apns = [])
     {
         $body = [
             'message' => [
                 'token' => $token,
                 'notification' => array_map('strval', $notification),
                 'data' => array_map('strval', $data),
-                'apns' => [
-                    'headers' => [
-                        'apns-priority' => '10',
-                    ],
-                    'payload' => [
-                        'aps' => [
-                            'alert' => [
-                                'title' => $notification['title'] ?? 'Notificación',
-                                'body' => $notification['body'] ?? 'Este es un ejemplo de notificación',
-                            ],
-                            'sound' => 'default',
-                        ],
-                    ],
-                ],
-
             ],
         ];
 
+        if (! empty($apns)) {
+            $body['message']['apns'] = $apns;
+        }
         $response = $this->client->post(
             'https://fcm.googleapis.com/v1/projects/'.env('FIREBASE_PROJECT_ID').'/messages:send',
             [

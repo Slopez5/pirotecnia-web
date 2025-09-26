@@ -26,6 +26,8 @@ class Product
 
     public $quantity;
 
+    public $price;
+
     public Collection $inventory;
 
     public function __construct(array $attributes = [])
@@ -45,6 +47,7 @@ class Product
 
     public static function fromProduct($product, $from = 'package')
     {
+        logger($product->inventories);
 
         return new Product([
             'id' => $product->id,
@@ -57,7 +60,16 @@ class Product
             'caliber' => $product->caliber,
             'shape' => $product->shape,
             'quantity' => self::extractQuantityFrom($product, $from),
+            'price' => self::extractPriceFrom($product, $from),
         ]);
+    }
+
+    private static function extractPriceFrom($product, $from)
+    {
+
+        logger($product);
+
+        return $product->inventories->first()->pivot->price ?? 0;
     }
 
     private static function extractQuantityFrom($product, $from)

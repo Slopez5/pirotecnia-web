@@ -7,6 +7,7 @@ use App\Core\UseCases\Events\CreateEvent;
 use App\Core\UseCases\Events\GetAllEvents;
 use App\Core\UseCases\Events\GetEvent;
 use App\Core\UseCases\Events\GetEventsByEmployee;
+use App\Helper\PdfQuoteFiller;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Events\StoreEventRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -36,7 +37,7 @@ class EventController extends Controller
     public function show($id)
     {
         $event = app(GetEvent::class)->execute($id);
-        $pdf = $this->generatePdf($event);
+        $pdf = $this->generateContrato($event);
         $fileName = 'event_'.$event->id.'.pdf';
         Storage::disk('public')->put('pdf/'.$fileName, $pdf);
         $url = asset('storage/pdf/'.$fileName);
@@ -68,9 +69,45 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request)
     {
-        $event = app(CreateEvent::class)->execute(Event::fromArray($request->all()));
+        // $event = app(CreateEvent::class)->execute(Event::fromArray($request->all()));
+        $pdfBinary = $this->generateContrato($request->all());
+        $filename = 'cotizacion_'.now()->format('Ymd_His').'.pdf';
 
-        return response()->success($event, 201);
+        return response($pdfBinary, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "inline; filename=\"$filename\"",
+        ]);
+    }
+
+    private function generateContrato($data)
+    {
+        logger($data);
+
+        $package_names = implode(', ', $data->packages->pluck('name')->toArray());
+
+        $items = $data->products->map(fn ($p) => [
+            'descripcion' => $p->name,
+            'cantidad' => $p->quantity,
+            'precio' => $p->price,
+        ])->toArray();
+
+        $data = [
+            'fecha' => $data->date,
+            'telefono' => $data->phone,
+            'nombre' => $data->client_name,
+            'domicilio' => $data->client_address,
+            'lugar_evento' => $data->event_address,
+            'fecha_hora_evento' => $data->event_date,
+            'tipo_evento' => $data->event_type,
+            'anticipo' => 3000.00,
+            'saldo' => 7000.00,
+            'paquete' => $package_names,
+            'items' => $items,
+            'viaticos' => 500.00,
+        ];
+        $pdf = new PdfQuoteFiller;
+
+        return $pdf->fill($data);
     }
 
     public function update(Request $request, $id) {}

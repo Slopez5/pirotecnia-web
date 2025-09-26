@@ -68,6 +68,20 @@ class AuthController extends Controller
             [
                 'id' => 1,
                 'name' => 'Evento',
+            ],
+            [
+                'headers' => [
+                    'apns-priority' => '10',
+                ],
+                'payload' => [
+                    'aps' => [
+                        'alert' => [
+                            'title' => 'Pirotecnia San Rafael - Notificación de Prueba',
+                            'body' => 'Este es un ejemplo de notificación con APNs',
+                        ],
+                        'sound' => 'default',
+                    ],
+                ],
             ]
         );
 
@@ -93,6 +107,8 @@ class AuthController extends Controller
                 $user->role_id = 3;
                 $user->password = bcrypt('12345678');
                 $user->save();
+                $employee->user_id = $user->id;
+                $employee->save();
             }
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Helper\FirebaseService;
 use App\Helper\Whatsapp;
 use App\Helper\WhatsappComponent;
 use App\Models\Event;
@@ -47,6 +48,10 @@ class SendReminder implements ShouldQueue
                 break;
             case 'whatsapp':
                 $this->sendWhatsapp();
+                break;
+            case 'pushNotification':
+                logger('Sending push notification...');
+                $this->sendPushNotification();
                 break;
             default:
                 break;
@@ -129,5 +134,41 @@ class SendReminder implements ShouldQueue
                 }
             }
         }
+    }
+
+    private function sendPushNotification()
+    {
+        $event = $this->event;
+        $token = $event->employees->first()->user->fcm_token;
+        // $token = 'cAyzVSqTT0kfrtjoFKQctq:APA91bEzA6YjIG5QvCzHsSXii_5OB6dvABetSE6tFykgtp_QyTmvTSrHs0EEzjdwvDCqTnXQdvb4v6DXwgDPfOgDdmRmdhFohXVXOa5XQ1bhzuM8kEQcO2g';
+
+        $notification = [
+            'title' => 'Pirotecnia San Rafael - Recordatorio de Evento',
+            'body' => $event->event_address.' - '.$event->event_date,
+        ];
+
+        $data = [
+            'event_id' => $event->id,
+        ];
+
+        $apns = [
+            'headers' => [
+                'apns-priority' => '10',
+            ],
+            'payload' => [
+                'aps' => [
+                    'alert' => [
+                        'title' => $notification['title'] ?? 'Notificación',
+                        'body' => $notification['body'] ?? 'Este es un ejemplo de notificación',
+                    ],
+                    'sound' => 'default',
+                ],
+            ],
+        ];
+
+        $firebaseService = new FirebaseService;
+
+        // Send push notification using your preferred service
+        $firebaseService->sendMessage($token, $notification, $data, $apns);
     }
 }
