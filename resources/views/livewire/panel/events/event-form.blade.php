@@ -90,13 +90,13 @@
         @for ($i = 0; $i < $countPackageInputs; $i++)
             <div class="form-group">
                 <label for="package_id">Paquete {{ $i + 1 }}</label>
-                <select class="form-control" id="package_id_{{ $i }}"
-                    wire:model.live="package_id.{{ $i }}">
+                <select class="form-control" id="package_id_{{ $i }}" wire:model.live="package_id.{{ $i }}">
                     <option value="">Seleccione un paquete</option>
                     @if ($packages != null)
                         @foreach ($packages as $package)
                             <option value="{{ $package->id }}">
-                                {{ $package->name }} - ${{ $package->price }} </option>
+                                {{ $package->name }} - ${{ $package->price }}
+                            </option>
                         @endforeach
                         <option value="-1">Agregar paquete</option>
                     @endif
@@ -153,6 +153,16 @@
             <input type="text" class="form-control" wire:model="viatic">
             <div>
                 @error('viatic')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
+        {{-- Precio (Opcional) --}}
+        <div class="form-group">
+            <label for="price">Precio</label>
+            <input type="text" class="form-control" wire:model="price">
+            <div>
+                @error('price')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
@@ -214,8 +224,7 @@
 
                             @foreach ($product->products as $material)
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio"
-                                        name="products-{{ $indexProducts }}-{{ $indexMaterial }}"
+                                    <input class="form-check-input" type="radio" name="products-{{ $indexProducts }}-{{ $indexMaterial }}"
                                         value="{{ $material->id }}" wire:model="radioSelected.{{ $indexMaterial }}">
                                     <label class="form-check-label"
                                         for="products-{{ $indexProducts }}-{{ $indexMaterial }}">{{ $material->name }}({{ $material->inventories->first()->pivot->quantity ?? 0 }})</label>
@@ -253,71 +262,71 @@
     <x-modal id="new-package" title="Nuevo Paquete">
         <x-slot:body>
             <livewire:panel.settings.packages.package-form :isTabs="false">
-        </x-slot>
+                </x-slot>
     </x-modal>
 
     {{-- Modal New Emplyee --}}
     <x-modal id="new-employee" title="Nuevo Encargado">
         <x-slot:body>
-            
-        </x-slot>
+
+            </x-slot>
     </x-modal>
 </div>
 
 
 @script
-    <script>
- 
-            Livewire.on('closeModal', (data) => {
-                let modalElement = document.getElementById(data[0].id);
-                let modalInstance = new bootstrap.Modal(modalElement);
+<script>
 
-                if (modalInstance) {
-                    modalInstance.hide(); // Cerrar el modal
-                    modalInstance.dispose(); // Destruir la instancia
-                } else {
-                    // Si no hay una instancia activa, la creamos para poder cerrarla
-                    modalInstance = new bootstrap.Modal(modalElement);
-                    modalInstance.hide();
-                    modalInstance.dispose();
-                }
+    Livewire.on('closeModal', (data) => {
+        let modalElement = document.getElementById(data[0].id);
+        let modalInstance = new bootstrap.Modal(modalElement);
 
-                // Eliminar el backdrop si persiste
-                let backdrop = document.querySelector('.modal-backdrop');
-                if (backdrop) {
-                    backdrop.remove();
-                }
+        if (modalInstance) {
+            modalInstance.hide(); // Cerrar el modal
+            modalInstance.dispose(); // Destruir la instancia
+        } else {
+            // Si no hay una instancia activa, la creamos para poder cerrarla
+            modalInstance = new bootstrap.Modal(modalElement);
+            modalInstance.hide();
+            modalInstance.dispose();
+        }
 
-                // Eliminar clase modal-open del body
-                if (document.body.classList.contains('modal-open')) {
-                    document.body.classList.remove('modal-open');
-                }
+        // Eliminar el backdrop si persiste
+        let backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
 
-                // Resetear cualquier estilo en el body que pudo haber quedado
-                document.body.style = '';
-            });
+        // Eliminar clase modal-open del body
+        if (document.body.classList.contains('modal-open')) {
+            document.body.classList.remove('modal-open');
+        }
 
-            Livewire.on('openModal', (data) => {
-                let modalElement = document.getElementById(data[0].id);
-                let modalInstance = new bootstrap.Modal(modalElement);
+        // Resetear cualquier estilo en el body que pudo haber quedado
+        document.body.style = '';
+    });
 
-                if (modalInstance) {
-                    modalInstance.show(); // Mostrar el modal
-                } else {
-                    // Si no hay una instancia activa, la creamos para poder mostrarla
-                    modalInstance = new bootstrap.Modal(modalElement);
-                    modalInstance.show();
-                }
+    Livewire.on('openModal', (data) => {
+        let modalElement = document.getElementById(data[0].id);
+        let modalInstance = new bootstrap.Modal(modalElement);
 
-                // Agregar clase modal-open al body
-                if (!document.body.classList.contains('modal-open')) {
-                    document.body.classList.add('modal-open');
-                }
+        if (modalInstance) {
+            modalInstance.show(); // Mostrar el modal
+        } else {
+            // Si no hay una instancia activa, la creamos para poder mostrarla
+            modalInstance = new bootstrap.Modal(modalElement);
+            modalInstance.show();
+        }
 
-                // Agregar estilos al body para evitar el scroll
-                document.body.style.overflow = 'hidden';
-                document.body.style.paddingRight = '17px'; // Ancho del scrollbar
-            });
-     
-    </script>
+        // Agregar clase modal-open al body
+        if (!document.body.classList.contains('modal-open')) {
+            document.body.classList.add('modal-open');
+        }
+
+        // Agregar estilos al body para evitar el scroll
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = '17px'; // Ancho del scrollbar
+    });
+
+</script>
 @endscript

@@ -27,6 +27,7 @@ class Event extends Model
         'notes',
         'reminder_send_date',
         'reminder_sent',
+        'price',
     ];
 
     protected static function boot()

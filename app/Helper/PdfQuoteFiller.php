@@ -6,26 +6,6 @@ use setasign\Fpdi\Fpdi;
 
 class PdfQuoteFiller
 {
-    /**
-     * Rellena la plantilla con los datos y devuelve el binario PDF.
-     * $data = [
-     *   'fecha' => '2025-08-31',
-     *   'telefono' => '312-123-4567',
-     *   'nombre' => 'Nombre del Cliente',
-     *   'domicilio' => 'Domicilio del Cliente',
-     *   'lugar_evento' => 'Salón X',
-     *   'fecha_hora_evento' => '2025-09-15 20:00',
-     *   'tipo_evento' => 'Boda',
-     *   'anticipo' => 3000.00,
-     *   'saldo' => 7000.00,
-     *   'paquete' => 'Paquete Oro',
-     *   'items' => [
-     *       ['descripcion'=>'Show pirotécnico 8 min', 'cantidad'=>1, 'precio'=>8000],
-     *       ['descripcion'=>'Efectos fríos (sparklers)', 'cantidad'=>4, 'precio'=>250],
-     *   ],
-     *   'viaticos' => 500.00,
-     * ];
-     */
     public function fill(array $data): string
     {
         $templatePath = storage_path('app/templates/plantilla_contrato_original.pdf');
@@ -48,6 +28,7 @@ class PdfQuoteFiller
 
         // ⚠️ Coordenadas de ejemplo (ajústalas una sola vez a tu plantilla)
         // Encabezado (fecha, teléfono, nombre, domicilio…)
+        $discount = 0;
         $date = (string) ($data['fecha'] ?? '');
         $date = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $date);
         $phone = (string) ($data['telefono'] ?? '');
@@ -93,8 +74,6 @@ class PdfQuoteFiller
         $lineHeight = 7;
 
         foreach ($items as $item) {
-            logger($item->name);
-            logger($item->price);
             $desc = (string) ($item->name ?? '');
             $desc = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $desc);
             $cant = '1';
@@ -103,6 +82,7 @@ class PdfQuoteFiller
             //     // Descripción con MultiCell para cortes de línea
             $pdf->SetXY($xDesc, $y);
             $pdf->MultiCell($wDesc, $lineHeight, $desc, 0, 'L');
+
             $usedHeight = $pdf->GetY() - $y;
             $rowHeight = max($lineHeight, $usedHeight);
 
@@ -112,15 +92,46 @@ class PdfQuoteFiller
 
             //     // Precio
             $pdf->SetXY($xPrec, $y);
+            if ($item->price <= 0) {
+                $prec = '';
+            }
             $pdf->Cell($wPrec, $rowHeight, $prec, 0, 0, 'R');
 
             $y += $rowHeight; // siguiente renglón
         }
 
+        if ($data['discount'] > 0) {
+
+            // Descuento
+            $pdf->SetXY($xDesc, $y);
+            $pdf->MultiCell($wDesc, $lineHeight, 'Descuento', 0, 'L');
+
+            $usedHeight = $pdf->GetY() - $y;
+            $rowHeight = max($lineHeight, $usedHeight);
+
+            // Cantidad (vacía)
+            $pdf->SetXY($xCant, $y);
+            $pdf->Cell($wCant, $lineHeight, '', 0, 0, 'C');
+
+            // Precio del descuento
+            $pdf->SetXY($xPrec, $y);
+            $discount = (float) ($data['discount'] ?? 0);
+            // Validate % or $
+            if ($discount > 0 && $discount < 1) {
+                $discount = $discount * ($data['saldo'] ?? 0);
+            }
+            $pdf->Cell($wPrec, $lineHeight, '-'.$this->money($discount), 0, 0, 'R');
+
+            $y += $rowHeight; // siguiente renglón
+        }
         // Viáticos y total
 
         $viaticos = (float) ($data['viaticos'] ?? 0);
-        $total = $data['saldo'] ?? 0;
+        $total = $data['total'] > 0 ? $data['total'] : $data['saldo'] ?? 0;
+
+        if ($discount > 0) {
+            $total -= $discount;
+        }
 
         // // Viáticos (alineado al layout de tu plantilla)
         $write(163, 122, $this->money($viaticos));
@@ -130,7 +141,14 @@ class PdfQuoteFiller
         // Anticipo / Saldo
         $write(55, 175, $this->money($data['anticipo'] ?? 0));
 
-        $saldo = $data['saldo'] - ($data['anticipo'] ?? 0);
+        if ($data['total'] > 0) {
+            $saldo = $data['total'] - ($data['anticipo'] ?? 0);
+        } else {
+            $saldo = ($data['saldo'] ?? 0) - ($data['anticipo'] ?? 0);
+        }
+        if ($discount > 0) {
+            $saldo -= $discount;
+        }
         $write(140, 175, $this->money($saldo));
 
         return $pdf->Output('S'); // 'S' = return as string

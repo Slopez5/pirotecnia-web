@@ -53,6 +53,8 @@ class EventForm extends Component
 
     public $viatic = 0;
 
+    public $price = 0;
+
     public $notes = '';
 
     public $radioSelected = [];
@@ -176,6 +178,7 @@ class EventForm extends Component
         $this->deposit = $this->event->advance;
         $this->viatic = $this->event->travel_expenses;
         $this->notes = $this->event->notes;
+        $this->price = $this->event->price;
     }
 
     private function getProductsLowInventory($packageId)
@@ -234,12 +237,13 @@ class EventForm extends Component
             'advance' => $this->deposit,
             'travel_expenses' => $this->formatViatic($this->viatic),
             'notes' => $this->notes,
+            'price' => $this->price,
         ]);
 
         if (! empty($this->package_id)) {
             $event->package()->associate($this->package_id[0]);
         }
-
+        logger($event->toArray());
         $event->save();
 
         $this->syncEmployees($event);
@@ -351,6 +355,7 @@ class EventForm extends Component
         }
 
         $this->validate();
+        logger('Saving event');
         $event = $this->saveEvent();
         $this->saveProductsInEvent($event);
         $this->reset();

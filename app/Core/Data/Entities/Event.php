@@ -32,6 +32,8 @@ class Event
 
     public $travel_expenses = 0;
 
+    public $price = 0;
+
     public $notes;
 
     public $reminder_send_date = null;
@@ -124,6 +126,7 @@ class Event
             'notes' => $event->notes,
             'reminder_send_date' => $event->reminder_send_date,
             'reminder_send' => $event->reminder_send,
+            'price' => $event->price,
         ];
     }
 

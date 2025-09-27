@@ -159,13 +159,14 @@ class EventController extends Controller
             'fecha_hora_evento' => $data->event_date,
             'tipo_evento' => $data->event_type,
             'anticipo' => $data->advance,
-            'saldo' => $price + $data->travel_expenses,
+            'saldo' => $price - $data->discount + $data->travel_expenses,
             'paquete' => $package_names,
             'items' => $items,
             'viaticos' => $data->travel_expenses,
             'packages' => $data->packages,
+            'discount' => $data->discount,
+            'total' => $data->price + $data->travel_expenses,
         ];
-        logger($data);
         $pdf = new PdfQuoteFiller;
 
         return $pdf->fill($data);
