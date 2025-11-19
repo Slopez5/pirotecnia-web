@@ -109,8 +109,9 @@ class EventController extends Controller
             'items' => $items,
             'viaticos' => $data->travel_expenses,
             'packages' => $data->packages,
+            'discount' => $data->discount,
+            'total' => $data->total
         ];
-        logger($data);
         $pdf = new PdfQuoteFiller;
 
         return $pdf->fill($data);
