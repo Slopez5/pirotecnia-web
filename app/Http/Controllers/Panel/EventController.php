@@ -80,7 +80,7 @@ class EventController extends Controller
         $event->equipments = $event->packages->map(function ($package) {
             return $package->equipments;
         })->flatten();
-        $event->load('employees');
+        $event->load(['employees']);
 
         // $event->products = $event->packages->map(function ($package) {
         //     return $package->materials;
@@ -129,7 +129,6 @@ class EventController extends Controller
         $fileName = 'event_'.$event->id.'.pdf';
         Storage::disk('public')->put('pdf/'.$fileName, $pdf);
         $url = asset('storage/pdf/'.$fileName);
-        $event->pdf_url = $url;
 
         // redirect to pdf url
         return redirect($url);
@@ -167,6 +166,7 @@ class EventController extends Controller
             'discount' => $data->discount,
             'total' => $data->price + $data->travel_expenses,
         ];
+        logger($data);
         $pdf = new PdfQuoteFiller;
 
         return $pdf->fill($data);

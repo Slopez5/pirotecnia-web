@@ -40,15 +40,15 @@ class Event
 
     public $reminder_send = false;
 
-    public Collection $employees;
+    public ?Collection $employees;
 
-    public Collection $packages;
+    public ?Collection $packages;
 
-    public Collection $products;
+    public ?Collection $products;
 
-    public Collection $equipments;
+    public ?Collection $equipments;
 
-    public Collection $lowInventoryProducts;
+    public ?Collection $lowInventoryProducts;
 
     public function __construct(array $attributes = [])
     {
@@ -65,12 +65,15 @@ class Event
         $employees = (new Collection($attributes['employees'] ?? []))->map(function ($employee) {
             return new Employee($employee);
         });
+
         $packages = (new Collection($attributes['packages'] ?? []))->map(function ($package) {
             return new Package($package);
         });
+
         $products = (new Collection($attributes['products'] ?? []))->map(function ($product) {
             return new Product($product);
         });
+
         $equipments = (new Collection($attributes['equipments'] ?? []))->map(function ($equipment) {
             return new Equipment($equipment);
         });
@@ -92,6 +95,7 @@ class Event
     {
         $event->load('employees', 'packages', 'products', 'equipments');
         $newEvent = new self(self::extractAttributes($event));
+        logger('Event attributes: '.json_encode($newEvent));
         $newEvent->employees = self::mapEmployees($event->employees);
         $newEvent->packages = self::mapPackages($event->packages);
         $newEvent->products = self::mapProducts($event->packages, $event->products);

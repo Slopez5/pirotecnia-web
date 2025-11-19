@@ -27,10 +27,15 @@ class CreateEvent
         try {
             return DB::transaction(function () use ($event, $validateInventory) {
                 $event = $this->storeEvent->execute($event);
+                logger('Event created: '.json_encode($event));
                 $event = $event->withPackages($this->assignPackagesToEvent->execute($event)->packages ?? new Collection);
+                logger('Packages assigned: '.json_encode($event->packages));
                 $event = $event->withProducts($this->assignProductsToEvent->execute($event)->products);
+                logger('Products assigned: '.json_encode($event->products));
                 $event = $event->withEquipments($this->assignEquipmentsToEvent->execute($event)->equipments);
+                logger('Equipments assigned: '.json_encode($event->equipments));
                 $event = $event->withEmployees($this->assignEmployeesToEvent->execute($event)->employees);
+                logger('Employees assigned: '.json_encode($event->employees));
 
                 if ($validateInventory) {
                     $lowInventory = $this->checkLowInventoryByProducts->execute($event->products);

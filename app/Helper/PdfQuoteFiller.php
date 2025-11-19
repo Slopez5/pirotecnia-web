@@ -99,31 +99,32 @@ class PdfQuoteFiller
 
             $y += $rowHeight; // siguiente renglón
         }
+        if (key_exists('discount',$data)) {
+            if ($data['discount'] > 0) {
+                // Descuento
+                $pdf->SetXY($xDesc, $y);
+                $pdf->MultiCell($wDesc, $lineHeight, 'Descuento', 0, 'L');
 
-        if ($data['discount'] > 0) {
+                $usedHeight = $pdf->GetY() - $y;
+                $rowHeight = max($lineHeight, $usedHeight);
 
-            // Descuento
-            $pdf->SetXY($xDesc, $y);
-            $pdf->MultiCell($wDesc, $lineHeight, 'Descuento', 0, 'L');
+                // Cantidad (vacía)
+                $pdf->SetXY($xCant, $y);
+                $pdf->Cell($wCant, $lineHeight, '', 0, 0, 'C');
 
-            $usedHeight = $pdf->GetY() - $y;
-            $rowHeight = max($lineHeight, $usedHeight);
+                // Precio del descuento
+                $pdf->SetXY($xPrec, $y);
+                $discount = (float) ($data['discount'] ?? 0);
+                // Validate % or $
+                if ($discount > 0 && $discount < 1) {
+                    $discount = $discount * ($data['saldo'] ?? 0);
+                }
+                $pdf->Cell($wPrec, $lineHeight, '-'.$this->money($discount), 0, 0, 'R');
 
-            // Cantidad (vacía)
-            $pdf->SetXY($xCant, $y);
-            $pdf->Cell($wCant, $lineHeight, '', 0, 0, 'C');
-
-            // Precio del descuento
-            $pdf->SetXY($xPrec, $y);
-            $discount = (float) ($data['discount'] ?? 0);
-            // Validate % or $
-            if ($discount > 0 && $discount < 1) {
-                $discount = $discount * ($data['saldo'] ?? 0);
+                $y += $rowHeight; // siguiente renglón
             }
-            $pdf->Cell($wPrec, $lineHeight, '-'.$this->money($discount), 0, 0, 'R');
-
-            $y += $rowHeight; // siguiente renglón
         }
+        
         // Viáticos y total
 
         $viaticos = (float) ($data['viaticos'] ?? 0);

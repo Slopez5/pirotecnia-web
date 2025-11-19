@@ -69,14 +69,16 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request)
     {
-        // $event = app(CreateEvent::class)->execute(Event::fromArray($request->all()));
-        $pdfBinary = $this->generateContrato($request->all());
-        $filename = 'cotizacion_'.now()->format('Ymd_His').'.pdf';
+        $event = app(CreateEvent::class)->execute(Event::fromArray($request->all()));
 
-        return response($pdfBinary, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => "inline; filename=\"$filename\"",
-        ]);
+        return $event;
+        // $pdfBinary = $this->generateContrato($request->all());
+        // $filename = 'cotizacion_'.now()->format('Ymd_His').'.pdf';
+
+        // return response($pdfBinary, 200, [
+        //     'Content-Type' => 'application/pdf',
+        //     'Content-Disposition' => "inline; filename=\"$filename\"",
+        // ]);
     }
 
     private function generateContrato($data)

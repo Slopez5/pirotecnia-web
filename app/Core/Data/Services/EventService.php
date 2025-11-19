@@ -249,7 +249,7 @@ class EventService
 
             return $event;
         } catch (\Exception $e) {
-            return null;
+            throw $e;
         }
     }
 
@@ -263,7 +263,7 @@ class EventService
 
             return $event;
         } catch (\Exception $e) {
-            return null;
+            throw $e;
         }
     }
 }
