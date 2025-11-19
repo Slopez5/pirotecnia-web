@@ -72,6 +72,7 @@ class EventController extends Controller
         $event = app(CreateEvent::class)->execute(Event::fromArray($request->all()));
 
         return $event;
+        
         // $pdfBinary = $this->generateContrato($request->all());
         // $filename = 'cotizacion_'.now()->format('Ymd_His').'.pdf';
 
@@ -104,13 +105,13 @@ class EventController extends Controller
             'fecha_hora_evento' => $data->event_date,
             'tipo_evento' => $data->event_type,
             'anticipo' => $data->advance,
-            'saldo' => $price + $data->travel_expenses,
+            'saldo' => $price - $data->discount + $data->travel_expenses,
             'paquete' => $package_names,
             'items' => $items,
             'viaticos' => $data->travel_expenses,
             'packages' => $data->packages,
             'discount' => $data->discount,
-            'total' => $data->total
+            'total' => $data->price + $data->travel_expenses,
         ];
         $pdf = new PdfQuoteFiller;
 
