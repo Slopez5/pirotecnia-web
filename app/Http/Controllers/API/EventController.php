@@ -37,7 +37,7 @@ class EventController extends Controller
     public function show($id)
     {
         $event = app(GetEvent::class)->execute($id);
-        $pdf = $this->generateContrato($event);
+        $pdf = $this->generatePdf($event);
         $fileName = 'event_'.$event->id.'.pdf';
         Storage::disk('public')->put('pdf/'.$fileName, $pdf);
         $url = asset('storage/pdf/'.$fileName);
@@ -72,14 +72,6 @@ class EventController extends Controller
         $event = app(CreateEvent::class)->execute(Event::fromArray($request->all()));
 
         return $event;
-        
-        // $pdfBinary = $this->generateContrato($request->all());
-        // $filename = 'cotizacion_'.now()->format('Ymd_His').'.pdf';
-
-        // return response($pdfBinary, 200, [
-        //     'Content-Type' => 'application/pdf',
-        //     'Content-Disposition' => "inline; filename=\"$filename\"",
-        // ]);
     }
 
     private function generateContrato($data)
