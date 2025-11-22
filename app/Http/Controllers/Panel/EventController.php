@@ -146,9 +146,14 @@ class EventController extends Controller
         ])->toArray();
 
         $price = 0;
-        foreach ($data->packages as $package) {
-            $price += $package->price;
+        if ($data->price == 0) {
+            foreach ($data->packages as $package) {
+                $price += $package->price;
+            }
+        } else {
+            $price = $data->price;
         }
+        
         $data = [
             'fecha' => $data->date,
             'telefono' => $data->phone,
@@ -164,9 +169,8 @@ class EventController extends Controller
             'viaticos' => $data->travel_expenses,
             'packages' => $data->packages,
             'discount' => $data->discount,
-            'total' => $data->price + $data->travel_expenses,
+            'total' => $price + $data->travel_expenses,
         ];
-        logger($data);
         $pdf = new PdfQuoteFiller;
 
         return $pdf->fill($data);

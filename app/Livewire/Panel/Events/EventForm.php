@@ -243,7 +243,6 @@ class EventForm extends Component
         if (! empty($this->package_id)) {
             $event->package()->associate($this->package_id[0]);
         }
-        logger($event->toArray());
         $event->save();
 
         $this->syncEmployees($event);
@@ -355,7 +354,6 @@ class EventForm extends Component
         }
 
         $this->validate();
-        logger('Saving event');
         $event = $this->saveEvent();
         $this->saveProductsInEvent($event);
         $this->reset();

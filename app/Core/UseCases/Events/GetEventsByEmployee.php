@@ -15,12 +15,13 @@ class GetEventsByEmployee
     public function execute(int $employeeId, int $page): Collection
     {
         $perPage = 10;
-        $events = $this->eventRepository->getEventsByEmployee($employeeId)->sortByDesc('date');
-        $slicedEvents = $events->slice(($page - 1) * $perPage, $perPage)->values();
+        $events = $this->eventRepository->getEventsByEmployee($employeeId);
+        $eventsSorted = $events->sortByDesc('event_date', SORT_ASC);
+        $slicedEvents = $eventsSorted->slice(($page - 1) * $perPage, $perPage)->values();
         $paginator = new LengthAwarePaginator($slicedEvents, $events->count(), $perPage, $page);
 
         return new Collection([
-            'total' => $events->count(),
+            'total' => $eventsSorted->count(),
             'total_pages' => $paginator->lastPage(),
             'current_page' => $page,
             'per_page' => $perPage,

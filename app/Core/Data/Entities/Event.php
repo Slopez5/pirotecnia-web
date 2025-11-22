@@ -95,7 +95,6 @@ class Event
     {
         $event->load('employees', 'packages', 'products', 'equipments');
         $newEvent = new self(self::extractAttributes($event));
-        logger('Event attributes: '.json_encode($newEvent));
         $newEvent->employees = self::mapEmployees($event->employees);
         $newEvent->packages = self::mapPackages($event->packages);
         $newEvent->products = self::mapProducts($event->packages, $event->products);
