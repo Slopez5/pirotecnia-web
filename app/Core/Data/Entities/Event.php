@@ -145,14 +145,11 @@ class Event
 
     private static function mapProducts($packages, $products)
     {
-        $products = $packages->flatMap(fn ($package) => $package->products->map(fn ($product) => Product::fromProduct($product)))
-            ->merge($products->map(fn ($product) => Product::fromProduct($product)));
-
+        // $products = $packages->flatMap(fn ($package) => $package->products->map(fn ($product) => Product::fromProduct($product)))
+        //     ->merge($products->map(fn ($product) => Product::fromProduct($product)));
+       
         return $products->map(function ($product) use ($products) {
-            $sameProduct = $products->where('id', $product->id);
-            $product->quantity = $sameProduct->sum('quantity');
-
-            return $product;
+            return Product::fromProduct($product);
         })->unique('id')->values();
     }
 
