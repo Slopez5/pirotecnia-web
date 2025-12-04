@@ -128,7 +128,7 @@ class PdfQuoteFiller
         // Viáticos y total
 
         $viaticos = (float) ($data['viaticos'] ?? 0);
-        $total = $data['total'] > 0 ? $data['total'] : $data['saldo'] ?? 0;
+        $total = $data['total'] ?? 0;
 
         // // Viáticos (alineado al layout de tu plantilla)
         $write(163, 122, $this->money($viaticos));
@@ -139,9 +139,9 @@ class PdfQuoteFiller
         $write(55, 175, $this->money($data['anticipo'] ?? 0));
 
         if ($data['total'] > 0) {
-            $saldo = $data['total'] - ($data['anticipo'] ?? 0);
+            $saldo = $data['total'] ?? 0;
         } else {
-            $saldo = ($data['saldo'] ?? 0) - ($data['anticipo'] ?? 0);
+            $saldo = ($data['saldo'] ?? 0);
         }
 
         $write(140, 175, $this->money($saldo));

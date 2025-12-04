@@ -169,7 +169,7 @@ class EventController extends Controller
             'viaticos' => $data->travel_expenses,
             'packages' => $data->packages,
             'discount' => $data->discount,
-            'total' => $price + $data->travel_expenses,
+            'total' => $price  - $data->discount + $data->travel_expenses,
         ];
         $pdf = new PdfQuoteFiller;
 

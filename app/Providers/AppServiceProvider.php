@@ -10,6 +10,8 @@ use App\Core\Domains\Repositories\EloquentEmployeeRepository;
 use App\Core\Domains\Repositories\EloquentEventRepository;
 use App\Core\Domains\Repositories\EloquentInventoryRepository;
 use App\Core\Domains\Repositories\EloquentPackageRepository;
+use App\Domain\Employees\Dashboard\Contracts\DashboardRepository;
+use App\Infraestructure\Persistence\Eloquent\Repositories\EloquentDashboard;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(EmployeeRepositoryInterface::class, EloquentEmployeeRepository::class);
         $this->app->bind(InventoryRepositoryInterface::class, EloquentInventoryRepository::class);
         $this->app->bind(PackageRepositoryInterface::class, EloquentPackageRepository::class);
+        $this->app->bind(DashboardRepository::class, EloquentDashboard::class);
     }
 
     /**

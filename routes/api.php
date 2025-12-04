@@ -13,6 +13,7 @@ use App\Http\Controllers\API\PurchaseController;
 use App\Http\Controllers\API\SaleController;
 use App\Http\Controllers\API\StallController;
 use App\Http\Controllers\API\UserController;
+use App\Presentation\Http\Controllers\API\DashboardController as APIDashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -78,6 +79,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Event
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/event/{id}', [EventController::class, 'show']);
+    Route::get('new/event/{id}', [APIDashboardController::class, 'eventDetails']);
     Route::post('/event', [EventController::class, 'store']);
     Route::put('/event/{id}', [EventController::class, 'update']);
     Route::delete('/event/{id}', [EventController::class, 'destroy']);
