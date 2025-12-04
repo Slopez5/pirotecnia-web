@@ -139,9 +139,9 @@ class PdfQuoteFiller
         $write(55, 175, $this->money($data['anticipo'] ?? 0));
 
         if ($data['total'] > 0) {
-            $saldo = $data['total'] ?? 0;
+            $saldo = $data['total'] - ($data['anticipo'] ?? 0);
         } else {
-            $saldo = ($data['saldo'] ?? 0);
+            $saldo = ($data['saldo'] ?? 0) - ($data['anticipo'] ?? 0);
         }
 
         $write(140, 175, $this->money($saldo));
