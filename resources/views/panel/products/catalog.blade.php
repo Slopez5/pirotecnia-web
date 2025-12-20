@@ -18,7 +18,8 @@
 <body>
     <section>
         <div class="row">
-            <iframe src="{{ asset('pdf/Catalogo_Pirotecnia_2025.pdf') }}" height="500px"></iframe>
+            <iframe src="https://pirotecniasanrafael.com/storage/pdf/Catalogo_Pirotecnia_2025.pdf"
+                height="500px"></iframe>
         </div>
         <br>
         <div class="row">
