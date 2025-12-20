@@ -9,12 +9,12 @@ class AddressMapper {
         
         return new Address(
             id: $model->id ?? null,
-            street: $model->street ?? "",
-            neighborhood: $model->neighborhood ?? "",
-            city: $model->city ?? "",
-            state: $model->state ?? "",
-            country: $model->country ?? "",
-            zipCode: $model->zipCode ?? "",
+            street: $model->street ,
+            neighborhood: $model->neighborhood,
+            city: $model->city,
+            state: $model->state,
+            country: $model->country,
+            zipCode: $model->zipCode,
             location: null
         );
     }

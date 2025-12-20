@@ -108,4 +108,9 @@ class ProductController extends Controller
 
         return redirect()->route('settings.products.index');
     }
+
+    public function catalogo()
+    {
+        return view('panel.products.catalog');
+    }
 }

@@ -11,11 +11,11 @@ class PackageMapper {
             experienceLevel: $model->experienceLevel,
             name: $model->name,
             description: $model->description,
-            price: $model->price,
+            price: $model->pivot->price,
             duration: $model->duration,
             videoUrl: $model->videoUrl,
             equipments: array_map(fn($equipment) => EquipmentMapper::fromModel($equipment), $model->equipments->all()),
-            products: []
+            products: array_map(fn($product) => ProductMapper::fromModel($product), $model->products->all())
         );
     }
 }

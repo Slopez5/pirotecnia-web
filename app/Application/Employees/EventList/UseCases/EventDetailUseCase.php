@@ -1,12 +1,12 @@
 <?php 
 
-namespace App\Application\Employees\Dashboard\UseCases;
+namespace App\Application\Employees\EventList\UseCases;
 
 use App\Application\Employees\Dashboard\DTO\EventDetailsData;
-use App\Domain\Employees\Dashboard\Contracts\DashboardRepository;
+use App\Domain\Employees\Events\Contracts\EventRepository;
 
 class EventDetailUseCase {
-    public function __construct(private DashboardRepository $dashboardRepository) {}
+    public function __construct(private EventRepository $dashboardRepository) {}
 
     public function __invoke(int $id)
     {

@@ -15,8 +15,4 @@ class DashboardController extends Controller {
 
         return $resource;
     }
-
-    public function eventDetails(EventDetailUseCase $eventDetailUseCase) {
-        return $eventDetailUseCase(249);
-    }
 }

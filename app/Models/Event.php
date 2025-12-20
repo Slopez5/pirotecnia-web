@@ -48,7 +48,7 @@ class Event extends Model
 
     public function packages(): BelongsToMany
     {
-        return $this->belongsToMany(Package::class);
+        return $this->belongsToMany(Package::class,'event_package')->withPivot('quantity','price')->withTimestamps();
     }
 
     public function equipments(): BelongsToMany

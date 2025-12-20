@@ -26,6 +26,8 @@ Route::post('/register', [AuthController::class, 'registerSubmit'])->name('regis
 
 Route::get('eventDetails/{id}', [EventController::class, 'showByWhatsapp'])->name('showByWhatsapp');
 
+Route::get('catalogo', [ProductController::class, 'catalogo']);
+
 Route::get('legal/privacy_policy', function () {
     return view('legal.privacy_policy');
 })->name('legal.privacy_policy');

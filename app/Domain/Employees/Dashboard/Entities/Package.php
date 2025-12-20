@@ -6,7 +6,7 @@ namespace App\Domain\Employees\Dashboard\Entities;
 class Package {
     public function __construct(
         public int $id,
-        public string $experienceLevel,
+        public ?string $experienceLevel,
         public string $name,
         public string $description,
         public string $price,

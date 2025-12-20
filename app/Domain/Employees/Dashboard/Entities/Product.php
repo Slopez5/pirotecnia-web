@@ -11,7 +11,7 @@ class Product {
         public string $unit,
         public ?string $duration,
         public ?string $shots,
-        public string $caliber,
+        public ?string $caliber,
         public ?string $shape,
         public ?string $quantity,
         public ?string $price

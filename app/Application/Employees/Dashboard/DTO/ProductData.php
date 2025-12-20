@@ -1,11 +1,12 @@
-<?php 
+<?php
 
 namespace App\Application\Employees\Dashboard\DTO;
 
 use App\Domain\Employees\Dashboard\Entities\Product;
 use Spatie\LaravelData\Data;
 
-class ProductData extends Data {
+class ProductData extends Data
+{
     public function __construct(
         public int $id,
         public ?string $productRole,
@@ -14,13 +15,14 @@ class ProductData extends Data {
         public string $unit,
         public ?string $duration,
         public ?string $shots,
-        public string $caliber,
+        public ?string $caliber,
         public ?string $shape,
         public ?string $quantity,
         public ?string $price
     ) {}
 
-    public static function fromEntity(Product $product): self {
+    public static function fromEntity(Product $product): self
+    {
         return new self(
             id: $product->id,
             productRole: $product->productRole,
