@@ -18,8 +18,7 @@
 <body>
     <section>
         <div class="row">
-            <iframe src="https://pirotecniasanrafael.com/storage/pdf/Catalogo_Pirotecnia_2025.pdf"
-                height="500px"></iframe>
+            <iframe src="https://dtylks53g0a7t.cloudfront.net/Catalogo_Pirotecnia_2025.pdf" height="500px"></iframe>
         </div>
         <br>
         <div class="row">
