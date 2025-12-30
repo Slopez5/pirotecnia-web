@@ -280,13 +280,13 @@ class EventForm extends Component
 
     private function sendReminders(Event $event)
     {
-        // if (!$this->isEditMode) {
-        //     Reminder::send($event, 'whatsapp', 4, true);
-        // }
+        if (! $this->isEditMode) {
+            Reminder::send($event, 'pushNotification', 4, true);
+        }
 
-        // if ($event->employees->count() > 0) {
-        //     Reminder::send($event, 'whatsapp', 3);
-        // }
+        if ($event->employees->count() > 0) {
+            Reminder::send($event, 'pushNotification', 3);
+        }
     }
 
     private function saveProductsInEvent(Event $event): Event
