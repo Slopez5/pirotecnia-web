@@ -21,13 +21,8 @@ require base_path('app/Presentation/Http/Routes/api.php');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/recovery', [AuthController::class, 'recovery']);
-Route::get('/import-from-employees', [AuthController::class, 'importFromEmployees']);
-
-Route::get('/test-firebase', [AuthController::class, 'testFirebase']);
 
 Route::middleware(['auth:api'])->group(function () {
-    Route::post('/upload-template', [DashboardController::class, 'uploadTemplate']);
-
     // Firebase
     Route::post('/fcm-token', [AuthController::class, 'saveFCMToken']);
 
@@ -35,6 +30,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Dashboard
+    /**
+     * Deprecated this function moved V2
+     */
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
     // Profile

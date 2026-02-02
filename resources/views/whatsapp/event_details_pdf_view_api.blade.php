@@ -68,17 +68,7 @@
 </head>
 
 <body>
-    {{-- Event Info --}}
-    {{--
-    Tienes un evento próximamente
-    Hola, este es un recordatorio para el evento Aniversario.
-    Detalles del evento:
-    Fecha: 28/09/2024
-    Hora: 17:30
-    Lugar: Unidad deportiva Cuauhtemoc
-    Responsable: Luis Javier Lopez Ceballos
-    Detalles adicionales: Preguntar al encargado los momentos y secuencias de detonación
-    --}}
+
     <h3>Información general</h3>
     <p><strong>Tipo de Evento:</strong> {{ $event->event_type }}</p>
     <p><strong>Teléfono:</strong> {{ $event->phone }}</p>
@@ -138,13 +128,11 @@
         </thead>
         <tbody>
             @foreach ($event->equipments as $package)
-
                 <tr>
                     <td>{{ $package->name }}</td>
                     <td>{{ $package->quantity }}</td>
                     <td></td>
                 </tr>
-
             @endforeach
         </tbody>
     </table>

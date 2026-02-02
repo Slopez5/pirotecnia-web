@@ -14,7 +14,7 @@ class CreateEventRequest extends BaseApiRequest
         $this->merge([
             'appVersion' => $this->header('X-APP-VERSION'),
             'osVersion' => $this->header('X-OS-VERSION'),
-            'appVersion' => $this->header('X-APP-VERSION'),
+            'deviceModel' => $this->header('X-DEVICE-MODEL'),
 
         ]);
     }
@@ -22,8 +22,11 @@ class CreateEventRequest extends BaseApiRequest
     public function rules(): array
     {
         return [
+            // Headers
             'appVersion' => ['required'],
-
+            'osVersion' => ['required'],
+            'deviceModel' => ['required'],
+            // Body
             'eventTypeId' => ['required', 'exists:event_types,id'],
             'packageId' => ['required', 'exists:packages,id'],
             'date' => ['required', 'date'],

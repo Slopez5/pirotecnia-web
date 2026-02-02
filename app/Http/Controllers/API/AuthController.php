@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Helper\FirebaseService;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\User;
@@ -58,34 +57,14 @@ class AuthController extends Controller
 
     public function testFirebase()
     {
-        $firebaseService = new FirebaseService;
-        $accessToken = $firebaseService->sendMessage(
-            'cAyzVSqTT0kfrtjoFKQctq:APA91bEzA6YjIG5QvCzHsSXii_5OB6dvABetSE6tFykgtp_QyTmvTSrHs0EEzjdwvDCqTnXQdvb4v6DXwgDPfOgDdmRmdhFohXVXOa5XQ1bhzuM8kEQcO2g',
-            [
-                'title' => 'Pirotecnia San Rafael',
-                'body' => 'El Ranchito Michoacan - 26/08/2025',
-            ],
-            [
-                'id' => 1,
-                'name' => 'Evento',
-            ],
-            [
-                'headers' => [
-                    'apns-priority' => '10',
-                ],
-                'payload' => [
-                    'aps' => [
-                        'alert' => [
-                            'title' => 'Pirotecnia San Rafael - Notificación de Prueba',
-                            'body' => 'Este es un ejemplo de notificación con APNs',
-                        ],
-                        'sound' => 'default',
-                    ],
-                ],
-            ]
-        );
+        $users = User::all();
 
-        return response()->json(['access_token' => $accessToken]);
+        foreach ($users as $key => $user) {
+            $role = $user->role;
+            $user->roles()->attach($role->id);
+        }
+
+        return response()->success($users);
     }
 
     public function importFromEmployees()

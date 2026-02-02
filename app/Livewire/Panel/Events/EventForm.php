@@ -214,6 +214,28 @@ class EventForm extends Component
         return empty($productsDiff);
     }
 
+    private function parse_user_amount(string $input): float
+    {
+        $value = trim($input);
+
+        // Detectar si es porcentaje por el símbolo %
+        $isPercent = str_contains($value, '%');
+
+        // Quitar todo excepto dígitos, punto, coma y signo negativo
+        $clean = preg_replace('/[^0-9\-\.,]/', '', $value);
+
+        if ($clean === '' || $clean === '-') {
+            return 0.0;
+        }
+
+        // Asumimos formato tipo MX/US: coma miles, punto decimal
+        $clean = str_replace(',', '', $clean);
+
+        $number = (float) $clean;
+
+        return $isPercent ? ($number / 100) : $number;
+    }
+
     private function saveEvent(): Event
     {
         $event = $this->isEditMode ? Event::find($this->event->id) : new Event;
@@ -233,7 +255,7 @@ class EventForm extends Component
             'event_address' => $this->event_address,
             'event_date' => $this->event_date.' '.$this->event_time,
             'event_type_id' => $this->event_type_id,
-            'discount' => $this->discount,
+            'discount' => $this->parse_user_amount($this->discount),
             'advance' => $this->deposit,
             'travel_expenses' => $this->formatViatic($this->viatic),
             'notes' => $this->notes,
