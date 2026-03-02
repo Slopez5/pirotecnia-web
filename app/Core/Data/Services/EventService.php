@@ -4,6 +4,7 @@ namespace App\Core\Data\Services;
 
 use App\Core\Data\Entities\Event;
 use App\Models\Event as ModelsEvent;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class EventService
@@ -27,7 +28,7 @@ class EventService
         try {
             $eloquentEvents = ModelsEvent::whereHas('employees', function ($query) use ($employeeId) {
                 $query->where('employee_id', $employeeId);
-            })->get();
+            })->where('event_date', '>', Carbon::today()->subDays(3))->get();
             $events = $eloquentEvents->map(function ($event) {
                 return Event::fromEvent($event);
             });

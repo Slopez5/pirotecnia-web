@@ -9,7 +9,7 @@ use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 
-class equipmentInPackageForm extends Component
+class EquipmentInPackageForm extends Component
 {
     use WithoutUrlPagination, WithPagination;
 
