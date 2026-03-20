@@ -22,6 +22,15 @@
         <nav class="mt-2">
             {{-- <x-menu> with required itemActive and optional parentItemActive --}}
             <x-menu :itemActive="$itemActive ?? null" :parentItemActive="$parentItemActive ?? null" />
+
+            <ul class="nav nav-pills nav-sidebar flex-column mt-2" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a href="{{ route('logout') }}" class="nav-link">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>Cerrar sesión</p>
+                    </a>
+                </li>
+            </ul>
         </nav>
         <!-- /.sidebar-menu -->
     </div>
