@@ -1,4 +1,15 @@
 <div>
+    <div class="d-flex justify-content-between align-items-center px-3 pt-3">
+        <p class="text-sm text-muted mb-0">
+            Eventos del {{ \Illuminate\Support\Carbon::parse($selectedDate)->format('d/m/Y') }}
+        </p>
+        @if ($selectedDate !== $todayDate)
+            <button wire:click="showToday" class="btn btn-default btn-sm" type="button">
+                Hoy
+            </button>
+        @endif
+    </div>
+
     <table class="table table-bordered table-hover text-nowrap">
         <thead>
             <tr>
@@ -10,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($events as $event)
+            @forelse ($events as $event)
                 <tr>
                     <td>{{ $event->package->name }}</td>
                     <td>{{ $event->event_date }}</td>
@@ -34,7 +45,13 @@
                         </form>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center text-muted">
+                        No hay eventos para la fecha seleccionada.
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 </div>

@@ -3,16 +3,22 @@
 namespace App\Livewire\Panel\Events;
 
 use App\Models\Event;
+use DateTime;
+use DateTimeZone;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class EventList extends Component
 {
-    public $events;
+    public $events = [];
+    public $selectedDate;
+    public $todayDate;
 
     public function mount()
     {
-        $this->events = Event::all()->where('event_date', '>', now());
+        $this->todayDate = $this->getLocalToday();
+        $this->selectedDate = $this->todayDate;
+        $this->loadEventsByDate($this->selectedDate);
     }
 
     public function render()
@@ -23,8 +29,29 @@ class EventList extends Component
     #[On('selectDate')]
     public function selectDate($date)
     {
-        $dateWithoutTime = $date;
-        $this->events = Event::all()->where('event_date', '>', $dateWithoutTime.' 00:00:00')->where('event_date', '<', $dateWithoutTime.' 23:59:59');
+        $this->selectedDate = $date;
+        $this->loadEventsByDate($this->selectedDate);
+    }
 
+    public function showToday()
+    {
+        $this->selectedDate = $this->todayDate;
+        $this->loadEventsByDate($this->selectedDate);
+    }
+
+    private function loadEventsByDate($date)
+    {
+        $this->events = Event::with(['package'])
+            ->whereDate('event_date', $date)
+            ->orderBy('event_date')
+            ->get();
+    }
+
+    private function getLocalToday()
+    {
+        $utcDateTime = new DateTime('now', new DateTimeZone('UTC'));
+        $utcDateTime->setTimezone(new DateTimeZone('America/Mexico_City'));
+
+        return $utcDateTime->format('Y-m-d');
     }
 }
