@@ -6,101 +6,178 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0">Dashboard</h1>
-                </div><!-- /.col -->
+                </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Dashboard v1</li>
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Inicio</a></li>
+                        <li class="breadcrumb-item active">Dashboard</li>
                     </ol>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
 @section('main-content')
-    <div class="mt-16 p-8 space-y-8">
-        <!-- Quick Actions Bar -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-on-primary tracking-tight">Panel de Control</h2>
-                <p class="text-primary-200 text-sm">Resumen operativo y métricas en tiempo real</p>
+    <div class="mt-16 space-y-8 p-8">
+        <div class="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(360px,0.95fr)]">
+            <div class="rounded-3xl bg-primary-800 p-8 shadow-2xl shadow-primary-900/20">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span
+                        class="inline-flex rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-primary-100">
+                        Dashboard operativo
+                    </span>
+                    <span
+                        class="inline-flex rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-accent">
+                        {{ $rangeLabel }}
+                    </span>
+                </div>
+
+                <h2 class="mt-5 text-3xl font-bold tracking-tight text-on-primary">Panel de control con rango filtrado</h2>
+                <p class="mt-3 max-w-3xl text-sm leading-7 text-primary-200">
+                    Todas las métricas comerciales y operativas del dashboard están calculadas con eventos entre
+                    <span class="font-semibold text-on-primary">{{ $rangeLabel }}</span>.
+                    La comparación de tendencia usa el rango anterior equivalente:
+                    <span class="font-semibold text-on-primary">{{ $comparisonRangeLabel }}</span>.
+                </p>
+
+                <div class="mt-6 grid gap-4 sm:grid-cols-3">
+                    <article class="rounded-2xl border border-primary-600/40 bg-primary-700/60 p-4">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">Eventos filtrados</p>
+                        <p class="mt-3 text-3xl font-bold text-on-primary">{{ $eventsInRangeCount }}</p>
+                    </article>
+                    <article class="rounded-2xl border border-primary-600/40 bg-primary-700/60 p-4">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">Pendientes en rango</p>
+                        <p class="mt-3 text-3xl font-bold text-secondary">{{ $futureEventsInRangeCount }}</p>
+                    </article>
+                    <article class="rounded-2xl border border-primary-600/40 bg-primary-700/60 p-4">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">Comparativo</p>
+                        <p class="mt-3 text-lg font-bold text-on-primary">{{ $comparisonRangeLabel }}</p>
+                    </article>
+                </div>
             </div>
-            <div class="flex gap-3">
-                <a href="{{ route('employees.create') }}"
-                    class="flex items-center gap-2 px-4 py-2 bg-primary-800 text-on-primary rounded-lg font-medium hover:bg-primary-700 transition-colors group">
-                    <span
-                        class="material-symbols-outlined text-secondary group-hover:scale-110 transition-transform">add_circle</span>
-                    Alta de Empleado
-                </a>
-                <a href="{{ route('sales.create') }}"
-                    class="flex items-center gap-2 px-4 py-2 bg-primary-800 text-on-primary rounded-lg font-medium hover:bg-primary-700 transition-colors group">
-                    <span
-                        class="material-symbols-outlined text-accent group-hover:scale-110 transition-transform">receipt_long</span>
-                    Registrar Venta
-                </a>
-                <a href="{{ route('events.create') }}"
-                    class="flex items-center gap-2 px-4 py-6 bg-gradient-to-br from-primary to-primary-600 text-on-primary rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
-                    Crear Nuevo Evento
-                </a>
+
+            <div class="rounded-3xl bg-gradient-to-br from-primary to-primary-700 p-8 shadow-2xl shadow-primary-900/30">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-secondary">Rango de fechas</p>
+                        <h3 class="mt-2 text-3xl font-bold text-on-primary">Filtrar dashboard</h3>
+                    </div>
+                    <span class="material-symbols-outlined text-3xl text-secondary">date_range</span>
+                </div>
+
+                <form action="{{ route('dashboard') }}" class="mt-6 space-y-4" method="GET">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <label class="block">
+                            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-primary-100">Desde</span>
+                            <input
+                                class="w-full rounded-2xl border border-primary-600/50 bg-on-primary/10 px-4 py-3 text-sm text-on-primary outline-none transition focus:border-secondary"
+                                name="start_date" type="date" value="{{ $selectedStartDate }}">
+                        </label>
+                        <label class="block">
+                            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-primary-100">Hasta</span>
+                            <input
+                                class="w-full rounded-2xl border border-primary-600/50 bg-on-primary/10 px-4 py-3 text-sm text-on-primary outline-none transition focus:border-secondary"
+                                name="end_date" type="date" value="{{ $selectedEndDate }}">
+                        </label>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3">
+                        <button
+                            class="inline-flex items-center gap-2 rounded-2xl bg-secondary px-5 py-3 text-sm font-bold text-on-secondary shadow-lg shadow-secondary/20 transition hover:bg-secondary-600"
+                            type="submit">
+                            <span class="material-symbols-outlined text-base">filter_alt</span>
+                            Aplicar rango
+                        </button>
+                        <a class="inline-flex items-center gap-2 rounded-2xl bg-on-primary/10 px-5 py-3 text-sm font-semibold text-on-primary transition hover:bg-on-primary/20"
+                            href="{{ route('dashboard') }}">
+                            <span class="material-symbols-outlined text-base">restart_alt</span>
+                            Restablecer
+                        </a>
+                    </div>
+                </form>
+
+                <div class="mt-8 grid gap-3 sm:grid-cols-3">
+                    <a href="{{ route('employees.create') }}"
+                        class="flex items-center gap-2 rounded-2xl bg-on-primary/10 px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-on-primary/20">
+                        <span class="material-symbols-outlined text-secondary">add_circle</span>
+                        Alta empleado
+                    </a>
+                    <a href="{{ route('sales.create') }}"
+                        class="flex items-center gap-2 rounded-2xl bg-on-primary/10 px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-on-primary/20">
+                        <span class="material-symbols-outlined text-accent">receipt_long</span>
+                        Registrar venta
+                    </a>
+                    <a href="{{ route('events.create') }}"
+                        class="flex items-center gap-2 rounded-2xl bg-on-primary/10 px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-on-primary/20">
+                        <span class="material-symbols-outlined text-warning">rocket_launch</span>
+                        Nuevo evento
+                    </a>
+                </div>
             </div>
         </div>
-        <!-- KPI Cards Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             <livewire:dashboard.kpi-card title="Ingreso contratado" icon="payments" backgroundColorIcon="bg-primary/10"
                 colorIcon="text-primary" :value="$monthlyRevenue" indicatorIcon="trending_up"
                 :indicatorLabel="$monthlyRevenueIndicator" :indicatorColor="$monthlyRevenueIndicatorColor" />
-            <livewire:dashboard.kpi-card title="Próximos eventos" icon="event_available" backgroundColorIcon="bg-accent/10"
-                colorIcon="text-accent" :value="$eventsNext30Days" indicatorIcon="event_upcoming"
-                :indicatorLabel="$eventsNext30Indicator" indicatorColor="text-primary-200" />
-            <livewire:dashboard.kpi-card title="Bajo stock" icon="warning" backgroundColorIcon="bg-error/10"
+            <livewire:dashboard.kpi-card title="Eventos en rango" icon="event_available" backgroundColorIcon="bg-accent/10"
+                colorIcon="text-accent" :value="$eventsInRangeCount" indicatorIcon="event_upcoming"
+                :indicatorLabel="$eventsInRangeIndicator" indicatorColor="text-primary-200" />
+            <livewire:dashboard.kpi-card title="Stock comprometido" icon="warning" backgroundColorIcon="bg-error/10"
                 colorIcon="text-error" :value="$lowStockCount" indicatorIcon="priority_high"
                 :indicatorLabel="$lowStockIndicator" :indicatorColor="$lowStockIndicatorColor" />
             <livewire:dashboard.kpi-card title="Paquetes contratados" icon="package_2"
-                backgroundColorIcon="bg-secondary/10" colorIcon="text-secondary" :value="$packagesThisMonth"
-                indicatorIcon="inventory_2" :indicatorLabel="$packagesThisMonthIndicator"
-                :indicatorColor="$packagesThisMonthIndicatorColor" />
+                backgroundColorIcon="bg-secondary/10" colorIcon="text-secondary" :value="$packagesInRange"
+                indicatorIcon="inventory_2" :indicatorLabel="$packagesInRangeIndicator"
+                :indicatorColor="$packagesInRangeIndicatorColor" />
         </div>
-        <!-- Bento Grid Section -->
-        <div class="grid grid-cols-12 gap-8 items-start">
-            <!-- Main Chart: Ventas Mensuales -->
-            <div class="col-span-12 lg:col-span-8 bg-primary-800 p-8 rounded-3xl">
-                <div class="flex justify-between items-center mb-10">
+
+        <div class="grid grid-cols-12 items-start gap-8">
+            <div class="col-span-12 rounded-3xl bg-primary-800 p-8 lg:col-span-8">
+                <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-on-primary">Rendimiento Comercial</h3>
-                        <p class="text-primary-200 text-sm">Ingreso contratado por mes durante el año actual</p>
+                        <h3 class="text-xl font-bold text-on-primary">Rendimiento comercial</h3>
+                        <p class="text-sm text-primary-200">
+                            Ingreso contratado agrupado por {{ $chartGranularityLabel }} dentro de {{ $rangeLabel }}.
+                        </p>
                     </div>
-                    <div class="flex gap-2 bg-primary-700 p-1 rounded-lg text-xs">
-                        <span class="px-3 py-1 font-semibold bg-primary-100 text-primary-800 rounded-md">Ingresos</span>
-                        <span class="px-3 py-1 font-semibold text-primary-200">Eventos</span>
+                    <div class="flex gap-2 rounded-lg bg-primary-700 p-1 text-xs">
+                        <span class="rounded-md bg-primary-100 px-3 py-1 font-semibold text-primary-800">Ingresos</span>
+                        <span class="px-3 py-1 font-semibold text-primary-200">{{ $comparisonRangeLabel }}</span>
                     </div>
                 </div>
-                <livewire:chart type="line" :series="$monthlyRevenueSeries" />
 
+                <livewire:chart type="line" :series="$monthlyRevenueSeries" emptyMessage="Sin ingresos para el rango seleccionado." />
             </div>
-            <!-- Secondary Chart: Dona/Eventos -->
-            <div class="col-span-12 lg:col-span-4 bg-primary-800 p-8 rounded-3xl h-full flex flex-col">
-                <h3 class="text-xl font-bold text-on-primary mb-2">Eventos por Categoría</h3>
-                <p class="text-primary-200 text-sm mb-8">Distribución anual de contrataciones por tipo de evento</p>
-                <livewire:chart type="dona" :segments="$eventTypeSegments" centerLabel="Eventos" />
+
+            <div class="col-span-12 flex h-full flex-col rounded-3xl bg-primary-800 p-8 lg:col-span-4">
+                <h3 class="text-xl font-bold text-on-primary">Eventos por categoría</h3>
+                <p class="mb-8 text-sm text-primary-200">Distribución de eventos dentro del rango seleccionado.</p>
+                <livewire:chart type="dona" :segments="$eventTypeSegments" centerLabel="Eventos"
+                    emptyMessage="Sin categorías registradas en el rango." />
             </div>
-            <!-- Upcoming Events Table -->
-            <div class="col-span-12 lg:col-span-8 bg-primary-800 rounded-3xl overflow-hidden">
+
+            <div class="col-span-12 overflow-hidden rounded-3xl bg-primary-800 lg:col-span-8">
                 <div class="p-8 pb-4">
-                    <h3 class="text-xl font-bold text-on-primary">Próximos Eventos</h3>
+                    <h3 class="text-xl font-bold text-on-primary">Eventos del rango</h3>
+                    <p class="mt-1 text-sm text-primary-200">Primeros eventos encontrados dentro del filtro actual.</p>
                 </div>
                 <div class="overflow-x-auto px-2">
-                    <livewire:dashboard.event-list :events="$upcomingEvents" />
-
+                    <livewire:dashboard.event-list :events="$upcomingEvents"
+                        emptyMessage="No hay eventos dentro del rango seleccionado." />
                 </div>
             </div>
-            <!-- Low Stock Sidebar List -->
-            <div class="col-span-12 lg:col-span-4 bg-primary-800 p-8 rounded-3xl h-full">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-on-primary">Bajo Stock</h3>
-                    <a class="text-primary text-xs font-semibold hover:underline" href="{{ route('inventories.index') }}">Ver Todo</a>
+
+            <div class="col-span-12 h-full rounded-3xl bg-primary-800 p-8 lg:col-span-4">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-on-primary">Bajo stock proyectado</h3>
+                        <p class="mt-1 text-sm text-primary-200">Considera apartados activos dentro del rango.</p>
+                    </div>
+                    <a class="text-xs font-semibold text-primary hover:underline" href="{{ route('inventories.index') }}">Ver todo</a>
                 </div>
+
                 <div class="space-y-4">
                     @forelse ($lowStockItems as $item)
                         <livewire:info-summary-card :icon="$item['icon']" :title="$item['title']"
@@ -108,26 +185,29 @@
                             :color="$item['color']" :key="'low-stock-'.$loop->index" />
                     @empty
                         <div class="rounded-2xl bg-primary-700/70 p-4">
-                            <p class="text-sm font-semibold text-on-primary">Sin alertas de inventario</p>
-                            <p class="mt-1 text-xs text-primary-200">No hay productos por debajo del minimo definido.</p>
+                            <p class="text-sm font-semibold text-on-primary">Sin alertas para el rango</p>
+                            <p class="mt-1 text-xs text-primary-200">
+                                No hay productos comprometidos por debajo del mínimo en este periodo.
+                            </p>
                         </div>
                     @endforelse
                 </div>
+
                 <div
-                    class="mt-8 bg-gradient-to-br from-primary-700 to-primary-600 p-6 rounded-2xl border border-primary-500/20 relative overflow-hidden">
+                    class="relative mt-8 overflow-hidden rounded-2xl border border-primary-500/20 bg-gradient-to-br from-primary-700 to-primary-600 p-6">
                     <span
-                        class="material-symbols-outlined absolute -right-4 -bottom-4 text-7xl text-on-primary/5 rotate-12">inventory</span>
-                    <p class="text-on-primary font-bold mb-2">Resumen de Almacén</p>
-                    <p class="text-primary-200 text-xs mb-4">
+                        class="material-symbols-outlined absolute -bottom-4 -right-4 rotate-12 text-7xl text-on-primary/5">inventory</span>
+                    <p class="mb-2 font-bold text-on-primary">Resumen del rango</p>
+                    <p class="mb-4 text-xs text-primary-200">
                         @if ($lowStockCount > 0)
                             {{ $criticalLowStockCount }} críticos y {{ $lowStockCount - $criticalLowStockCount }} en seguimiento por debajo del mínimo.
                         @else
-                            Inventario estable, sin productos por debajo del mínimo de seguridad.
+                            Inventario estable para el rango filtrado.
                         @endif
                     </p>
                     <a href="{{ route('purchases.create') }}"
-                        class="w-full py-2 bg-on-primary/10 hover:bg-on-primary/20 text-on-primary rounded-lg text-sm font-semibold transition-colors">
-                        Generar Orden
+                        class="rounded-lg bg-on-primary/10 px-4 py-2 text-sm font-semibold text-on-primary transition-colors hover:bg-on-primary/20">
+                        Generar orden
                     </a>
                 </div>
             </div>

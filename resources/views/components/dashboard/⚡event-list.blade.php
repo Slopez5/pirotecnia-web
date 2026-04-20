@@ -4,12 +4,14 @@ use Livewire\Component;
 
 new class extends Component {
     public array $events = [];
+    public string $emptyMessage = 'No hay eventos próximos registrados';
 };
 ?>
 
 <div>
     @php
         $statusColorMap = [
+            'primary' => ['dot' => 'bg-primary', 'text' => 'text-primary-200'],
             'secondary' => ['dot' => 'bg-secondary', 'text' => 'text-secondary'],
             'accent' => ['dot' => 'bg-accent', 'text' => 'text-accent'],
             'warning' => ['dot' => 'bg-warning', 'text' => 'text-warning'],
@@ -20,8 +22,8 @@ new class extends Component {
     @if (count($events) === 0)
         <div class="px-6 pb-8">
             <div class="rounded-2xl bg-primary-700/70 p-6 text-center">
-                <p class="text-sm font-semibold text-on-primary">No hay eventos próximos registrados</p>
-                <p class="mt-2 text-xs text-primary-200">La tabla se actualizará cuando existan nuevas contrataciones en agenda.</p>
+                <p class="text-sm font-semibold text-on-primary">{{ $emptyMessage }}</p>
+                <p class="mt-2 text-xs text-primary-200">La tabla se actualizará cuando existan eventos dentro del filtro activo.</p>
             </div>
         </div>
     @else

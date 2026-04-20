@@ -6,82 +6,119 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Inventory;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $now = Carbon::now('America/Mexico_City');
-        $startOfMonth = $now->copy()->startOfMonth();
-        $endOfMonth = $now->copy()->endOfMonth();
-        $startOfPreviousMonth = $now->copy()->subMonthNoOverflow()->startOfMonth();
-        $endOfPreviousMonth = $now->copy()->subMonthNoOverflow()->endOfMonth();
-        $endOfWeek = $now->copy()->endOfWeek();
-        $endOfNext30Days = $now->copy()->addDays(30)->endOfDay();
+        $timezone = 'America/Mexico_City';
+        $now = Carbon::now($timezone);
+        [$startDate, $endDate] = $this->resolveDateRange($request, $now);
+        [$previousStartDate, $previousEndDate] = $this->resolvePreviousRange($startDate, $endDate);
 
-        $events = Event::with(['packages', 'typeEvent', 'employees'])
+        $events = Event::with(['packages', 'typeEvent', 'employees', 'products'])
             ->orderBy('event_date')
             ->get();
 
         $inventory = Inventory::with('products')->first();
 
-        $futureEvents = $events
-            ->filter(fn (Event $event) => $this->eventDate($event)->gte($now))
+        $rangeEvents = $this->filterEventsByRange($events, $startDate, $endDate);
+        $previousRangeEvents = $this->filterEventsByRange($events, $previousStartDate, $previousEndDate);
+        $futureRangeEvents = $rangeEvents
+            ->filter(fn(Event $event) => $this->eventDate($event)->gte($now->copy()->startOfDay()))
             ->values();
 
-        $eventsThisMonth = $events
-            ->filter(fn (Event $event) => $this->eventDate($event)->between($startOfMonth, $endOfMonth, true))
-            ->values();
+        $revenueInRange = $rangeEvents->sum(fn(Event $event) => $this->calculateEventTotal($event));
+        $previousRevenue = $previousRangeEvents->sum(fn(Event $event) => $this->calculateEventTotal($event));
 
-        $eventsPreviousMonth = $events
-            ->filter(fn (Event $event) => $this->eventDate($event)->between($startOfPreviousMonth, $endOfPreviousMonth, true))
-            ->values();
+        $packagesInRange = $rangeEvents->sum(fn(Event $event) => $this->countPackagesForEvent($event));
+        $previousPackages = $previousRangeEvents->sum(fn(Event $event) => $this->countPackagesForEvent($event));
 
-        $eventsThisWeek = $futureEvents
-            ->filter(fn (Event $event) => $this->eventDate($event)->between($now, $endOfWeek, true))
-            ->count();
+        $rangeGranularity = $this->resolveSeriesGranularity($startDate, $endDate);
+        $monthlyRevenueSeries = $this->buildRangeRevenueSeries($rangeEvents, $startDate, $endDate, $now, $rangeGranularity);
+        $eventTypeSegments = $this->buildEventTypeSegments($rangeEvents);
+        $upcomingEvents = $this->buildRangeEvents($rangeEvents, $now);
 
-        $eventsNext30Days = $futureEvents
-            ->filter(fn (Event $event) => $this->eventDate($event)->between($now, $endOfNext30Days, true))
-            ->count();
-
-        $monthlyRevenue = $eventsThisMonth->sum(fn (Event $event) => $this->calculateEventTotal($event));
-        $previousMonthlyRevenue = $eventsPreviousMonth->sum(fn (Event $event) => $this->calculateEventTotal($event));
-
-        $packagesThisMonth = $eventsThisMonth->sum(fn (Event $event) => $this->countPackagesForEvent($event));
-        $packagesPreviousMonth = $eventsPreviousMonth->sum(fn (Event $event) => $this->countPackagesForEvent($event));
-
-        $lowStockItems = $this->buildLowStockItems($inventory);
+        $lowStockItems = $this->buildLowStockItems($inventory, $rangeEvents);
         $lowStockCount = count($lowStockItems);
         $criticalLowStockCount = collect($lowStockItems)->where('color', 'error')->count();
-
-        $monthlyRevenueSeries = $this->buildMonthlyRevenueSeries($events, $now);
-        $eventTypeSegments = $this->buildEventTypeSegments($events, $now);
-        $upcomingEvents = $this->buildUpcomingEvents($futureEvents, $now);
 
         $itemActive = 1;
 
         return view('panel.dashboard', [
             'itemActive' => $itemActive,
-            'monthlyRevenue' => $this->formatMoney($monthlyRevenue),
-            'monthlyRevenueIndicator' => $this->formatTrendLabel($monthlyRevenue, $previousMonthlyRevenue, 'Nueva actividad'),
-            'monthlyRevenueIndicatorColor' => $monthlyRevenue >= $previousMonthlyRevenue ? 'text-secondary' : 'text-warning',
-            'eventsNext30Days' => (string) $eventsNext30Days,
-            'eventsNext30Indicator' => $eventsThisWeek > 0 ? "Semana: $eventsThisWeek" : 'Sin eventos esta semana',
+            'selectedStartDate' => $startDate->toDateString(),
+            'selectedEndDate' => $endDate->toDateString(),
+            'rangeLabel' => $this->buildRangeLabel($startDate, $endDate),
+            'comparisonRangeLabel' => $this->buildRangeLabel($previousStartDate, $previousEndDate),
+            'monthlyRevenue' => $this->formatMoney($revenueInRange),
+            'monthlyRevenueIndicator' => $this->formatTrendLabel($revenueInRange, $previousRevenue, 'Nueva actividad'),
+            'monthlyRevenueIndicatorColor' => $revenueInRange >= $previousRevenue ? 'text-secondary' : 'text-warning',
+            'eventsInRangeCount' => (string) $rangeEvents->count(),
+            'eventsInRangeIndicator' => $this->buildEventRangeIndicator($rangeEvents, $now),
             'lowStockCount' => (string) $lowStockCount,
-            'lowStockIndicator' => $lowStockCount > 0 ? 'Accion requerida' : 'Sin alertas',
+            'lowStockIndicator' => $lowStockCount > 0 ? 'Comprometido en el rango' : 'Sin riesgo en el rango',
             'lowStockIndicatorColor' => $lowStockCount > 0 ? 'text-error' : 'text-secondary',
-            'packagesThisMonth' => (string) $packagesThisMonth,
-            'packagesThisMonthIndicator' => $this->formatTrendLabel($packagesThisMonth, $packagesPreviousMonth, 'Nueva actividad'),
-            'packagesThisMonthIndicatorColor' => $packagesThisMonth >= $packagesPreviousMonth ? 'text-secondary' : 'text-warning',
+            'packagesInRange' => (string) $packagesInRange,
+            'packagesInRangeIndicator' => $this->formatTrendLabel($packagesInRange, $previousPackages, 'Nueva actividad'),
+            'packagesInRangeIndicatorColor' => $packagesInRange >= $previousPackages ? 'text-secondary' : 'text-warning',
             'monthlyRevenueSeries' => $monthlyRevenueSeries,
             'eventTypeSegments' => $eventTypeSegments,
             'upcomingEvents' => $upcomingEvents,
             'lowStockItems' => $lowStockItems,
             'criticalLowStockCount' => $criticalLowStockCount,
+            'chartGranularityLabel' => $this->resolveGranularityLabel($rangeGranularity),
+            'futureEventsInRangeCount' => $futureRangeEvents->count(),
         ]);
+    }
+
+    private function resolveDateRange(Request $request, Carbon $referenceDate): array
+    {
+        $timezone = 'America/Mexico_City';
+        $startDateInput = $request->query('start_date');
+        $endDateInput = $request->query('end_date');
+
+        if (! $startDateInput || ! $endDateInput) {
+            return [
+                $referenceDate->copy()->startOfMonth(),
+                $referenceDate->copy()->endOfMonth(),
+            ];
+        }
+
+        try {
+            $startDate = Carbon::createFromFormat('Y-m-d', $startDateInput, $timezone)->startOfDay();
+            $endDate = Carbon::createFromFormat('Y-m-d', $endDateInput, $timezone)->endOfDay();
+        } catch (\Throwable $exception) {
+            return [
+                $referenceDate->copy()->startOfMonth(),
+                $referenceDate->copy()->endOfMonth(),
+            ];
+        }
+
+        if ($startDate->gt($endDate)) {
+            [$startDate, $endDate] = [$endDate->copy()->startOfDay(), $startDate->copy()->endOfDay()];
+        }
+
+        return [$startDate, $endDate];
+    }
+
+    private function resolvePreviousRange(Carbon $startDate, Carbon $endDate): array
+    {
+        $rangeDays = max($startDate->copy()->startOfDay()->diffInDays($endDate->copy()->startOfDay()) + 1, 1);
+        $previousEndDate = $startDate->copy()->subDay()->endOfDay();
+        $previousStartDate = $startDate->copy()->subDays($rangeDays)->startOfDay();
+
+        return [$previousStartDate, $previousEndDate];
+    }
+
+    private function filterEventsByRange(Collection $events, Carbon $startDate, Carbon $endDate): Collection
+    {
+        return $events
+            ->filter(fn(Event $event) => $this->eventDate($event)->between($startDate, $endDate, true))
+            ->values();
     }
 
     private function eventDate(Event $event): Carbon
@@ -114,14 +151,18 @@ class DashboardController extends Controller
 
     private function countPackagesForEvent(Event $event): int
     {
-        return (int) $event->packages->sum(function ($package) {
-            return max((int) ($package->pivot->quantity ?? 1), 1);
-        });
+        if ($event->packages->isNotEmpty()) {
+            return (int) $event->packages->sum(function ($package) {
+                return max((int) ($package->pivot->quantity ?? 1), 1);
+            });
+        }
+
+        return $event->products->isNotEmpty() ? 1 : 0;
     }
 
     private function formatMoney(float $amount): string
     {
-        return '$'.number_format($amount, 2);
+        return '$' . number_format($amount, 2);
     }
 
     private function formatTrendLabel(float|int $current, float|int $previous, string $fallback): string
@@ -136,46 +177,192 @@ class DashboardController extends Controller
             return 'Sin cambios';
         }
 
-        return ($difference > 0 ? '+' : '').number_format($difference, 1).'%';
+        return ($difference > 0 ? '+' : '') . number_format($difference, 1) . '%';
     }
 
-    private function buildMonthlyRevenueSeries(Collection $events, Carbon $referenceDate): array
+    private function resolveSeriesGranularity(Carbon $startDate, Carbon $endDate): string
     {
-        $year = $referenceDate->year;
+        $days = $startDate->copy()->startOfDay()->diffInDays($endDate->copy()->startOfDay()) + 1;
+        $months = $startDate->copy()->startOfMonth()->diffInMonths($endDate->copy()->startOfMonth()) + 1;
 
-        return collect(range(1, 12))
-            ->map(function (int $month) use ($events, $year, $referenceDate) {
-                $monthEvents = $events->filter(function (Event $event) use ($month, $year) {
-                    $eventDate = $this->eventDate($event);
-
-                    return $eventDate->year === $year && $eventDate->month === $month;
-                });
-
-                $value = $monthEvents->sum(fn (Event $event) => $this->calculateEventTotal($event));
-                $labelDate = Carbon::create($year, $month, 1, 0, 0, 0, 'America/Mexico_City')->locale('es');
-
-                return [
-                    'label' => Str::upper($labelDate->isoFormat('MMM')),
-                    'value' => $value,
-                    'formatted' => $this->formatMoney($value),
-                    'isCurrent' => $referenceDate->month === $month,
-                ];
-            })
-            ->all();
-    }
-
-    private function buildEventTypeSegments(Collection $events, Carbon $referenceDate): array
-    {
-        $yearEvents = $events->filter(function (Event $event) use ($referenceDate) {
-            return $this->eventDate($event)->year === $referenceDate->year;
-        });
-
-        if ($yearEvents->isEmpty()) {
-            $yearEvents = $events->filter(fn (Event $event) => $this->eventDate($event)->gte($referenceDate));
+        if ($days <= 31) {
+            return 'day';
         }
 
-        $grouped = $yearEvents
-            ->groupBy(fn (Event $event) => optional($event->typeEvent)->name ?: 'Sin tipo')
+        if ($days <= 180) {
+            return 'week';
+        }
+
+        if ($months <= 18) {
+            return 'month';
+        }
+
+        if ($months <= 48) {
+            return 'quarter';
+        }
+
+        return 'year';
+    }
+
+    private function resolveGranularityLabel(string $granularity): string
+    {
+        return match ($granularity) {
+            'day' => 'dia',
+            'week' => 'semana',
+            'quarter' => 'trimestre',
+            'year' => 'ano',
+            default => 'mes',
+        };
+    }
+
+    private function buildRangeRevenueSeries(
+        Collection $events,
+        Carbon $startDate,
+        Carbon $endDate,
+        Carbon $referenceDate,
+        string $granularity
+    ): array {
+        $series = collect();
+
+        if ($granularity === 'day') {
+            $cursor = $startDate->copy()->startOfDay();
+
+            while ($cursor->lte($endDate)) {
+                $bucketStart = $cursor->copy()->startOfDay();
+                $bucketEnd = $cursor->copy()->endOfDay();
+                $bucketEvents = $events->filter(fn(Event $event) => $this->eventDate($event)->between($bucketStart, $bucketEnd, true));
+                $value = $bucketEvents->sum(fn(Event $event) => $this->calculateEventTotal($event));
+
+                $series->push([
+                    'label' => $bucketStart->locale('es')->isoFormat('D MMM'),
+                    'value' => $value,
+                    'formatted' => $this->formatMoney($value),
+                    'isCurrent' => $referenceDate->between($bucketStart, $bucketEnd, true),
+                ]);
+
+                $cursor->addDay();
+            }
+        }
+
+        if ($granularity === 'week') {
+            $cursor = $startDate->copy()->startOfDay();
+
+            while ($cursor->lte($endDate)) {
+                $bucketStart = $cursor->copy()->startOfDay();
+                $bucketEnd = $cursor->copy()->addDays(6)->endOfDay();
+
+                if ($bucketEnd->gt($endDate)) {
+                    $bucketEnd = $endDate->copy()->endOfDay();
+                }
+
+                $bucketEvents = $events->filter(fn(Event $event) => $this->eventDate($event)->between($bucketStart, $bucketEnd, true));
+                $value = $bucketEvents->sum(fn(Event $event) => $this->calculateEventTotal($event));
+
+                $series->push([
+                    'label' => $bucketStart->locale('es')->isoFormat('D MMM'),
+                    'value' => $value,
+                    'formatted' => $this->formatMoney($value),
+                    'isCurrent' => $referenceDate->between($bucketStart, $bucketEnd, true),
+                ]);
+
+                $cursor = $bucketEnd->copy()->addDay()->startOfDay();
+            }
+        }
+
+        if ($granularity === 'month') {
+            $cursor = $startDate->copy()->startOfMonth();
+
+            while ($cursor->lte($endDate)) {
+                $bucketStart = $cursor->copy()->startOfMonth();
+                $bucketEnd = $cursor->copy()->endOfMonth();
+
+                if ($bucketStart->lt($startDate)) {
+                    $bucketStart = $startDate->copy()->startOfDay();
+                }
+
+                if ($bucketEnd->gt($endDate)) {
+                    $bucketEnd = $endDate->copy()->endOfDay();
+                }
+
+                $bucketEvents = $events->filter(fn(Event $event) => $this->eventDate($event)->between($bucketStart, $bucketEnd, true));
+                $value = $bucketEvents->sum(fn(Event $event) => $this->calculateEventTotal($event));
+
+                $series->push([
+                    'label' => Str::upper($cursor->locale('es')->isoFormat('MMM YY')),
+                    'value' => $value,
+                    'formatted' => $this->formatMoney($value),
+                    'isCurrent' => $referenceDate->between($bucketStart, $bucketEnd, true),
+                ]);
+
+                $cursor->addMonthNoOverflow()->startOfMonth();
+            }
+        }
+
+        if ($granularity === 'quarter') {
+            $cursor = $startDate->copy()->startOfQuarter();
+
+            while ($cursor->lte($endDate)) {
+                $bucketStart = $cursor->copy()->startOfQuarter();
+                $bucketEnd = $cursor->copy()->endOfQuarter();
+
+                if ($bucketStart->lt($startDate)) {
+                    $bucketStart = $startDate->copy()->startOfDay();
+                }
+
+                if ($bucketEnd->gt($endDate)) {
+                    $bucketEnd = $endDate->copy()->endOfDay();
+                }
+
+                $bucketEvents = $events->filter(fn(Event $event) => $this->eventDate($event)->between($bucketStart, $bucketEnd, true));
+                $value = $bucketEvents->sum(fn(Event $event) => $this->calculateEventTotal($event));
+
+                $series->push([
+                    'label' => 'T' . $cursor->quarter . ' ' . $cursor->format('y'),
+                    'value' => $value,
+                    'formatted' => $this->formatMoney($value),
+                    'isCurrent' => $referenceDate->between($bucketStart, $bucketEnd, true),
+                ]);
+
+                $cursor->addQuarter()->startOfQuarter();
+            }
+        }
+
+        if ($granularity === 'year') {
+            $cursor = $startDate->copy()->startOfYear();
+
+            while ($cursor->lte($endDate)) {
+                $bucketStart = $cursor->copy()->startOfYear();
+                $bucketEnd = $cursor->copy()->endOfYear();
+
+                if ($bucketStart->lt($startDate)) {
+                    $bucketStart = $startDate->copy()->startOfDay();
+                }
+
+                if ($bucketEnd->gt($endDate)) {
+                    $bucketEnd = $endDate->copy()->endOfDay();
+                }
+
+                $bucketEvents = $events->filter(fn(Event $event) => $this->eventDate($event)->between($bucketStart, $bucketEnd, true));
+                $value = $bucketEvents->sum(fn(Event $event) => $this->calculateEventTotal($event));
+
+                $series->push([
+                    'label' => $cursor->format('Y'),
+                    'value' => $value,
+                    'formatted' => $this->formatMoney($value),
+                    'isCurrent' => $referenceDate->between($bucketStart, $bucketEnd, true),
+                ]);
+
+                $cursor->addYear()->startOfYear();
+            }
+        }
+
+        return $series->all();
+    }
+
+    private function buildEventTypeSegments(Collection $events): array
+    {
+        $grouped = $events
+            ->groupBy(fn(Event $event) => optional($event->typeEvent)->name ?: 'Sin tipo')
             ->map->count()
             ->sortDesc();
 
@@ -199,14 +386,17 @@ class DashboardController extends Controller
             ->all();
     }
 
-    private function buildUpcomingEvents(Collection $futureEvents, Carbon $referenceDate): array
+    private function buildRangeEvents(Collection $rangeEvents, Carbon $referenceDate): array
     {
-        return $futureEvents
+        return $rangeEvents
+            ->sortBy(fn(Event $event) => $this->eventDate($event)->timestamp)
             ->take(5)
             ->map(function (Event $event) use ($referenceDate) {
                 $eventDate = $this->eventDate($event)->locale('es');
 
-                if ($eventDate->isToday()) {
+                if ($eventDate->lt($referenceDate->copy()->startOfDay())) {
+                    $status = ['label' => 'Finalizado', 'color' => 'primary'];
+                } elseif ($eventDate->isToday()) {
                     $status = ['label' => 'Hoy', 'color' => 'warning'];
                 } elseif ($eventDate->between($referenceDate, $referenceDate->copy()->endOfWeek(), true)) {
                     $status = ['label' => 'Esta semana', 'color' => 'secondary'];
@@ -228,30 +418,48 @@ class DashboardController extends Controller
             ->all();
     }
 
-    private function buildLowStockItems(?Inventory $inventory): array
+    private function buildLowStockItems(?Inventory $inventory, Collection $rangeEvents): array
     {
         if (! $inventory) {
             return [];
         }
 
+        $reservedByProduct = [];
+
+        $rangeEvents->each(function (Event $event) use (&$reservedByProduct) {
+            $event->products->each(function ($product) use (&$reservedByProduct) {
+                if ((bool) ($product->pivot->check_almacen ?? false)) {
+                    return;
+                }
+
+                $reservedByProduct[$product->id] = ($reservedByProduct[$product->id] ?? 0) + (float) ($product->pivot->quantity ?? 0);
+            });
+        });
+
         return $inventory->products
-            ->filter(function ($product) {
-                return isset($product->pivot->quantity) && (float) $product->pivot->quantity <= Inventory::MIN_STOCK;
-            })
-            ->sortBy(fn ($product) => (float) $product->pivot->quantity)
-            ->take(4)
-            ->map(function ($product) {
-                $quantity = (float) $product->pivot->quantity;
-                $isCritical = $quantity <= max(1, Inventory::MIN_STOCK / 2);
+            ->map(function ($product) use ($reservedByProduct) {
+                $currentQuantity = (float) ($product->pivot->quantity ?? 0);
+                $reservedInRange = (float) ($reservedByProduct[$product->id] ?? 0);
+                $projectedAvailable = max($currentQuantity - $reservedInRange, 0);
+                $isCritical = $projectedAvailable <= max(1, Inventory::MIN_STOCK / 2);
 
                 return [
                     'icon' => $this->resolveInventoryIcon($product->unit),
                     'title' => $product->name,
                     'subtitle' => $product->unit ?: 'Existencias',
-                    'value' => $this->formatQuantity($quantity),
-                    'subValue' => 'Min: '.Inventory::MIN_STOCK,
+                    'value' => $this->formatQuantity($projectedAvailable),
+                    'subValue' => 'Apartado: ' . $this->formatQuantity($reservedInRange),
+                    'projected_available' => $projectedAvailable,
                     'color' => $isCritical ? 'error' : 'warning',
                 ];
+            })
+            ->filter(fn(array $item) => $item['projected_available'] <= Inventory::MIN_STOCK)
+            ->sortBy('projected_available')
+            ->take(4)
+            ->map(function (array $item) {
+                unset($item['projected_available']);
+
+                return $item;
             })
             ->values()
             ->all();
@@ -279,5 +487,40 @@ class DashboardController extends Controller
         }
 
         return rtrim(rtrim(number_format($quantity, 2, '.', ''), '0'), '.');
+    }
+
+    private function buildRangeLabel(Carbon $startDate, Carbon $endDate): string
+    {
+        $startLabel = $startDate->copy()->locale('es')->isoFormat('D MMM YYYY');
+        $endLabel = $endDate->copy()->locale('es')->isoFormat('D MMM YYYY');
+
+        return $startDate->isSameDay($endDate) ? $startLabel : $startLabel . ' - ' . $endLabel;
+    }
+
+    private function buildEventRangeIndicator(Collection $rangeEvents, Carbon $referenceDate): string
+    {
+        if ($rangeEvents->isEmpty()) {
+            return 'Sin eventos en el rango';
+        }
+
+        $todayCount = $rangeEvents->filter(fn(Event $event) => $this->eventDate($event)->isSameDay($referenceDate))->count();
+        $completedCount = $rangeEvents->filter(fn(Event $event) => $this->eventDate($event)->lt($referenceDate->copy()->startOfDay()))->count();
+        $pendingCount = $rangeEvents->filter(fn(Event $event) => $this->eventDate($event)->gt($referenceDate->copy()->endOfDay()))->count();
+
+        $parts = [];
+
+        if ($todayCount > 0) {
+            $parts[] = 'Hoy: ' . $todayCount;
+        }
+
+        if ($pendingCount > 0) {
+            $parts[] = $pendingCount . ' pendientes';
+        }
+
+        if ($completedCount > 0) {
+            $parts[] = $completedCount . ' finalizados';
+        }
+
+        return implode(' · ', array_slice($parts, 0, 2));
     }
 }

@@ -32,6 +32,8 @@ new class extends Component {
     @if ($type == 'line')
         @php
             $maxValue = collect($series)->max('value') ?: 0;
+            $pointCount = count($series);
+            $chartMinWidth = $pointCount > 12 ? max($pointCount * 56, 720) : null;
         @endphp
 
         @if (count($series) === 0 || $maxValue <= 0)
@@ -39,27 +41,31 @@ new class extends Component {
                 {{ $emptyMessage }}
             </div>
         @else
-            <div class="h-64 flex items-end justify-between gap-2 px-2">
-                @foreach ($series as $point)
-                    @php
-                        $value = (float) ($point['value'] ?? 0);
-                        $height = $value > 0 ? max(14, round(($value / $maxValue) * 100)) : 8;
-                        $isCurrent = $point['isCurrent'] ?? false;
-                    @endphp
-                    <div class="flex flex-1 flex-col items-center gap-3">
-                        <div class="relative flex h-56 w-full items-end">
-                            <div
-                                class="group relative w-full rounded-t-lg transition-colors {{ $isCurrent ? 'bg-primary/50 border-t-2 border-primary' : 'bg-primary-700/70 hover:bg-primary/20' }}"
-                                style="height: {{ $height }}%">
+            <div class="overflow-x-auto pb-2">
+                <div class="h-64 flex items-end justify-between gap-2 px-2" @if($chartMinWidth) style="min-width: {{ $chartMinWidth }}px" @endif>
+                    @foreach ($series as $point)
+                        @php
+                            $value = (float) ($point['value'] ?? 0);
+                            $height = $value > 0 ? max(14, round(($value / $maxValue) * 100)) : 8;
+                            $isCurrent = $point['isCurrent'] ?? false;
+                        @endphp
+                        <div class="flex min-w-0 flex-1 flex-col items-center gap-3">
+                            <div class="relative flex h-56 w-full items-end">
                                 <div
-                                    class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded bg-primary px-2 py-1 text-[10px] whitespace-nowrap text-on-primary opacity-0 transition-opacity group-hover:opacity-100">
-                                    {{ $point['label'] }} · {{ $point['formatted'] ?? '' }}
+                                    class="group relative w-full rounded-t-lg transition-colors {{ $isCurrent ? 'border-t-2 border-primary bg-primary/50' : 'bg-primary-700/70 hover:bg-primary/20' }}"
+                                    style="height: {{ $height }}%">
+                                    <div
+                                        class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded bg-primary px-2 py-1 text-[10px] whitespace-nowrap text-on-primary opacity-0 transition-opacity group-hover:opacity-100">
+                                        {{ $point['label'] }} · {{ $point['formatted'] ?? '' }}
+                                    </div>
                                 </div>
                             </div>
+                            <span class="block max-w-full truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-200">
+                                {{ $point['label'] }}
+                            </span>
                         </div>
-                        <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-200">{{ $point['label'] }}</span>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         @endif
     @endif
