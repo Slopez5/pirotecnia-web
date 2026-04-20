@@ -77,7 +77,8 @@
     <p><strong>Dirección del evento:</strong> {{ $event->event_address }}</p>
     <p><strong>Fecha del evento:</strong> {{ date('j \d\e F \d\e Y \a \l\a\s g:ia', strtotime($event->event_date)) }}
     </p>
-    <p><strong>Total de Paquete:</strong> ${{ $event->full_price }}</p>
+    <p><strong>Configuración:</strong> {{ $event->package ?: 'Sin paquete asignado' }}</p>
+    <p><strong>Total del evento:</strong> ${{ $event->full_price }}</p>
     @if ($event->discount <= 1)
         <p><strong>Descuento:</strong> ${{ $event->discount * $event->full_price }}</p>
     @else

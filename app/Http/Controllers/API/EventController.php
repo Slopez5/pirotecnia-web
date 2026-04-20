@@ -48,13 +48,13 @@ class EventController extends Controller
 
     private function generatePdf($event)
     {
-        $price = 0;
-
         if ($event) {
-            foreach ($event->packages as $package) {
-                $price += $package->price;
-            }
+            $price = (float) $event->price > 0 ? (float) $event->price : (float) $event->packages->sum('price');
             $event->full_price = $price;
+            $event->package = $event->packages->pluck('name')->implode(', ');
+            if ($event->package === '' && $event->products->isNotEmpty()) {
+                $event->package = 'Paquete personalizado';
+            }
             if ($event->discount > 1) {
                 $event->balance = ($price - $event->discount) - $event->advance + $event->travel_expenses;
             } else {
@@ -77,6 +77,9 @@ class EventController extends Controller
     private function generateContrato($data)
     {
         $package_names = implode(', ', $data->packages->pluck('name')->toArray());
+        if ($package_names === '' && $data->products->isNotEmpty()) {
+            $package_names = 'Paquete personalizado';
+        }
 
         $items = $data->products->map(fn ($p) => [
             'descripcion' => $p->name,

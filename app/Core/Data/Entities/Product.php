@@ -64,15 +64,19 @@ class Product
 
     private static function extractPriceFrom($product, $from)
     {
+        if (($from === 'event' || $from === 'package') && isset($product->pivot)) {
+            return (float) ($product->pivot->price ?? 0);
+        }
+
         return $product->inventories->first()->pivot->price ?? 0;
     }
 
     private static function extractQuantityFrom($product, $from)
     {
-        if ($from === 'package') {
+        if (($from === 'package' || $from === 'event') && isset($product->pivot)) {
             return $product->pivot->quantity;
-        } else {
-            return $product->inventories->first()->pivot->quantity;
         }
+
+        return $product->inventories->first()->pivot->quantity;
     }
 }

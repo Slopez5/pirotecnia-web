@@ -1,157 +1,140 @@
-<div>
-    <form wire:submit.prevent="save">
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <input type="text" class="form-control" id="name" wire:model="name">
-            @error('name')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <textarea class="form-control" id="description" wire:model="description"></textarea>
-            <span id="charCount" class="text-sm text-muted">0/2000 caracteres</span>
-            @error('description')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-        <div class="form-group">
-            <label for="price">Precio</label>
-            <input type="text" class="form-control" id="price" wire:model="price">
-            @error('price')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-        <div class="form-group">
-            <label for="duration">Duración</label>
-            <input type="text" class="form-control" id="duration" wire:model="duration">
-            @error('duration')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-        {{-- Link video_url --}}
-        <div class="form-group">
-            <label for="video_url">Link del video</label>
-            <input type="text" class="form-control" id="video_url" wire:model="video_url">
-            @error('video_url')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
+@php
+    $labelClass = 'text-[11px] font-semibold uppercase tracking-[0.24em] text-primary-200';
+    $inputClass =
+        'w-full rounded-2xl border border-primary-600/40 bg-primary-900/70 px-4 py-3 text-sm text-on-primary placeholder:text-primary-300 transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20';
+    $errorClass = 'text-xs font-semibold text-secondary';
+@endphp
 
-        <div class="form-group">
-            <label for="experience">Experiencia</label>
-            <select class="form-control" id="experience" wire:model="experience_id">
-                <option value="">Selecciona una experiencia</option>
-                @foreach ($experienceLevels as $experience)
-                    <option value="{{ $experience->id }}">{{ $experience->name }}</option>
-                @endforeach
-            </select>
-            @error('experience_id')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div class="row justify-content-between">
-            <div class="col">
-                <button type="submit" class="btn btn-primary">Guardar</button>
+<div class="space-y-6">
+    <form class="space-y-6" wire:submit.prevent="save">
+        <div class="grid gap-5 md:grid-cols-2">
+            <div class="space-y-2">
+                <label class="{{ $labelClass }}" for="package_name">Nombre</label>
+                <input class="{{ $inputClass }}" id="package_name" placeholder="Ej. Show premium 10 minutos"
+                    type="text" wire:model="name">
+                @error('name')
+                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                @enderror
             </div>
-            @if ($isTabs)
-                <div class="col text-end">
-                    <button type="button" class="btn btn-success" wire:click="nextTab">Siguiente</button>
-                </div>
-            @endif
+
+            <div class="space-y-2">
+                <label class="{{ $labelClass }}" for="experience">Experiencia</label>
+                <select class="{{ $inputClass }} appearance-none" id="experience" wire:model="experience_id">
+                    <option value="">Selecciona una experiencia</option>
+                    @foreach ($experienceLevels as $experience)
+                        <option value="{{ $experience->id }}">{{ $experience->name }}</option>
+                    @endforeach
+                </select>
+                @error('experience_id')
+                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="space-y-2">
+                <label class="{{ $labelClass }}" for="price">Precio</label>
+                <input class="{{ $inputClass }}" id="price" placeholder="$0.00" type="text" wire:model="price">
+                @error('price')
+                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="space-y-2">
+                <label class="{{ $labelClass }}" for="duration">Duración</label>
+                <input class="{{ $inputClass }}" id="duration" placeholder="Ej. 10 min" type="text"
+                    wire:model="duration">
+                @error('duration')
+                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="space-y-2 md:col-span-2">
+                <label class="{{ $labelClass }}" for="description">Descripción</label>
+                <textarea class="{{ $inputClass }} min-h-28" id="description"
+                    placeholder="Describe qué incluye el paquete y su propuesta comercial" wire:model="description"></textarea>
+                @error('description')
+                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="space-y-2 md:col-span-2">
+                <label class="{{ $labelClass }}" for="video_url">Link del video</label>
+                <input class="{{ $inputClass }}" id="video_url" placeholder="https://..." type="text"
+                    wire:model="video_url">
+                @error('video_url')
+                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
-
+        <div
+            class="flex flex-col gap-4 rounded-2xl border border-primary-700/60 bg-primary-900/40 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <p class="max-w-xl text-sm text-primary-200">
+                Guarda el paquete para que aparezca de inmediato en el selector del evento actual.
+            </p>
+            <div class="flex flex-wrap gap-3">
+                <button
+                    class="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-on-secondary transition-colors hover:bg-secondary-600"
+                    type="submit">
+                    <span class="material-symbols-outlined text-base">save</span>
+                    Guardar paquete
+                </button>
+                @if ($isTabs)
+                    <button
+                        class="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-600"
+                        type="button" wire:click="nextTab">
+                        <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        Siguiente
+                    </button>
+                @endif
+            </div>
+        </div>
     </form>
 </div>
 
 @script
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('description');
-            const charCount = document.getElementById('charCount');
-            const maxLines = 5;
-            const maxChars = 2000; // Set your character limit here
-            const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight);
-            const maxHeight = lineHeight * maxLines;
-
-            textarea.addEventListener('input', function() {
-                // Truncate text if it exceeds the character limit
-                if (this.value.length > maxChars) {
-                    this.value = this.value.substring(0, maxChars);
-                }
-                // Adjust height
-                this.style.height = 'auto';
-                if (this.scrollHeight > maxHeight) {
-                    this.style.height = maxHeight + 'px';
-                } else {
-                    this.style.height = (this.scrollHeight) + 'px';
-                }
-
-                // Update character count
-                const currentLength = this.value.length;
-                charCount.textContent = `${currentLength}/${maxChars} caracteres`;
-            });
-
-            // Initial adjustment for pre-existing content, if any
-            if (textarea.scrollHeight > maxHeight) {
-                textarea.style.height = maxHeight + 'px';
-            } else {
-                textarea.style.height = 'auto';
-                textarea.style.height = (textarea.scrollHeight) + 'px';
+        const showPackageFeedback = (title, text) => {
+            if (!window.Swal) {
+                return;
             }
 
-            // Initial character count update
-            charCount.textContent = `${textarea.value.length}/${maxChars} caracteres`;
-        });
-
+            window.Swal.fire(title, text, 'success');
+        };
 
         Livewire.on('packageUpdated', () => {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Swal.fire(
-                'Paquete Actualizado',
-                'El paquete ha sido actualizado correctamente',
-                'success'
-            )
-            // change tab
-            changeTab('materials');
-            localStorage.setItem('activeTab', 'materials');
+            showPackageFeedback('Paquete actualizado', 'El paquete ha sido actualizado correctamente.');
 
-
+            @if ($isTabs)
+                if (typeof window.$ === 'function') {
+                    changeTab('materials');
+                    localStorage.setItem('activeTab', 'materials');
+                }
+            @endif
         });
 
         Livewire.on('packageCreated', () => {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
+            showPackageFeedback('Paquete creado', 'El paquete ha sido creado correctamente.');
+
+            @if ($isTabs)
+                if (typeof window.$ === 'function') {
+                    $('#custom-tabs-two-tab a[href="#materials"]').removeClass('disabled');
+                    $('#custom-tabs-two-tab a[href="#equipments"]').removeClass('disabled');
+                    changeTab('materials');
+                }
+            @endif
+        });
+
+        @if ($isTabs)
+            Livewire.on('nextToMaterials', () => {
+                if (typeof window.$ === 'function') {
+                    changeTab('materials');
+                    localStorage.setItem('activeTab', 'materials');
+                }
             });
-            Swal.fire(
-                'Paquete Creado',
-                'El paquete ha sido creado correctamente',
-                'success'
-            )
 
-            // enable materials tab
-            $('#custom-tabs-two-tab a[href="#materials"]').removeClass('disabled');
-            $('#custom-tabs-two-tab a[href="#equipments"]').removeClass('disabled');
-            changeTab('materials');
-        });
-
-        Livewire.on('nextToMaterials', () => {
-            changeTab('materials');
-            localStorage.setItem('activeTab', 'materials');
-        });
-
-        function changeTab(tabId) {
-            $('#custom-tabs-two-tab a[href="#' + tabId + '"]').tab('show');
-        }
+            function changeTab(tabId) {
+                window.$('#custom-tabs-two-tab a[href="#' + tabId + '"]').tab('show');
+            }
+        @endif
     </script>
 @endscript

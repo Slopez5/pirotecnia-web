@@ -83,7 +83,9 @@ class UserController extends Controller
 
     public function indexEmployees()
     {
-        $employees = Employee::all();
+        $employees = Employee::with('experienceLevel')
+            ->orderBy('name')
+            ->get();
         $itemActive = 3;
 
         return view('panel.employees.index', compact('employees', 'itemActive'));

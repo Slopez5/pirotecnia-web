@@ -1,1 +1,191 @@
 @import "tailwindcss";
+
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../**/*.vue";
+@source "../**/*.ts";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+
+    /* Brand core */
+
+    --color-primary: #25387F;
+
+    --color-secondary: #E40D81;
+
+    --color-accent: #24A3DD;
+
+    --color-warning: #F4A203;
+
+    /* Base UI */
+
+    --color-background: #F7F7F7;
+
+    --color-foreground: #21254C;
+
+    --color-surface: #FFFFFF;
+
+    --color-surface-alt: #F1F3F8;
+
+    --color-border: #D9DDE8;
+
+    --color-muted: #6B728A;
+
+    /* On colors */
+
+    --color-on-primary: #FFFFFF;
+
+    --color-on-secondary: #FFFFFF;
+
+    --color-on-accent: #FFFFFF;
+
+    --color-on-warning: #21254C;
+
+    --color-on-background: #21254C;
+
+    --color-on-surface: #21254C;
+
+    /* Optional scale - primary */
+
+    --color-primary-50: #EEF1FA;
+
+    --color-primary-100: #D9E0F5;
+
+    --color-primary-200: #B7C4EB;
+
+    --color-primary-300: #93A5F3;
+
+    --color-primary-400: #5C73C9;
+
+    --color-primary-500: #25387F;
+
+    --color-primary-600: #1F306D;
+
+    --color-primary-700: #19285A;
+
+    --color-primary-800: #131F48;
+
+    --color-primary-900: #0D1736;
+
+    /* Optional scale - secondary */
+
+    --color-secondary-50: #FDE7F3;
+
+    --color-secondary-100: #FBCFE8;
+
+    --color-secondary-200: #F9A0D3;
+
+    --color-secondary-300: #F56FBD;
+
+    --color-secondary-400: #EE3EA3;
+
+    --color-secondary-500: #E40D81;
+
+    --color-secondary-600: #C20B6E;
+
+    --color-secondary-700: #9F095A;
+
+    --color-secondary-800: #7D0747;
+
+    --color-secondary-900: #5B0533;
+
+    /* Optional scale - accent */
+
+    --color-accent-50: #E9F7FD;
+
+    --color-accent-100: #D2EEFB;
+
+    --color-accent-200: #A6DEF7;
+
+    --color-accent-300: #79CDF2;
+
+    --color-accent-400: #4DBDEE;
+
+    --color-accent-500: #24A3DD;
+
+    --color-accent-600: #1F8ABF;
+
+    --color-accent-700: #1A72A0;
+
+    --color-accent-800: #145981;
+
+    --color-accent-900: #0F4161;
+
+    /* Optional scale - warning */
+
+    --color-warning-50: #FFF6E5;
+
+    --color-warning-100: #FEEBCC;
+
+    --color-warning-200: #FDD699;
+
+    --color-warning-300: #FBC266;
+
+    --color-warning-400: #F9AD33;
+
+    --color-warning-500: #F4A203;
+
+    --color-warning-600: #CF8A03;
+
+    --color-warning-700: #AA7102;
+
+    --color-warning-800: #855802;
+
+    --color-warning-900: #604001;
+
+    /* Semantic extras */
+
+    --color-success: #16A34A;
+
+    --color-error: #BA1A1A;
+
+    --color-info: var(--color-accent);
+
+    /* Typography */
+
+    --font-display: "Bebas Neue Pro", sans-serif;
+
+    --font-heading: "Raleway", sans-serif;
+
+    --font-body: "Lato", sans-serif;
+
+    /* Radius */
+
+    --radius-sm: 0.125rem;
+
+    --radius: 0.25rem;
+
+    --radius-lg: 0.5rem;
+
+    --radius-xl: 0.75rem;
+
+    --radius-full: 9999px;
+
+    /* Shadows */
+
+    --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+
+    --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.spark-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--color-primary-200) 50%, transparent 100%);
+}
+
+.map-grayscale {
+    filter: grayscale(100%) invert(90%) contrast(90%);
+}
+
+
+
+;

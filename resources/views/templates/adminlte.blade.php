@@ -1,133 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html class="dark" lang="es">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Dashboard</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <!-- Tempusdominus  -->
-    <link href="{{ asset('adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}"
-        rel="stylesheet">
-    <!-- iCheck -->
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-    <!-- JQVMap -->
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/jqvmap/jqvmap.min.css') }}">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css" />
-    <!-- overlayScrollbars -->
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-    <!-- Daterange picker -->
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/daterangepicker/daterangepicker.css') }}">
-    <!-- summernote -->
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/summernote/summernote-bs4.min.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-    @yield('extra-css')
+        h1,
+        h2,
+        h3,
+        .headline {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
-    <div class="wrapper">
-
-        <!-- Preloader -->
-        <div class="preloader flex-column justify-content-center align-items-center">
-            <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60"
-                width="60">
-        </div>
-
-        <!-- Navbar -->
-        @include('templates.adminlte.navbar')
-        <!-- /.navbar -->
-
-        <!-- Main Sidebar Container -->
-        @include('templates.adminlte.sidebar')
-
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            @yield('content-header')
-            <!-- /.content-header -->
-
-            <!-- Main content -->
-            @yield('content')
-            <!-- /.content -->
-        </div>
-
-
-
-        <!-- /.content-wrapper -->
-        <footer class="main-footer">
-            <strong>Copyright &copy; 2024-2025 <a href="https://adminlte.io">PirotecniaSanRafael</a>.</strong>
-            Todos los derechos reservados.
-            <div class="float-right d-none d-sm-inline-block">
-                <b>Versión</b> 1.0.0
+<body class="bg-primary-900 text-on-primary selection:bg-primary/30 min-h-screen">
+    <!-- SideNavBar (JSON Derived) -->
+    <aside
+        class="bg-primary-100 dark:bg-primary-800 h-screen w-64 fixed left-0 top-0 overflow-y-auto no-border shadow-2xl shadow-primary-900/40 flex flex-col py-6 font-['Manrope'] tracking-tight z-50">
+        <div class="px-6 mb-8 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-primary"
+                    style="font-variation-settings: 'FILL' 1;">explosion</span>
             </div>
-        </footer>
+            <div>
+                <h1 class="text-xl font-bold tracking-tighter text-on-primary">Pirotecnia San Rafael</h1>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-secondary">Detonando emociones</p>
+            </div>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <!-- Active Tab: Inicio -->
+            <a class="flex items-center gap-3 py-3 px-4 bg-primary-700 text-secondary font-semibold rounded-lg mx-2 transition-transform scale-[0.98] active:scale-95"
+                href="{{ route('dashboard') }}">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Inicio</span>
+            </a>
+            <a class="flex items-center gap-3 py-3 px-4 text-primary-200 hover:text-on-primary hover:bg-primary-700 transition-colors duration-200 mx-2"
+                href="{{ route('employees.index') }}">
+                <span class="material-symbols-outlined">badge</span>
+                <span>Empleados</span>
+            </a>
+            <a class="flex items-center gap-3 py-3 px-4 text-primary-200 hover:text-on-primary hover:bg-primary-700 transition-colors duration-200 mx-2"
+                href="{{ route('events.index') }}">
+                <span class="material-symbols-outlined">event_upcoming</span>
+                <span>Eventos</span>
+            </a>
+            <a class="flex items-center gap-3 py-3 px-4 text-primary-200 hover:text-on-primary hover:bg-primary-700 transition-colors duration-200 mx-2"
+                href="{{ route('inventories.index') }}">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span>Inventario</span>
+            </a>
+            <a class="flex items-center gap-3 py-3 px-4 text-primary-200 hover:text-on-primary hover:bg-primary-700 transition-colors duration-200 mx-2"
+                href="{{ route('purchases.index') }}">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span>Compras</span>
+            </a>
+            <a class="flex items-center gap-3 py-3 px-4 text-primary-200 hover:text-on-primary hover:bg-primary-700 transition-colors duration-200 mx-2"
+                href="{{ route('sales.index') }}">
+                <span class="material-symbols-outlined">payments</span>
+                <span>Ventas</span>
+            </a>
+            <a class="flex items-center gap-3 py-3 px-4 text-primary-200 hover:text-on-primary hover:bg-primary-700 transition-colors duration-200 mx-2"
+                href="#">
+                <span class="material-symbols-outlined">settings</span>
+                <span>Configuración</span>
+            </a>
+        </nav>
+        <div class="mt-auto px-4">
+            <div class="bg-primary-700 rounded-xl p-4 flex items-center gap-3">
+                <img alt="Admin" class="w-10 h-10 rounded-full object-cover border border-on-primary/10"
+                    data-alt="Professional headshot of a mature business administrator with silver hair in a sharp navy suit, clean studio background"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8Bl-k16pH2-oxzBS6OIqfTgCbeV3aCIzWFZrMOcObz-HwE1yfrd4xSgSmIyyFvfk50gWOjKKWbvXbw6C2qSu1MAD-05WvnY2cmSb64FkUxuhAWVUcmvFa0KHrlCPTBr6eo7NcnJOEdUIPAm3B04gPkpVZPVA7q1DZm4LvgUVi7IeAImHxR2O7efFMf3wrYZFAb-pg_PFUPWxx_Pll-VEVHMrVJkbvwJR11dYwkFbonobTHSCvkjoYdHa402GkwDn6WGFcLumR4uo" />
+                <div class="overflow-hidden">
+                    <p class="text-sm font-semibold text-on-primary truncate">Administrador</p>
+                    <p class="text-xs text-primary-200 truncate">Sede Central</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <header
+        class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-primary-900/80 backdrop-blur-xl dark:bg-primary-800/80 flex justify-between items-center px-8 font-['Manrope'] font-medium shadow-sm border-b border-primary-600/20">
+        <div
+            class="flex items-center bg-primary-800 px-4 py-2 rounded-full w-96 group focus-within:ring-1 focus-within:ring-accent/30 transition-all">
+            <span class="material-symbols-outlined text-primary-200 text-sm mr-2">search</span>
+            <input
+                class="bg-transparent border-none focus:ring-0 text-sm text-on-primary placeholder:text-primary-200 w-full"
+                placeholder="Buscar eventos, productos o facturas..." type="text" />
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="p-2 hover:bg-primary-700/60 rounded-full transition-all text-on-primary relative">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+            </button>
+            <button class="p-2 hover:bg-primary-700/60 rounded-full transition-all text-on-primary">
+                <span class="material-symbols-outlined">settings</span>
+            </button>
+            <div class="h-8 w-[1px] bg-primary-600/40 mx-2"></div>
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-on-primary">Pirotecnia San Rafael</span>
+                <div
+                    class="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center text-on-primary border border-primary-600/40">
+                    <span class="material-symbols-outlined text-lg">shield_person</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Content Wrapper -->
+    <main class="ml-64 min-h-screen flex flex-col">
+        <!-- TopNavBar (JSON Derived) -->
 
+        <!-- Dashboard Canvas -->
 
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            @yield('control-sidebar')
-        </aside>
-        <!-- /.control-sidebar -->
-    </div>
-    <!-- ./wrapper -->
+        @yield('main-content')
+    </main>
 
-    <!-- jQuery -->
-    <script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
-    <!-- jQuery UI 1.11.4 -->
-    <script src="{{ asset('adminlte/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-    <script>
-        $.widget.bridge('uibutton', $.ui.button)
-    </script>
-    <!-- Bootstrap 4 -->
-    <script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <!-- ChartJS -->
-    <script src="{{ asset('adminlte/plugins/chart.js/Chart.min.js') }}"></script>
-    <!-- Sparkline -->
-    <script src="{{ asset('adminlte/plugins/sparklines/sparkline.js') }}"></script>
-    <!-- JQVMap -->
-    <script src="{{ asset('adminlte/plugins/jqvmap/jquery.vmap.min.js') }}"></script>
-    <script src="{{ asset('adminlte/plugins/jqvmap/maps/jquery.vmap.usa.js') }}"></script>
-    <!-- jQuery Knob Chart -->
-    <script src="{{ asset('adminlte/plugins/jquery-knob/jquery.knob.min.js') }}"></script>
-    <!-- daterangepicker -->
-    <script src="{{ asset('adminlte/plugins/moment/moment.min.js') }}"></script>
-    <script src="{{ asset('adminlte/plugins/daterangepicker/daterangepicker.js') }}"></script>
-    <script src="{{ asset('adminlte/plugins/select2/js/select2.full.min.js') }}"></script>
-    <!-- Tempusdominus Bootstrap 4 -->
-    <script src="{{ asset('adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
-    <!-- Summernote -->
-    <script src="{{ asset('adminlte/plugins/summernote/summernote-bs4.min.js') }}"></script>
-
-    <script src="{{ asset('adminlte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    <!-- overlayScrollbars -->
-    <script src="{{ asset('adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="{{ asset('adminlte/dist/js/adminlte.js') }}"></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-
-    @livewireScripts
-    @yield('extra-script')
+    @livewireScriptConfig
 </body>
 
 </html>

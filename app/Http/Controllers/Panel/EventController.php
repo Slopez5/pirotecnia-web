@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Panel;
 use App\Core\UseCases\Events\GetEvent;
 use App\Helper\PdfQuoteFiller;
 use App\Helper\Reminder;
-use App\Helper\Whatsapp;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\Package;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
@@ -27,26 +27,16 @@ class EventController extends Controller
         $utcDateTime = new DateTime('now', new DateTimeZone('UTC'));
         $utcDateTime->setTimezone(new DateTimeZone('America/Mexico_City'));
         $dateLocal = $utcDateTime->format('Y-m-d H:i:s');
-        $packages = Package::all();
-        // separes the products of the package in materials and products
-        $events = Event::with(['packages', 'products', 'packages.products', 'packages.products.products'])
+        $events = Event::with(['packages', 'employees', 'typeEvent', 'products'])
             ->where('event_date', '>', $dateLocal)
+            ->orderBy('event_date')
             ->get()
             ->map(function ($event) {
-                // $productPackages = $event->packages->first()->products;
-                // unset($event->packages->first()->products);
-                // $event->package->first()->products = $productPackages->filter(function ($product) {
-                //     return $product->product_role_id == 3;
-                // })->values();
-                // $event->package->first()->materials = $productPackages->filter(function ($product) {
-                //     return $product->product_role_id == 2 || $product->product_role_id == 1;
-                // })->values();
-
                 return $event;
             });
         $itemActive = 4;
 
-        return view('panel.events.index', compact('events', 'packages', 'itemActive'));
+        return view('panel.events.index', compact('events', 'itemActive'));
     }
 
     // / Description of the function
@@ -60,14 +50,14 @@ class EventController extends Controller
 
     public function edit($id)
     {
-        $event = Event::find($id);
+        $event = Event::findOrFail($id);
 
         return view('panel.events.edit', compact('event'));
     }
 
     public function destroy($id)
     {
-        $event = Event::find($id);
+        $event = Event::findOrFail($id);
         $event->delete();
 
         return redirect()->route('events.index');
@@ -75,23 +65,25 @@ class EventController extends Controller
 
     public function show($id)
     {
-        $event = Event::find($id);
-        // Conbine all materials and equipments of all packages
-        $event->equipments = $event->packages->map(function ($package) {
-            return $package->equipments;
-        })->flatten();
-        $event->load(['employees']);
+        $event = $this->buildEventDetail(
+            Event::with([
+                'typeEvent',
+                'employees.user',
+                'employees.experienceLevel',
+                'products.inventories',
+                'equipments',
+                'packages.equipments',
+            ])->findOrFail($id)
+        );
 
-        // $event->products = $event->packages->map(function ($package) {
-        //     return $package->materials;
-        // })->flatten();
         return view('panel.events.show', compact('event'));
     }
 
     public function reminder($id)
     {
-        $event = Event::find($id);
-        if ($event->employees->first()->user->fcm_token) {
+        $event = Event::with(['employees.user'])->findOrFail($id);
+
+        if ($event->employees->first()?->user?->fcm_token) {
             Reminder::send($event, 'pushNotification', 0, true);
             Reminder::send($event, 'pushNotification', 0, false);
         }
@@ -101,25 +93,13 @@ class EventController extends Controller
 
     public function showByWhatsapp($id)
     {
-        $event = Event::with(['typeEvent', 'packages'])->where('id', $id)->get()->first();
-        $price = 0;
-        // verify if exist packages key
-        if ($event) {
-            foreach ($event->packages as $package) {
-                $price += $package->price;
-            }
-            $event->full_price = $price;
-            if ($event->discount > 1) {
-                $event->balance = ($price - $event->discount) - $event->advance + $event->travel_expenses;
-            } else {
-                $event->balance = ($price - ($price * $event->discount)) - $event->advance + $event->travel_expenses;
-            }
-        }
-        // Build PDF
+        $event = $this->buildEventDetail(
+            Event::with(['typeEvent', 'packages', 'employees', 'products'])->findOrFail($id)
+        );
+
         $pdf = Pdf::loadView('whatsapp.event_details_pdf_view', compact('event'));
 
         return $pdf->stream('event_details.pdf');
-        // return view('whatsapp.event_details_pdf_view', compact('event'));
     }
 
     public function showContract($id)
@@ -138,6 +118,9 @@ class EventController extends Controller
     private function generateContrato($data)
     {
         $package_names = implode(', ', $data->packages->pluck('name')->toArray());
+        if ($package_names === '' && $data->products->isNotEmpty()) {
+            $package_names = 'Paquete personalizado';
+        }
 
         $items = $data->products->map(fn ($p) => [
             'descripcion' => $p->name,
@@ -174,5 +157,103 @@ class EventController extends Controller
         $pdf = new PdfQuoteFiller;
 
         return $pdf->fill($data);
+    }
+
+    private function buildEventDetail(Event $event): Event
+    {
+        $event->setRelation('equipments', $this->mergeEventEquipments($event));
+
+        $subtotal = $this->resolveEventSubtotal($event);
+        $discountAmount = $this->resolveDiscountAmount($event, $subtotal);
+        $travelExpenses = $this->normalizeAmount($event->travel_expenses);
+        $advance = $this->normalizeAmount($event->advance);
+        $total = max($subtotal - $discountAmount + $travelExpenses, 0);
+        $eventDate = Carbon::parse($event->event_date, 'America/Mexico_City');
+        $packageLabel = $event->packages->pluck('name')->filter()->implode(', ');
+
+        if ($packageLabel === '' && $event->products->isNotEmpty()) {
+            $packageLabel = 'Paquete personalizado';
+        }
+
+        $event->setAttribute('event_type', optional($event->typeEvent)->name ?: 'Sin tipo');
+        $event->setAttribute('package_label', $packageLabel !== '' ? $packageLabel : 'Sin paquete asignado');
+        $event->setAttribute('event_code', 'EV-'.str_pad((string) $event->id, 4, '0', STR_PAD_LEFT));
+        $event->setAttribute('full_price', $subtotal);
+        $event->setAttribute('discount_amount', $discountAmount);
+        $event->setAttribute('travel_expenses_amount', $travelExpenses);
+        $event->setAttribute('advance_amount', $advance);
+        $event->setAttribute('total_amount', $total);
+        $event->setAttribute('balance', max($total - $advance, 0));
+        $event->setAttribute('event_day_label', $eventDate->locale('es')->isoFormat('D [de] MMMM [de] YYYY'));
+        $event->setAttribute('event_time_label', $eventDate->format('g:i A'));
+        $event->setAttribute('event_datetime_label', $eventDate->locale('es')->isoFormat('D MMM YYYY, HH:mm'));
+        $event->setAttribute('is_custom_event', $event->packages->isEmpty() && $event->products->isNotEmpty());
+
+        return $event;
+    }
+
+    private function mergeEventEquipments(Event $event): Collection
+    {
+        $directEquipments = $event->equipments ?? collect();
+        $packageEquipments = $directEquipments->isNotEmpty()
+            ? collect()
+            : $event->packages->flatMap(fn ($package) => $package->equipments ?? collect());
+
+        return $packageEquipments
+            ->merge($directEquipments)
+            ->groupBy('id')
+            ->map(function (Collection $items) {
+                $equipment = $items->first();
+                $quantity = $items->sum(fn ($item) => (int) ($item->pivot->quantity ?? 0));
+
+                if ($equipment?->pivot) {
+                    $equipment->pivot->quantity = $quantity;
+                }
+
+                return $equipment;
+            })
+            ->values();
+    }
+
+    private function resolveEventSubtotal(Event $event): float
+    {
+        $customPrice = $this->normalizeAmount($event->price);
+
+        if ($customPrice > 0) {
+            return $customPrice;
+        }
+
+        return (float) $event->packages->sum(function ($package) {
+            $quantity = max((int) ($package->pivot->quantity ?? 1), 1);
+            $unitPrice = $this->normalizeAmount(($package->pivot->price ?? 0) > 0 ? $package->pivot->price : $package->price);
+
+            return $unitPrice * $quantity;
+        });
+    }
+
+    private function resolveDiscountAmount(Event $event, float $subtotal): float
+    {
+        $discount = $this->normalizeAmount($event->discount);
+
+        if ($discount <= 0) {
+            return 0;
+        }
+
+        return $discount > 1 ? $discount : $subtotal * $discount;
+    }
+
+    private function normalizeAmount(mixed $value): float
+    {
+        if ($value === null) {
+            return 0.0;
+        }
+
+        $normalized = preg_replace('/[^0-9\-\.,]/', '', (string) $value);
+
+        if ($normalized === '' || $normalized === '-') {
+            return 0.0;
+        }
+
+        return (float) str_replace(',', '', $normalized);
     }
 }

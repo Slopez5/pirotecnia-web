@@ -18,6 +18,8 @@ use App\Http\Controllers\Panel\SaleController;
 use App\Http\Controllers\Panel\UserController;
 use Illuminate\Support\Facades\Route;
 
+Route::view('/', 'landing-page');
+
 // Auth
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'loginSubmit'])->name('login.submit');
@@ -44,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/home', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/panel/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/panel/employees', [UserController::class, 'indexEmployees'])->name('employees.index');
     Route::get('/panel/events', [EventController::class, 'index'])->name('events.index');

@@ -112,11 +112,16 @@ class Event
 
     private static function extractAttributes($event)
     {
+        $packageName = $event->packages->first()?->name;
+
+        if ($packageName === null && $event->products->isNotEmpty()) {
+            $packageName = 'Paquete personalizado';
+        }
 
         return [
             'id' => $event->id,
-            'event_type' => $event->typeEvent->name,
-            'package' => $event->packages[0]->name,
+            'event_type' => optional($event->typeEvent)->name ?: 'Sin tipo',
+            'package' => $packageName ?: 'Sin paquete asignado',
             'date' => $event->date,
             'phone' => $event->phone,
             'client_name' => $event->client_name,
@@ -145,18 +150,18 @@ class Event
 
     private static function mapProducts($packages, $products)
     {
-        // $products = $packages->flatMap(fn ($package) => $package->products->map(fn ($product) => Product::fromProduct($product)))
-        //     ->merge($products->map(fn ($product) => Product::fromProduct($product)));
-       
         return $products->map(function ($product) use ($products) {
-            return Product::fromProduct($product);
+            return Product::fromProduct($product, 'event');
         })->unique('id')->values();
     }
 
     private static function mapEquipments($packages, $equipments)
     {
-        $equipments = $packages->flatMap(fn ($package) => $package->equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)))
-            ->merge($equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)));
+        if ($equipments->isNotEmpty()) {
+            $equipments = $equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment));
+        } else {
+            $equipments = $packages->flatMap(fn ($package) => $package->equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)));
+        }
 
         return $equipments->map(function ($equipment) use ($equipments) {
             $sameEquipment = $equipments->where('id', $equipment->id);

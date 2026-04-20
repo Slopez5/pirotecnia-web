@@ -53,7 +53,7 @@ class Event extends Model
 
     public function equipments(): BelongsToMany
     {
-        return $this->belongsToMany(Equipment::class)->withPivot('quantity')->withTimestamps();
+        return $this->belongsToMany(Equipment::class)->withPivot('quantity', 'check_employee', 'check_almacen')->withTimestamps();
     }
 
     public function employees(): BelongsToMany
@@ -63,7 +63,7 @@ class Event extends Model
 
     public function products(): MorphToMany
     {
-        return $this->morphToMany(Product::class, 'productable')->withPivot('quantity', 'price')->withTimestamps();
+        return $this->morphToMany(Product::class, 'productable')->withPivot('quantity', 'price', 'check_employee', 'check_almacen')->withTimestamps();
     }
 
     public function typeEvent(): BelongsTo

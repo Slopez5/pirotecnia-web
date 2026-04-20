@@ -39,12 +39,14 @@ class Package
 
     public static function fromPackage($package)
     {
+        $snapshotPrice = (float) ($package->pivot->price ?? 0);
+
         return new Package([
             'id' => $package->id,
             'experience_level_id' => $package->experience_level_id,
             'name' => $package->name,
             'description' => $package->description,
-            'price' => $package->price,
+            'price' => $snapshotPrice > 0 ? $snapshotPrice : $package->price,
             'duration' => $package->duration,
             'video_url' => $package->video_url,
             'equipments' => $package->equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)),
