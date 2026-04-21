@@ -15,6 +15,7 @@ use App\Http\Controllers\Panel\ProductController;
 use App\Http\Controllers\Panel\ProductRoleController;
 use App\Http\Controllers\Panel\PurchaseController;
 use App\Http\Controllers\Panel\SaleController;
+use App\Http\Controllers\Panel\SearchController;
 use App\Http\Controllers\Panel\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,7 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard
     Route::get('/home', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/panel/search', [SearchController::class, 'index'])->name('search.global');
     Route::get('/panel/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/panel/employees', [UserController::class, 'indexEmployees'])->name('employees.index');
     Route::get('/panel/events', [EventController::class, 'index'])->name('events.index');

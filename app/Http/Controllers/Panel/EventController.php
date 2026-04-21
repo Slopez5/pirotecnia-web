@@ -9,9 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use DateTime;
-use DateTimeZone;
 use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
@@ -22,21 +21,26 @@ class EventController extends Controller
     // / This function is used to get all the events that are going to happen in the future and show them in the view
     // / ## Returns
     // / - View: The view with the events that are going to happen in the future
-    public function index()
+    public function index(Request $request)
     {
-        $utcDateTime = new DateTime('now', new DateTimeZone('UTC'));
-        $utcDateTime->setTimezone(new DateTimeZone('America/Mexico_City'));
-        $dateLocal = $utcDateTime->format('Y-m-d H:i:s');
+        [$startDate, $endDate] = $this->resolveIndexDateRange($request);
+
         $events = Event::with(['packages', 'employees', 'typeEvent', 'products'])
-            ->where('event_date', '>', $dateLocal)
+            ->whereBetween('event_date', [
+                $startDate->toDateTimeString(),
+                $endDate->toDateTimeString(),
+            ])
             ->orderBy('event_date')
-            ->get()
-            ->map(function ($event) {
-                return $event;
-            });
+            ->get();
         $itemActive = 4;
 
-        return view('panel.events.index', compact('events', 'itemActive'));
+        return view('panel.events.index', [
+            'events' => $events,
+            'itemActive' => $itemActive,
+            'selectedStartDate' => $startDate->toDateString(),
+            'selectedEndDate' => $endDate->toDateString(),
+            'rangeLabel' => $this->buildRangeLabel($startDate, $endDate),
+        ]);
     }
 
     // / Description of the function
@@ -122,12 +126,6 @@ class EventController extends Controller
             $package_names = 'Paquete personalizado';
         }
 
-        $items = $data->products->map(fn ($p) => [
-            'descripcion' => $p->name,
-            'cantidad' => $p->quantity,
-            'precio' => $p->price,
-        ])->toArray();
-
         $price = 0;
         if ($data->price == 0) {
             foreach ($data->packages as $package) {
@@ -136,7 +134,9 @@ class EventController extends Controller
         } else {
             $price = $data->price;
         }
-        
+
+        $items = $this->buildContractItems($data, (float) $price);
+
         $data = [
             'fecha' => $data->date,
             'telefono' => $data->phone,
@@ -157,6 +157,33 @@ class EventController extends Controller
         $pdf = new PdfQuoteFiller;
 
         return $pdf->fill($data);
+    }
+
+    private function buildContractItems(object $event, float $basePrice): array
+    {
+        if ($event->packages->isNotEmpty()) {
+            return $event->packages->map(fn ($package) => [
+                'descripcion' => $package->name,
+                'cantidad' => 1,
+                'precio' => (float) $package->price,
+            ])->toArray();
+        }
+
+        $contractDescription = trim((string) ($event->contract_description ?? ''));
+
+        if ($contractDescription !== '') {
+            return [[
+                'descripcion' => $contractDescription,
+                'cantidad' => 1,
+                'precio' => $basePrice,
+            ]];
+        }
+
+        return $event->products->map(fn ($product) => [
+            'descripcion' => $product->name,
+            'cantidad' => $product->quantity,
+            'precio' => $product->price,
+        ])->toArray();
     }
 
     private function buildEventDetail(Event $event): Event
@@ -190,6 +217,40 @@ class EventController extends Controller
         $event->setAttribute('is_custom_event', $event->packages->isEmpty() && $event->products->isNotEmpty());
 
         return $event;
+    }
+
+    private function resolveIndexDateRange(Request $request): array
+    {
+        $timezone = 'America/Mexico_City';
+        $defaultStartDate = Carbon::now($timezone)->startOfWeek(Carbon::MONDAY)->startOfDay();
+        $defaultEndDate = Carbon::now($timezone)->endOfWeek(Carbon::SUNDAY)->endOfDay();
+        $startDateInput = $request->query('start_date');
+        $endDateInput = $request->query('end_date');
+
+        if (! $startDateInput || ! $endDateInput) {
+            return [$defaultStartDate, $defaultEndDate];
+        }
+
+        try {
+            $startDate = Carbon::createFromFormat('Y-m-d', $startDateInput, $timezone)->startOfDay();
+            $endDate = Carbon::createFromFormat('Y-m-d', $endDateInput, $timezone)->endOfDay();
+        } catch (\Throwable $exception) {
+            return [$defaultStartDate, $defaultEndDate];
+        }
+
+        if ($startDate->gt($endDate)) {
+            [$startDate, $endDate] = [$endDate->copy()->startOfDay(), $startDate->copy()->endOfDay()];
+        }
+
+        return [$startDate, $endDate];
+    }
+
+    private function buildRangeLabel(Carbon $startDate, Carbon $endDate): string
+    {
+        $startLabel = $startDate->copy()->locale('es')->isoFormat('D MMM YYYY');
+        $endLabel = $endDate->copy()->locale('es')->isoFormat('D MMM YYYY');
+
+        return $startDate->isSameDay($endDate) ? $startLabel : $startLabel . ' - ' . $endLabel;
     }
 
     private function mergeEventEquipments(Event $event): Collection

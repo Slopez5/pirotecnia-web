@@ -25,6 +25,7 @@ class Event extends Model
         'advance',
         'travel_expenses',
         'notes',
+        'contract_description',
         'reminder_send_date',
         'reminder_sent',
         'price',

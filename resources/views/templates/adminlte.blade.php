@@ -102,13 +102,19 @@
     </aside>
     <header
         class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-primary-900/80 backdrop-blur-xl dark:bg-primary-800/80 flex justify-between items-center px-8 font-['Manrope'] font-medium shadow-sm border-b border-primary-600/20">
-        <div
-            class="flex items-center bg-primary-800 px-4 py-2 rounded-full w-96 group focus-within:ring-1 focus-within:ring-accent/30 transition-all">
-            <span class="material-symbols-outlined text-primary-200 text-sm mr-2">search</span>
+        <form action="{{ route('search.global') }}"
+            class="flex w-full max-w-xl items-center rounded-full bg-primary-800 px-4 py-2 transition-all focus-within:ring-1 focus-within:ring-accent/30"
+            method="GET">
+            <span class="material-symbols-outlined mr-2 text-sm text-primary-200">search</span>
             <input
-                class="bg-transparent border-none focus:ring-0 text-sm text-on-primary placeholder:text-primary-200 w-full"
-                placeholder="Buscar eventos, productos o facturas..." type="text" />
-        </div>
+                class="w-full border-none bg-transparent text-sm text-on-primary placeholder:text-primary-200 focus:ring-0"
+                name="q" placeholder="Buscar eventos, empleados, productos o ventas..." type="text"
+                value="{{ request('q') }}" />
+            <button class="rounded-full bg-primary-700 px-3 py-1 text-xs font-semibold text-on-primary transition hover:bg-primary-600"
+                type="submit">
+                Buscar
+            </button>
+        </form>
         <div class="flex items-center gap-4">
             <button class="p-2 hover:bg-primary-700/60 rounded-full transition-all text-on-primary relative">
                 <span class="material-symbols-outlined">notifications</span>

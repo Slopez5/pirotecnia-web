@@ -1,6 +1,7 @@
 @php
     $sectionClass = 'rounded-3xl border border-primary-700/60 bg-primary-900/40 p-6 shadow-soft';
-    $sectionHeaderClass = 'mb-6 flex flex-col gap-3 border-b border-primary-700/60 pb-4 lg:flex-row lg:items-start lg:justify-between';
+    $sectionHeaderClass =
+        'mb-6 flex flex-col gap-3 border-b border-primary-700/60 pb-4 lg:flex-row lg:items-start lg:justify-between';
     $labelClass = 'text-[11px] font-semibold uppercase tracking-[0.24em] text-primary-200';
     $inputClass =
         'w-full rounded-2xl border border-primary-600/40 bg-primary-900/70 px-4 py-3 text-sm text-on-primary placeholder:text-primary-300 transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20';
@@ -13,7 +14,8 @@
         <article class="rounded-2xl border border-primary-700/60 bg-primary-900/40 p-5">
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-200">Modo</p>
             <p class="mt-3 text-2xl font-bold text-on-primary">{{ $isEditMode ? 'Edición' : 'Nuevo registro' }}</p>
-            <p class="mt-2 text-sm text-primary-200">Flujo {{ $isEditMode ? 'de actualización' : 'de alta comercial' }} activo.</p>
+            <p class="mt-2 text-sm text-primary-200">Flujo {{ $isEditMode ? 'de actualización' : 'de alta comercial' }}
+                activo.</p>
         </article>
         <article class="rounded-2xl border border-primary-700/60 bg-primary-900/40 p-5">
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-200">Paquetes registrados</p>
@@ -37,14 +39,16 @@
                     <h4 class="mt-2 text-xl font-bold text-on-primary">Datos de contacto</h4>
                 </div>
                 <p class="max-w-xl text-sm text-primary-200">
-                    Registra la información base para identificar rápidamente al cliente y mantener trazabilidad del contrato.
+                    Registra la información base para identificar rápidamente al cliente y mantener trazabilidad del
+                    contrato.
                 </p>
             </div>
 
             <div class="grid gap-5 md:grid-cols-2">
                 <div class="space-y-2">
                     <label class="{{ $labelClass }}" for="phone">Teléfono</label>
-                    <input class="{{ $inputClass }}" id="phone" placeholder="55 0000 0000" type="text" wire:model="phone">
+                    <input class="{{ $inputClass }}" id="phone" placeholder="55 0000 0000" type="text"
+                        wire:model="phone">
                     @error('phone')
                         <p class="{{ $errorClass }}">{{ $message }}</p>
                     @enderror
@@ -62,7 +66,8 @@
                 <div class="space-y-2 md:col-span-2">
                     <label class="{{ $labelClass }}" for="client_address">Dirección del cliente</label>
                     <input class="{{ $inputClass }}" id="client_address"
-                        placeholder="Calle, número, colonia y ciudad del cliente" type="text" wire:model="client_address">
+                        placeholder="Calle, número, colonia y ciudad del cliente" type="text"
+                        wire:model="client_address">
                     @error('client_address')
                         <p class="{{ $errorClass }}">{{ $message }}</p>
                     @enderror
@@ -84,7 +89,7 @@
             <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
                 <div class="space-y-2">
                     <label class="{{ $labelClass }}" for="date">Fecha de registro</label>
-                    <input class="{{ $inputClass }}" id="date" type="date" wire:model="date">
+                    <input class="{{ $inputClass }}" id="date" type="date" wire:model="date" disabled>
                     @error('date')
                         <p class="{{ $errorClass }}">{{ $message }}</p>
                     @enderror
@@ -108,7 +113,8 @@
 
                 <div class="space-y-2">
                     <label class="{{ $labelClass }}" for="event_type_id">Tipo de evento</label>
-                    <select class="{{ $inputClass }} appearance-none" id="event_type_id" wire:model.live="event_type_id">
+                    <select class="{{ $inputClass }} appearance-none" id="event_type_id"
+                        wire:model.live="event_type_id">
                         <option value="">Seleccione un tipo de evento</option>
                         @foreach ($eventTypes as $eventType)
                             <option value="{{ $eventType->id }}">{{ $eventType->name }}</option>
@@ -122,7 +128,8 @@
                 <div class="space-y-2 md:col-span-2 xl:col-span-4">
                     <label class="{{ $labelClass }}" for="event_address">Dirección del evento</label>
                     <input class="{{ $inputClass }}" id="event_address"
-                        placeholder="Ubicación exacta donde se montará el espectáculo" type="text" wire:model="event_address">
+                        placeholder="Ubicación exacta donde se montará el espectáculo" type="text"
+                        wire:model="event_address">
                     @error('event_address')
                         <p class="{{ $errorClass }}">{{ $message }}</p>
                     @enderror
@@ -137,18 +144,20 @@
                     <h4 class="mt-2 text-xl font-bold text-on-primary">Cómo se construirá este evento</h4>
                 </div>
                 <p class="max-w-xl text-sm text-primary-200">
-                    Elige si trabajarás con paquetes registrados o con una composición personalizada que solo viva dentro de este evento.
+                    Elige si trabajarás con paquetes registrados o con una composición personalizada que solo viva
+                    dentro de este evento.
                 </p>
             </div>
 
             <div class="grid gap-4 xl:grid-cols-2">
-                <button
-                    @class([
-                        'rounded-2xl border p-6 text-left transition-all',
-                        'border-secondary bg-secondary/10 shadow-lg shadow-secondary/10' => $packageMode === 'registered',
-                        'border-primary-700/60 bg-primary-800/60 hover:border-primary-500/60' => $packageMode !== 'registered',
-                        'cursor-not-allowed opacity-55' => $packages->isEmpty(),
-                    ])
+                <button @class([
+                    'rounded-2xl border p-6 text-left transition-all',
+                    'border-secondary bg-secondary/10 shadow-lg shadow-secondary/10' =>
+                        $packageMode === 'registered',
+                    'border-primary-700/60 bg-primary-800/60 hover:border-primary-500/60' =>
+                        $packageMode !== 'registered',
+                    'cursor-not-allowed opacity-55' => $packages->isEmpty(),
+                ])
                     @if ($packages->isNotEmpty()) wire:click="$set('packageMode', 'registered')" @endif
                     type="button">
                     <div class="flex items-start justify-between gap-4">
@@ -156,7 +165,8 @@
                             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-secondary">Opción 1</p>
                             <h5 class="mt-2 text-lg font-bold text-on-primary">Paquete registrado</h5>
                             <p class="mt-2 text-sm leading-6 text-primary-200">
-                                Usa uno o varios paquetes ya dados de alta y, si hace falta, complementa con selección de materiales variables.
+                                Usa uno o varios paquetes ya dados de alta y, si hace falta, complementa con selección
+                                de materiales variables.
                             </p>
                         </div>
                         <span
@@ -165,7 +175,8 @@
                         </span>
                     </div>
                     <div class="mt-5 flex flex-wrap items-center gap-3 text-xs font-semibold">
-                        <span class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
+                        <span
+                            class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
                             {{ $packages->count() }} disponibles
                         </span>
                         @if ($packages->isEmpty())
@@ -176,19 +187,20 @@
                     </div>
                 </button>
 
-                <button
-                    @class([
-                        'rounded-2xl border p-6 text-left transition-all',
-                        'border-accent bg-accent/10 shadow-lg shadow-accent/10' => $packageMode === 'custom',
-                        'border-primary-700/60 bg-primary-800/60 hover:border-primary-500/60' => $packageMode !== 'custom',
-                    ])
-                    type="button" wire:click="$set('packageMode', 'custom')">
+                <button @class([
+                    'rounded-2xl border p-6 text-left transition-all',
+                    'border-accent bg-accent/10 shadow-lg shadow-accent/10' =>
+                        $packageMode === 'custom',
+                    'border-primary-700/60 bg-primary-800/60 hover:border-primary-500/60' =>
+                        $packageMode !== 'custom',
+                ]) type="button" wire:click="$set('packageMode', 'custom')">
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-accent">Opción 2</p>
                             <h5 class="mt-2 text-lg font-bold text-on-primary">Paquete personalizado</h5>
                             <p class="mt-2 text-sm leading-6 text-primary-200">
-                                Construye el evento agregando productos reales del catálogo. No se registrará un `Package`; solo se guardará la composición del evento.
+                                Construye el evento agregando productos reales del catálogo. No se registrará un
+                                `Package`; solo se guardará la composición del evento.
                             </p>
                         </div>
                         <span
@@ -200,7 +212,8 @@
                         <span class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-accent">
                             Flexible y sin catálogo
                         </span>
-                        <span class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
+                        <span
+                            class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
                             Guarda materiales directos
                         </span>
                     </div>
@@ -225,8 +238,10 @@
                         <div class="rounded-2xl border border-primary-700/60 bg-primary-800/60 p-5">
                             <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
                                 <div class="space-y-2">
-                                    <label class="{{ $labelClass }}" for="package_id_{{ $i }}">Paquete {{ $i + 1 }}</label>
-                                    <select class="{{ $inputClass }} appearance-none" id="package_id_{{ $i }}"
+                                    <label class="{{ $labelClass }}" for="package_id_{{ $i }}">Paquete
+                                        {{ $i + 1 }}</label>
+                                    <select class="{{ $inputClass }} appearance-none"
+                                        id="package_id_{{ $i }}"
                                         wire:model.live="package_id.{{ $i }}">
                                         <option value="">Seleccione un paquete</option>
                                         @foreach ($packages as $package)
@@ -238,7 +253,8 @@
                                     </select>
                                     @if ($i === $countPackageInputs - 1)
                                         <p class="text-xs text-primary-200">
-                                            Usa la opción <span class="font-semibold text-secondary">Agregar paquete</span> si
+                                            Usa la opción <span class="font-semibold text-secondary">Agregar
+                                                paquete</span> si
                                             necesitas registrarlo sin salir del evento.
                                         </p>
                                     @endif
@@ -273,11 +289,13 @@
             <section class="{{ $sectionClass }}">
                 <div class="{{ $sectionHeaderClass }}">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-accent">Composición personalizada</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-accent">Composición
+                            personalizada</p>
                         <h4 class="mt-2 text-xl font-bold text-on-primary">Constructor del evento</h4>
                     </div>
                     <p class="max-w-xl text-sm text-primary-200">
-                        Agrega productos reales al evento sin dar de alta un paquete formal. La composición se guardará solo dentro de esta contratación.
+                        Agrega productos reales al evento sin dar de alta un paquete formal. La composición se guardará
+                        solo dentro de esta contratación.
                     </p>
                 </div>
 
@@ -296,12 +314,13 @@
                         <div class="space-y-2">
                             <label class="{{ $labelClass }}" for="customProductSearch">Buscar productos</label>
                             <input class="{{ $inputClass }}" id="customProductSearch"
-                                placeholder="Ej. cake, bomba, cruz del sur..." type="text" wire:model.live.debounce.300ms="customProductSearch">
+                                placeholder="Ej. cake, bomba, cruz del sur..." type="text"
+                                wire:model.live.debounce.300ms="customProductSearch">
                         </div>
                         <div class="space-y-2">
                             <label class="{{ $labelClass }}" for="customProductQuantity">Cantidad a agregar</label>
-                            <input class="{{ $inputClass }}" id="customProductQuantity" min="1" type="number"
-                                wire:model.live="customProductQuantity">
+                            <input class="{{ $inputClass }}" id="customProductQuantity" min="1"
+                                type="number" wire:model.live="customProductQuantity">
                         </div>
                     </div>
 
@@ -310,9 +329,11 @@
                             <div class="flex items-center justify-between gap-3">
                                 <div>
                                     <p class="text-sm font-semibold text-on-primary">Catálogo de productos</p>
-                                    <p class="text-xs text-primary-200">Selecciona piezas reales para construir este evento.</p>
+                                    <p class="text-xs text-primary-200">Selecciona piezas reales para construir este
+                                        evento.</p>
                                 </div>
-                                <span class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-xs font-semibold text-primary-100">
+                                <span
+                                    class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-xs font-semibold text-primary-100">
                                     {{ $customCatalogProducts->count() }} visibles
                                 </span>
                             </div>
@@ -325,27 +346,39 @@
                                             type="button" wire:click="addCustomProduct({{ $catalogProduct->id }})">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div>
-                                                    <p class="text-sm font-semibold text-on-primary">{{ $catalogProduct->name }}</p>
+                                                    <p class="text-sm font-semibold text-on-primary">
+                                                        {{ $catalogProduct->name }}</p>
                                                     @php
                                                         $descriptor = collect([
-                                                            $catalogProduct->caliber ? $catalogProduct->caliber . '"' : null,
-                                                            $catalogProduct->shots ? $catalogProduct->shots . ' tiros' : null,
+                                                            $catalogProduct->caliber
+                                                                ? $catalogProduct->caliber . '"'
+                                                                : null,
+                                                            $catalogProduct->shots
+                                                                ? $catalogProduct->shots . ' tiros'
+                                                                : null,
                                                             $catalogProduct->shape ?: null,
                                                             $catalogProduct->unit ?: null,
-                                                        ])->filter()->implode(' · ');
+                                                        ])
+                                                            ->filter()
+                                                            ->implode(' · ');
                                                     @endphp
                                                     @if ($descriptor !== '')
-                                                        <p class="mt-1 text-xs text-primary-200">{{ $descriptor }}</p>
+                                                        <p class="mt-1 text-xs text-primary-200">{{ $descriptor }}
+                                                        </p>
                                                     @endif
                                                 </div>
-                                                <span class="material-symbols-outlined text-primary-200 transition group-hover:text-accent">add_circle</span>
+                                                <span
+                                                    class="material-symbols-outlined text-primary-200 transition group-hover:text-accent">add_circle</span>
                                             </div>
                                             <div class="mt-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
-                                                <span class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
-                                                    Stock {{ $catalogProduct->inventories->first()->pivot->quantity ?? 0 }}
+                                                <span
+                                                    class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
+                                                    Stock
+                                                    {{ $catalogProduct->inventories->first()->pivot->quantity ?? 0 }}
                                                 </span>
                                                 @if (isset($customSelectedIndex[$catalogProduct->id]))
-                                                    <span class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-accent">
+                                                    <span
+                                                        class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-accent">
                                                         Agregado x{{ $customSelectedIndex[$catalogProduct->id] }}
                                                     </span>
                                                 @endif
@@ -356,7 +389,8 @@
                             @else
                                 <div class="rounded-2xl border border-primary-700/60 bg-primary-800/60 p-5">
                                     <p class="text-sm font-semibold text-on-primary">Sin resultados</p>
-                                    <p class="mt-2 text-sm text-primary-200">No encontré materiales con ese filtro. Prueba otro nombre o borra la búsqueda.</p>
+                                    <p class="mt-2 text-sm text-primary-200">No encontré materiales con ese filtro.
+                                        Prueba otro nombre o borra la búsqueda.</p>
                                 </div>
                             @endif
                         </div>
@@ -364,14 +398,18 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-sm font-semibold text-on-primary">Resumen del paquete personalizado</p>
-                                    <p class="text-xs text-primary-200">Edita cantidades o elimina piezas antes de guardar.</p>
+                                    <p class="text-sm font-semibold text-on-primary">Resumen del paquete personalizado
+                                    </p>
+                                    <p class="text-xs text-primary-200">Edita cantidades o elimina piezas antes de
+                                        guardar.</p>
                                 </div>
                                 <div class="flex flex-wrap gap-2 text-xs font-semibold">
-                                    <span class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-accent">
+                                    <span
+                                        class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-accent">
                                         {{ $customSelectionItems->count() }} materiales
                                     </span>
-                                    <span class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
+                                    <span
+                                        class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-primary-100">
                                         {{ $customSelectionItems->sum('quantity') }} piezas
                                     </span>
                                 </div>
@@ -384,27 +422,35 @@
                             @if ($customSelectionItems->isNotEmpty())
                                 <div class="space-y-3">
                                     @foreach ($customSelectionItems as $item)
-                                        <article class="rounded-2xl border border-primary-700/60 bg-primary-800/60 p-4">
+                                        <article
+                                            class="rounded-2xl border border-primary-700/60 bg-primary-800/60 p-4">
                                             <div class="flex items-start justify-between gap-4">
                                                 <div>
-                                                    <p class="text-sm font-semibold text-on-primary">{{ $item['name'] }}</p>
+                                                    <p class="text-sm font-semibold text-on-primary">
+                                                        {{ $item['name'] }}</p>
                                                     @if ($item['descriptor'] !== '')
-                                                        <p class="mt-1 text-xs text-primary-200">{{ $item['descriptor'] }}</p>
+                                                        <p class="mt-1 text-xs text-primary-200">
+                                                            {{ $item['descriptor'] }}</p>
                                                     @endif
-                                                    <p class="mt-2 text-xs font-semibold text-primary-100">Stock actual: {{ $item['stock'] }}</p>
+                                                    <p class="mt-2 text-xs font-semibold text-primary-100">Stock
+                                                        actual: {{ $item['stock'] }}</p>
                                                 </div>
                                                 <button
                                                     class="inline-flex items-center gap-2 rounded-xl bg-error/10 px-3 py-2 text-xs font-semibold text-error transition-colors hover:bg-error/20"
-                                                    type="button" wire:click="removeCustomProduct({{ $item['index'] }})">
+                                                    type="button"
+                                                    wire:click="removeCustomProduct({{ $item['index'] }})">
                                                     <span class="material-symbols-outlined text-base">delete</span>
                                                     Quitar
                                                 </button>
                                             </div>
                                             <div class="mt-4 grid gap-3 sm:grid-cols-[140px_auto] sm:items-end">
                                                 <div class="space-y-2">
-                                                    <label class="{{ $labelClass }}" for="custom_product_qty_{{ $item['index'] }}">Cantidad</label>
-                                                    <input class="{{ $inputClass }}" id="custom_product_qty_{{ $item['index'] }}"
-                                                        min="1" type="number" wire:model.live="customProducts.{{ $item['index'] }}.quantity">
+                                                    <label class="{{ $labelClass }}"
+                                                        for="custom_product_qty_{{ $item['index'] }}">Cantidad</label>
+                                                    <input class="{{ $inputClass }}"
+                                                        id="custom_product_qty_{{ $item['index'] }}" min="1"
+                                                        type="number"
+                                                        wire:model.live="customProducts.{{ $item['index'] }}.quantity">
                                                 </div>
                                                 <p class="text-xs text-primary-200">
                                                     Esta cantidad se guardará directamente en los materiales del evento.
@@ -417,7 +463,8 @@
                                 <div class="rounded-2xl border border-warning/30 bg-warning/10 p-5">
                                     <p class="text-sm font-semibold text-warning">Aún no hay materiales agregados</p>
                                     <p class="mt-2 text-sm text-primary-100">
-                                        Usa el catálogo de la izquierda para ir agregando productos al evento antes de guardar.
+                                        Usa el catálogo de la izquierda para ir agregando productos al evento antes de
+                                        guardar.
                                     </p>
                                 </div>
                             @endif
@@ -446,8 +493,10 @@
                         <div class="rounded-2xl border border-primary-700/60 bg-primary-800/60 p-5">
                             <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
                                 <div class="space-y-2">
-                                    <label class="{{ $labelClass }}" for="employee_id_{{ $i }}">Encargado {{ $i + 1 }}</label>
-                                    <select class="{{ $inputClass }} appearance-none" id="employee_id_{{ $i }}"
+                                    <label class="{{ $labelClass }}"
+                                        for="employee_id_{{ $i }}">Encargado {{ $i + 1 }}</label>
+                                    <select class="{{ $inputClass }} appearance-none"
+                                        id="employee_id_{{ $i }}"
                                         wire:model="employee_id.{{ $i }}">
                                         <option value="">Seleccione un encargado</option>
                                         @foreach ($employees as $employee)
@@ -497,7 +546,8 @@
                     <div class="mb-5 rounded-2xl border border-warning/30 bg-warning/10 p-4">
                         <p class="text-sm font-semibold text-warning">Precio final requerido</p>
                         <p class="mt-2 text-sm text-primary-100">
-                            Como este evento no registrará un paquete formal, el campo <span class="font-semibold">Precio final</span>
+                            Como este evento no registrará un paquete formal, el campo <span
+                                class="font-semibold">Precio final</span>
                             será la referencia para agenda, contrato y métricas.
                         </p>
                     </div>
@@ -506,8 +556,8 @@
                 <div class="grid gap-5 md:grid-cols-2">
                     <div class="space-y-2">
                         <label class="{{ $labelClass }}" for="discount">Descuento</label>
-                        <input class="{{ $inputClass }}" id="discount" placeholder="10% o $1,500" type="text"
-                            wire:model="discountString">
+                        <input class="{{ $inputClass }}" id="discount" placeholder="10% o $1,500"
+                            type="text" wire:model="discountString">
                         @error('discount')
                             <p class="{{ $errorClass }}">{{ $message }}</p>
                         @enderror
@@ -540,10 +590,26 @@
                         @enderror
                     </div>
 
+                    @if ($packageMode === 'custom')
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="{{ $labelClass }}" for="contract_description">Descripción en contrato</label>
+                            <textarea class="{{ $textareaClass }}" id="contract_description"
+                                placeholder="Opcional. Describe cómo debe presentarse este paquete personalizado ante el cliente en el contrato."
+                                wire:model="contract_description"></textarea>
+                            <p class="text-xs text-primary-200">
+                                Si la capturas, el contrato mostrará esta descripción comercial en lugar del desglose
+                                técnico de materiales.
+                            </p>
+                            @error('contract_description')
+                                <p class="{{ $errorClass }}">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+
                     <div class="space-y-2 md:col-span-2">
                         <label class="{{ $labelClass }}" for="notes">Notas</label>
-                        <textarea class="{{ $textareaClass }}" id="notes" placeholder="Observaciones, acuerdos especiales o requerimientos del cliente"
-                            wire:model="notes"></textarea>
+                        <textarea class="{{ $textareaClass }}" id="notes"
+                            placeholder="Observaciones, acuerdos especiales o requerimientos del cliente" wire:model="notes"></textarea>
                         @error('notes')
                             <p class="{{ $errorClass }}">{{ $message }}</p>
                         @enderror
@@ -556,11 +622,13 @@
             <section class="{{ $sectionClass }}">
                 <div class="{{ $sectionHeaderClass }}">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-warning">Materiales variables</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-warning">Materiales variables
+                        </p>
                         <h4 class="mt-2 text-xl font-bold text-on-primary">Selección por paquete</h4>
                     </div>
                     <p class="max-w-xl text-sm text-primary-200">
-                        Cuando un paquete requiera elegir materiales equivalentes, aquí podrás decidir qué producto se usará.
+                        Cuando un paquete requiera elegir materiales equivalentes, aquí podrás decidir qué producto se
+                        usará.
                     </p>
                 </div>
 
@@ -590,7 +658,8 @@
                                             @foreach ($product->products as $material)
                                                 <label
                                                     class="group block cursor-pointer rounded-2xl border border-primary-700/60 bg-primary-900/40 p-4 transition-all hover:border-accent/40 hover:bg-primary-900/70">
-                                                    <input class="peer sr-only" name="products-{{ $indexProducts }}-{{ $indexMaterial }}"
+                                                    <input class="peer sr-only"
+                                                        name="products-{{ $indexProducts }}-{{ $indexMaterial }}"
                                                         type="radio" value="{{ $material->id }}"
                                                         wire:key="product-option-{{ $selectionKey }}-{{ $material->id }}"
                                                         wire:model="radioSelected.{{ $selectionKey }}">
@@ -669,7 +738,8 @@
                 <p class="text-sm font-semibold text-on-primary">
                     {{ $isEditMode ? 'Actualiza el evento cuando termines los ajustes.' : 'Guarda el evento para enviarlo a la agenda operativa.' }}
                 </p>
-                <p class="mt-1 text-sm text-primary-200">El registro usará la configuración actual del backend y sus relaciones.</p>
+                <p class="mt-1 text-sm text-primary-200">El registro usará la configuración actual del backend y sus
+                    relaciones.</p>
             </div>
             <div class="flex flex-wrap gap-3">
                 <a class="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-600"
@@ -677,15 +747,15 @@
                     <span class="material-symbols-outlined text-base">close</span>
                     Cancelar
                 </a>
-                <button
-                    @class([
-                        'inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all',
-                        'bg-secondary text-on-secondary shadow-lg shadow-secondary/20 hover:bg-secondary-600 active:scale-95' =>
-                            $this->enableSave,
-                        'cursor-not-allowed bg-primary-700 text-primary-200 opacity-60' => ! $this->enableSave,
-                    ])
-                    @disabled(! $this->enableSave) type="submit" wire:loading.attr="disabled">
-                    <span class="material-symbols-outlined text-base" wire:loading.remove wire:target="save,saveAndContinue">
+                <button @class([
+                    'inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all',
+                    'bg-secondary text-on-secondary shadow-lg shadow-secondary/20 hover:bg-secondary-600 active:scale-95' =>
+                        $this->enableSave,
+                    'cursor-not-allowed bg-primary-700 text-primary-200 opacity-60' => !$this->enableSave,
+                ]) @disabled(!$this->enableSave) type="submit"
+                    wire:loading.attr="disabled">
+                    <span class="material-symbols-outlined text-base" wire:loading.remove
+                        wire:target="save,saveAndContinue">
                         save
                     </span>
                     <span wire:loading.remove wire:target="save,saveAndContinue">

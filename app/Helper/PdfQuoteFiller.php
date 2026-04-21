@@ -70,14 +70,16 @@ class PdfQuoteFiller
         $wPrec = 25;
 
         $pdf->SetFont('Arial', '', 11);
-        $items = $data['packages']->toArray() ?? [];
+        $items = collect($data['items'] ?? $data['packages'] ?? [])->values()->all();
         $lineHeight = 7;
 
         foreach ($items as $item) {
-            $desc = (string) ($item->name ?? '');
+            $desc = (string) $this->resolveItemValue($item, 'descripcion', $this->resolveItemValue($item, 'name', ''));
             $desc = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $desc);
-            $cant = '1';
-            $prec = $this->money($item->price ?? 0);
+            $quantity = $this->resolveItemValue($item, 'cantidad', 1);
+            $cant = (string) $quantity;
+            $priceValue = (float) $this->resolveItemValue($item, 'precio', $this->resolveItemValue($item, 'price', 0));
+            $prec = $this->money($priceValue);
 
             //     // Descripción con MultiCell para cortes de línea
             $pdf->SetXY($xDesc, $y);
@@ -92,7 +94,7 @@ class PdfQuoteFiller
 
             //     // Precio
             $pdf->SetXY($xPrec, $y);
-            if ($item->price <= 0) {
+            if ($priceValue <= 0) {
                 $prec = '';
             }
             $pdf->Cell($wPrec, $rowHeight, $prec, 0, 0, 'R');
@@ -152,5 +154,18 @@ class PdfQuoteFiller
     private function money(float $v): string
     {
         return ''.number_format($v, 2, '.', ',');
+    }
+
+    private function resolveItemValue(mixed $item, string $key, mixed $default = null): mixed
+    {
+        if (is_array($item)) {
+            return $item[$key] ?? $default;
+        }
+
+        if (is_object($item)) {
+            return $item->{$key} ?? $default;
+        }
+
+        return $default;
     }
 }

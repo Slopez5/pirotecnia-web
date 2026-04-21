@@ -66,6 +66,8 @@ class EventForm extends Component
 
     public $notes = '';
 
+    public $contract_description = '';
+
     public $radioSelected = [];
 
     public $showAlert = false;
@@ -89,7 +91,7 @@ class EventForm extends Component
         $this->showAlert = false;
         $this->enableSave = true;
         $this->errorMessage = '';
-        $this->resetValidation(['package_id', 'customProducts', 'price']);
+        $this->resetValidation(['package_id', 'customProducts', 'price', 'contract_description']);
         $this->refreshPackageProducts();
     }
 
@@ -251,6 +253,7 @@ class EventForm extends Component
         $this->deposit = $this->event->advance;
         $this->viatic = $this->event->travel_expenses;
         $this->notes = $this->event->notes;
+        $this->contract_description = $this->event->contract_description;
         $this->price = $this->event->price;
         $this->packageMode = $this->event->packages->isNotEmpty() ? 'registered' : 'custom';
 
@@ -342,6 +345,7 @@ class EventForm extends Component
             'advance' => $this->parse_user_amount((string) $this->deposit),
             'travel_expenses' => $this->formatViatic($this->viatic),
             'notes' => $this->notes,
+            'contract_description' => $this->packageMode === 'custom' ? $this->sanitizeContractDescription() : null,
             'price' => $this->parse_user_amount((string) $this->price),
         ]);
 
@@ -457,9 +461,8 @@ class EventForm extends Component
         $event = $this->saveEvent();
         $this->saveProductsInEvent($event);
         $this->syncEventEquipments($event);
-        $this->reset();
 
-        return redirect()->route('events.index');
+        return redirect()->route('events.show', $event->id);
     }
 
     private function processDiscount(): void
@@ -498,15 +501,14 @@ class EventForm extends Component
         $event = $this->saveEvent();
         $this->saveProductsInEvent($event);
         $this->syncEventEquipments($event);
-        $this->reset();
         $this->showAlert = false;
 
-        return redirect()->route('events.index');
+        return redirect()->route('events.show', $event->id);
     }
 
     private function validateEventComposition(): bool
     {
-        $this->resetValidation(['package_id', 'customProducts', 'price']);
+        $this->resetValidation(['package_id', 'customProducts', 'price', 'contract_description']);
 
         if ($this->packageMode === 'registered') {
             if (! empty($this->selectedPackageIds())) {
@@ -526,6 +528,12 @@ class EventForm extends Component
 
         if ($this->parse_user_amount((string) $this->price) <= 0) {
             $this->addError('price', 'Captura el precio final del evento para un paquete personalizado.');
+
+            return false;
+        }
+
+        if ($this->sanitizeContractDescription() !== null && mb_strlen((string) $this->sanitizeContractDescription()) > 240) {
+            $this->addError('contract_description', 'La descripción para contrato debe ser breve. Usa hasta 240 caracteres.');
 
             return false;
         }
@@ -711,6 +719,13 @@ class EventForm extends Component
             $product->shape ?: null,
             $product->unit ?: null,
         ])->filter()->implode(' · ');
+    }
+
+    private function sanitizeContractDescription(): ?string
+    {
+        $description = trim(preg_replace('/\s+/', ' ', (string) $this->contract_description) ?? '');
+
+        return $description !== '' ? $description : null;
     }
 
     private function syncEventEquipments(Event $event): void

@@ -52,7 +52,7 @@ class CreateEventSnapshotTest extends TestCase
         $package->materials()->attach($product->id, ['quantity' => 4, 'price' => 125.5]);
         $package->equipments()->attach($equipment->id, ['quantity' => 2]);
 
-        Livewire::test(EventForm::class)
+        $component = Livewire::test(EventForm::class)
             ->set('date', '2026-05-01')
             ->set('phone', '3121234567')
             ->set('client_name', 'Maria Lopez')
@@ -67,16 +67,17 @@ class CreateEventSnapshotTest extends TestCase
             ->set('deposit', '1500')
             ->set('viatic', '300')
             ->set('notes', 'Montaje principal')
-            ->call('save')
-            ->assertRedirect(route('events.index'));
+            ->call('save');
 
         $event = Event::query()->latest('id')->firstOrFail();
+        $component->assertRedirect(route('events.show', $event->id));
 
         $this->assertDatabaseHas('events', [
             'id' => $event->id,
             'client_name' => 'Maria Lopez',
             'event_type_id' => $eventType->id,
             'price' => 0,
+            'contract_description' => null,
         ]);
 
         $this->assertDatabaseHas('event_package', [
@@ -189,7 +190,7 @@ class CreateEventSnapshotTest extends TestCase
         $this->attachInventoryStock($inventory, $product, 25, 180);
         $this->attachInventoryStock($inventory, $material, 20, 60);
 
-        Livewire::test(EventForm::class)
+        $component = Livewire::test(EventForm::class)
             ->set('date', '2026-06-01')
             ->set('phone', '3127654321')
             ->set('client_name', 'Juan Perez')
@@ -204,13 +205,14 @@ class CreateEventSnapshotTest extends TestCase
                 ['product_id' => $material->id, 'quantity' => 2],
             ])
             ->set('price', '4200')
+            ->set('contract_description', 'Show personalizado con apertura brillante, bloque central sincronizado y cierre dorado.')
             ->set('deposit', '1000')
             ->set('viatic', '250')
             ->set('notes', 'Show personalizado')
-            ->call('save')
-            ->assertRedirect(route('events.index'));
+            ->call('save');
 
         $event = Event::query()->latest('id')->firstOrFail();
+        $component->assertRedirect(route('events.show', $event->id));
 
         $this->assertDatabaseHas('events', [
             'id' => $event->id,
@@ -218,6 +220,7 @@ class CreateEventSnapshotTest extends TestCase
             'event_type_id' => $eventType->id,
             'price' => 4200,
             'package_id' => null,
+            'contract_description' => 'Show personalizado con apertura brillante, bloque central sincronizado y cierre dorado.',
         ]);
 
         $this->assertDatabaseMissing('event_package', [
@@ -262,6 +265,10 @@ class CreateEventSnapshotTest extends TestCase
         $snapshot = EventEntity::fromEvent($event->fresh(['packages', 'products', 'equipments']));
 
         $this->assertTrue($snapshot->packages->isEmpty());
+        $this->assertSame(
+            'Show personalizado con apertura brillante, bloque central sincronizado y cierre dorado.',
+            $snapshot->contract_description
+        );
         $this->assertSame(180.0, (float) $snapshot->products->firstWhere('id', $product->id)->price);
         $this->assertSame(60.0, (float) $snapshot->products->firstWhere('id', $material->id)->price);
 

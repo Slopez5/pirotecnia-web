@@ -67,6 +67,7 @@ class EventService
                 'advance' => $event->advance,
                 'travel_expenses' => $event->travel_expenses,
                 'notes' => $event->notes,
+                'contract_description' => $event->contract_description,
                 'reminder_send_date' => $event->reminder_send_date,
                 'reminder_sent' => $event->reminder_send,
             ]);
@@ -96,6 +97,7 @@ class EventService
                 'advance' => $event->advance,
                 'travel_expenses' => $event->travel_expenses,
                 'notes' => $event->notes,
+                'contract_description' => $event->contract_description,
                 'reminder_send_date' => $event->reminder_send_date,
                 'reminder_sent' => $event->reminder_send,
             ]);

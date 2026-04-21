@@ -36,6 +36,8 @@ class Event
 
     public $notes;
 
+    public $contract_description;
+
     public $reminder_send_date = null;
 
     public $reminder_send = false;
@@ -132,6 +134,7 @@ class Event
             'advance' => $event->advance,
             'travel_expenses' => $event->travel_expenses,
             'notes' => $event->notes,
+            'contract_description' => $event->contract_description,
             'reminder_send_date' => $event->reminder_send_date,
             'reminder_send' => $event->reminder_send,
             'price' => $event->price,
