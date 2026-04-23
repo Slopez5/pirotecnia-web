@@ -231,7 +231,7 @@
                 <div class="absolute -inset-4 rounded-[2rem] bg-accent/10 blur-2xl"></div>
                 <div class="relative overflow-hidden rounded-[2rem] border border-border bg-surface shadow-card">
                     <img alt="Equipo profesional preparando un espectáculo pirotécnico"
-                        class="h-[520px] w-full object-cover"
+                        class="h-[360px] w-full object-cover sm:h-[440px] lg:h-[520px]"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuA25PSKUFLO91mOp-PA6fnd0DbSLNHOBLJUSDlrTd2v36TWsepkh5uffc_b1X1pP4u4wUItjvw1a1Vpcb8qY9LCdePWp6LdnBs0XYuobXwQvCXeSm3pjfsMMtW2NItuZAva7sT17Hs3BIu7fnX0BwYWMdQqIl1HQ_MV852f1lj2rGeR67e1xc29OB1LCy85LWN1JFzxKaBiRo7qiyMgzobWOPrrMOocyk6QAPk8Tl3sMuIOEoIWD4BFPPmUzWXDf3yIH-CuzRoNFAU" />
                 </div>
             </div>
@@ -414,7 +414,7 @@
                 </h2>
             </div>
 
-            <div class="mt-14 grid h-[800px] grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="mt-14 grid h-[520px] grid-cols-2 gap-4 sm:h-[680px] md:grid-cols-4 xl:h-[800px]">
                 <div class="col-span-2 row-span-2 overflow-hidden rounded-[2rem]">
                     <img alt="Final épico de espectáculo pirotécnico"
                         class="h-full w-full object-cover transition duration-1000 hover:scale-105"
@@ -597,7 +597,7 @@
             </div>
 
             <div class="relative overflow-hidden rounded-[2rem] border border-border bg-primary-900 shadow-card">
-                <img alt="Mapa de ubicación" class="h-[460px] w-full object-cover opacity-30 map-grayscale"
+                <img alt="Mapa de ubicación" class="h-[320px] w-full object-cover opacity-30 map-grayscale sm:h-[400px] lg:h-[460px]"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqe40fTyi7lEUEIJVcKpWa2_Lw30bRvmI1-ET8rqc1F2qXXf-JKyhbHXnXThGkLsMTXJBb9VHs1eUOg3O1rm1z_1dv2P8f0aLfKCTXlObXbOufcgg-4lApnZNoYbfiEZHqnoWxo53f8V2ui87hAJJgok7P1olxCEWSFVlU39z6pXOTOM8JIm7712r4yGuXE6CtGXandGA9W4HqkKzkmu0yngqwufSbKV6JPeeV1IvU2p-XuJv2bWWzVJZh_LgRdisQIzahKySo3Mk" />
                 <div
                     class="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-primary-900/40 to-primary-900/70">

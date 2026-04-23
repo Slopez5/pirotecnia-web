@@ -14,7 +14,10 @@ class PurchaseController extends Controller
 
     public function index()
     {
-        $purchases = Purchase::all();
+        $purchases = Purchase::with('products')
+            ->latest('date')
+            ->latest('id')
+            ->get();
         $itemActive = 6;
 
         return view('panel.purchases.index', compact('purchases', 'itemActive'));

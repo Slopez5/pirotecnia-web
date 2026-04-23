@@ -27,7 +27,7 @@ new class extends Component {
             </div>
         </div>
     @else
-        <table class="w-full text-left border-separate border-spacing-y-2 px-6 pb-6">
+        <table class="responsive-stack-table responsive-stack-table-dark w-full text-left border-separate border-spacing-y-2 px-6 pb-6">
             <thead>
                 <tr class="text-primary-200 uppercase text-[10px] tracking-widest font-bold">
                     <th class="pb-4 pl-4">Fecha</th>
@@ -43,26 +43,26 @@ new class extends Component {
                         $statusClasses = $statusColorMap[$event['statusColor'] ?? 'secondary'] ?? $statusColorMap['secondary'];
                     @endphp
                     <tr class="group hover:bg-primary-700/60 transition-colors">
-                        <td class="py-4 pl-4 rounded-l-xl bg-primary-700/70 group-hover:bg-transparent">
+                        <td class="py-4 pl-4 rounded-l-xl bg-primary-700/70 group-hover:bg-transparent" data-label="Fecha">
                             <div class="flex flex-col">
                                 <span class="text-on-primary font-semibold">{{ $event['month'] }} {{ $event['day'] }}</span>
                                 <span class="text-xs text-primary-200">{{ $event['year'] }}</span>
                             </div>
                         </td>
-                        <td class="py-4 bg-primary-700/70 group-hover:bg-transparent">
+                        <td class="py-4 bg-primary-700/70 group-hover:bg-transparent" data-label="Cliente">
                             <span class="text-on-primary font-medium">{{ $event['client'] }}</span>
                         </td>
-                        <td class="py-4 bg-primary-700/70 group-hover:bg-transparent">
+                        <td class="py-4 bg-primary-700/70 group-hover:bg-transparent" data-label="Tipo">
                             <span
                                 class="px-2 py-1 rounded bg-accent/10 text-accent text-xs font-bold uppercase tracking-tighter">{{ $event['type'] }}</span>
                         </td>
-                        <td class="py-4 bg-primary-700/70 group-hover:bg-transparent">
+                        <td class="py-4 bg-primary-700/70 group-hover:bg-transparent" data-label="Estado">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full {{ $statusClasses['dot'] }}"></span>
                                 <span class="text-sm {{ $statusClasses['text'] }}">{{ $event['status'] }}</span>
                             </div>
                         </td>
-                        <td class="py-4 pr-4 rounded-r-xl bg-primary-700/70 group-hover:bg-transparent text-right">
+                        <td class="py-4 pr-4 rounded-r-xl bg-primary-700/70 group-hover:bg-transparent text-right" data-label="Monto">
                             <span class="text-on-primary font-bold">{{ $event['price'] }}</span>
                         </td>
                     </tr>

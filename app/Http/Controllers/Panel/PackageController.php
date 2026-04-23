@@ -12,7 +12,10 @@ class PackageController extends Controller
 
     public function index()
     {
-        $packages = Package::all();
+        $packages = Package::with(['materials', 'equipments', 'experienceLevel'])
+            ->withCount('events')
+            ->orderBy('name')
+            ->get();
 
         $parentItemActive = 8;
         $itemActive = 0;

@@ -12,7 +12,10 @@ class SaleController extends Controller
 
     public function index()
     {
-        $sales = Sale::all();
+        $sales = Sale::query()
+            ->latest('created_at')
+            ->latest('id')
+            ->get();
         $itemActive = 7;
 
         return view('panel.sales.index', compact('sales', 'itemActive'));

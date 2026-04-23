@@ -305,6 +305,87 @@ class CreateEventSnapshotTest extends TestCase
         ]);
     }
 
+    public function test_it_creates_new_inventory_products_from_custom_events_and_reserves_them(): void
+    {
+        Queue::fake();
+
+        $this->seedCatalog();
+
+        $eventType = $this->createEventType('XV Anos');
+        $inventory = $this->createInventory();
+
+        $component = Livewire::test(EventForm::class)
+            ->set('packageMode', 'custom')
+            ->set('newCustomProductName', 'Volcan Titanio')
+            ->set('newCustomProductDescription', 'Producto creado durante el alta del evento')
+            ->set('newCustomProductUnit', 'pz')
+            ->set('newCustomProductQuantity', 3)
+            ->set('newCustomProductStock', 15)
+            ->set('newCustomProductPrice', '210')
+            ->call('addNewCustomProduct')
+            ->set('date', '2026-07-01')
+            ->set('phone', '3121112233')
+            ->set('client_name', 'Laura Rangel')
+            ->set('client_address', 'Manzanillo')
+            ->set('event_address', 'Terraza del Mar')
+            ->set('event_date', '2026-07-15')
+            ->set('event_time', '20:30')
+            ->set('event_type_id', $eventType->id)
+            ->set('price', '3800')
+            ->set('deposit', '1200')
+            ->set('viatic', '150')
+            ->set('notes', 'Evento con producto creado en captura')
+            ->call('save');
+
+        $event = Event::query()->latest('id')->firstOrFail();
+        $product = Product::query()->where('name', 'Volcan Titanio')->firstOrFail();
+
+        $component->assertRedirect(route('events.show', $event->id));
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'product_role_id' => 1,
+            'name' => 'Volcan Titanio',
+            'description' => 'Producto creado durante el alta del evento',
+            'unit' => 'pz',
+        ]);
+
+        $this->assertDatabaseHas('productables', [
+            'product_id' => $product->id,
+            'productable_type' => Inventory::class,
+            'productable_id' => $inventory->id,
+            'quantity' => 15,
+            'price' => 210,
+        ]);
+
+        $this->assertDatabaseHas('productables', [
+            'product_id' => $product->id,
+            'productable_type' => Event::class,
+            'productable_id' => $event->id,
+            'quantity' => 3,
+            'price' => 210,
+            'check_almacen' => 0,
+            'check_employee' => 0,
+        ]);
+
+        Inventory::updateQuantityProducts($event->fresh(['products', 'equipments']));
+
+        $this->assertDatabaseHas('productables', [
+            'product_id' => $product->id,
+            'productable_type' => Inventory::class,
+            'productable_id' => $inventory->id,
+            'quantity' => 12,
+            'price' => 210,
+        ]);
+
+        $this->assertDatabaseHas('productables', [
+            'product_id' => $product->id,
+            'productable_type' => Event::class,
+            'productable_id' => $event->id,
+            'check_almacen' => 1,
+        ]);
+    }
+
     private function seedCatalog(): void
     {
         DB::table('product_roles')->insert([

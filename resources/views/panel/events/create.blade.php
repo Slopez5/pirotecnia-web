@@ -1,7 +1,7 @@
 @extends('templates.adminlte')
 
 @section('main-content')
-    <div class="mt-16 w-full max-w-[1680px] space-y-8 p-8">
+    <div class="mx-auto mt-16 w-full max-w-[1680px] space-y-8 px-4 py-6 sm:p-8">
         <header class="overflow-hidden rounded-3xl bg-primary-800 p-6 shadow-2xl shadow-primary-900/20">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                 <div class="max-w-3xl">

@@ -93,7 +93,7 @@ class UserController extends Controller
 
     public function createEmployee()
     {
-        $experienceLevels = ExperienceLevel::all();
+        $experienceLevels = ExperienceLevel::orderBy('name')->get();
 
         return view('panel.employees.create', compact('experienceLevels'));
     }
@@ -102,35 +102,32 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
-            'experience_level' => 'required',
+            'email' => 'required|email|unique:employees,email',
+            'phone' => 'required',
+            'experience_level' => 'required|exists:experience_levels,id',
+            'salary' => 'nullable',
+            'photo' => 'nullable|image|max:2048',
         ]);
 
         $employee = new Employee;
         $employee->name = $request->name;
         $employee->email = $request->email;
         $employee->phone = $request->phone;
-        if ($request->address) {
-            $employee->address = $request->address;
-        } else {
-            $employee->address = '';
-        }
-        if ($request->salary) {
-            $employee->salary = $request->salary;
-        } else {
-            $employee->salary = 0;
-        }
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $fileName = time().$file->getClientOriginalName();
-            // save to storage/app/public/employee_id/image_profile.jpg
-            $file->storeAs('public/employees/'.$employee->id, $fileName);
-            $employee->image = $fileName;
-        }
+        $employee->address = $request->address ?: '';
+        $employee->salary = $this->normalizeAmount((string) $request->salary);
+
         if ($request->experience_level != '') {
             $employee->experienceLevel()->associate($request->experience_level);
         }
         $employee->save();
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $file->storeAs('public/employees/'.$employee->id, $fileName);
+            $employee->photo = $fileName;
+            $employee->save();
+        }
 
         return redirect()->route('employees.index');
     }
@@ -172,5 +169,16 @@ class UserController extends Controller
         $employee = Employee::find($id);
 
         return view('panel.employees.show', compact('employee'));
+    }
+
+    private function normalizeAmount(string $value): string
+    {
+        $normalized = preg_replace('/[^0-9\-\.,]/', '', trim($value));
+
+        if ($normalized === null || $normalized === '' || $normalized === '-') {
+            return '0';
+        }
+
+        return (string) ((float) str_replace(',', '', $normalized));
     }
 }

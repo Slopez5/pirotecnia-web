@@ -186,6 +186,96 @@
     filter: grayscale(100%) invert(90%) contrast(90%);
 }
 
+@media (max-width: 767px) {
+    .responsive-stack-table thead {
+        display: none;
+    }
 
+    .responsive-stack-table,
+    .responsive-stack-table tbody,
+    .responsive-stack-table tr,
+    .responsive-stack-table td {
+        display: block;
+        width: 100%;
+    }
 
-;
+    .responsive-stack-table {
+        min-width: 0 !important;
+    }
+
+    .responsive-stack-table tbody {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .responsive-stack-table tbody > tr {
+        overflow: hidden;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 1.5rem;
+    }
+
+    .responsive-stack-table tbody > tr > td {
+        display: grid;
+        grid-template-columns: minmax(96px, 112px) minmax(0, 1fr);
+        align-items: start;
+        gap: 0.75rem;
+        padding: 0.875rem 1rem;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        text-align: left !important;
+    }
+
+    .responsive-stack-table tbody > tr > td::before {
+        content: attr(data-label);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .responsive-stack-table tbody > tr > td:last-child {
+        border-bottom: none;
+    }
+
+    .responsive-stack-table tbody > tr > td[colspan] {
+        grid-template-columns: 1fr;
+    }
+
+    .responsive-stack-table tbody > tr > td[colspan]::before {
+        content: none;
+    }
+
+    .responsive-stack-table tbody > tr > td > * {
+        min-width: 0;
+    }
+
+    .responsive-stack-table-dark tbody > tr {
+        border-color: var(--color-primary-600);
+        background: var(--color-primary-700);
+    }
+
+    .responsive-stack-table-dark tbody > tr > td {
+        border-color: var(--color-primary-600);
+        background: transparent !important;
+    }
+
+    .responsive-stack-table-dark tbody > tr > td::before {
+        color: var(--color-primary-200);
+    }
+
+    .responsive-stack-table-light tbody > tr {
+        border-color: var(--color-border);
+        background: var(--color-surface-alt);
+    }
+
+    .responsive-stack-table-light tbody > tr > td {
+        border-color: var(--color-border);
+        background: transparent !important;
+    }
+
+    .responsive-stack-table-light tbody > tr > td::before {
+        color: var(--color-muted);
+    }
+}

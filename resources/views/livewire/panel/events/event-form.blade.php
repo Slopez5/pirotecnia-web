@@ -304,7 +304,7 @@
                         <p class="text-sm font-semibold text-accent">Flujo recomendado</p>
                         <p class="mt-2 text-sm leading-6 text-primary-100">
                             1. Busca productos por nombre.
-                            2. Define una cantidad base.
+                            2. Define una cantidad base o registra uno nuevo si todavía no existe.
                             3. Agrégalos al evento.
                             4. Captura el <span class="font-semibold">precio final</span> en la sección comercial.
                         </p>
@@ -321,6 +321,81 @@
                             <label class="{{ $labelClass }}" for="customProductQuantity">Cantidad a agregar</label>
                             <input class="{{ $inputClass }}" id="customProductQuantity" min="1"
                                 type="number" wire:model.live="customProductQuantity">
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-secondary/30 bg-secondary/10 p-5">
+                        <div class="flex flex-col gap-3 border-b border-secondary/20 pb-4 lg:flex-row lg:items-start lg:justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-secondary">Producto nuevo para este evento</p>
+                                <p class="mt-2 text-sm text-primary-100">
+                                    Si el material no existe en catálogo o no está dado de alta en inventario, puedes
+                                    crearlo aquí. Al guardar el evento también quedará registrado en inventario.
+                                </p>
+                            </div>
+                            <button
+                                class="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-on-secondary shadow-lg shadow-secondary/20 transition-all hover:bg-secondary-600 active:scale-95"
+                                type="button" wire:click="addNewCustomProduct">
+                                <span class="material-symbols-outlined text-base"
+                                    style="font-variation-settings: 'FILL' 1;">playlist_add</span>
+                                Crear y agregar
+                            </button>
+                        </div>
+
+                        <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                            <div class="space-y-2 xl:col-span-2">
+                                <label class="{{ $labelClass }}" for="newCustomProductName">Nombre</label>
+                                <input class="{{ $inputClass }}" id="newCustomProductName"
+                                    placeholder="Ej. Volcán cascada oro" type="text"
+                                    wire:model="newCustomProductName">
+                                @error('newCustomProductName')
+                                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="{{ $labelClass }}" for="newCustomProductRoleId">Tipo</label>
+                                <select class="{{ $inputClass }} appearance-none" id="newCustomProductRoleId"
+                                    wire:model="newCustomProductRoleId">
+                                    <option value="1">Producto</option>
+                                    <option value="2">Material</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="{{ $labelClass }}" for="newCustomProductUnit">Unidad</label>
+                                <input class="{{ $inputClass }}" id="newCustomProductUnit" placeholder="pz"
+                                    type="text" wire:model="newCustomProductUnit">
+                                @error('newCustomProductUnit')
+                                    <p class="{{ $errorClass }}">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="space-y-2 md:col-span-2 xl:col-span-4">
+                                <label class="{{ $labelClass }}" for="newCustomProductDescription">Descripción</label>
+                                <input class="{{ $inputClass }}" id="newCustomProductDescription"
+                                    placeholder="Opcional. Si la dejas vacía, se usará el nombre como referencia."
+                                    type="text" wire:model="newCustomProductDescription">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="{{ $labelClass }}" for="newCustomProductQuantity">Cantidad para el evento</label>
+                                <input class="{{ $inputClass }}" id="newCustomProductQuantity" min="1"
+                                    type="number" wire:model.live="newCustomProductQuantity">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="{{ $labelClass }}" for="newCustomProductStock">Stock inicial inventario</label>
+                                <input class="{{ $inputClass }}" id="newCustomProductStock" min="0"
+                                    placeholder="Se ajusta al menos a la cantidad del evento" type="number"
+                                    wire:model="newCustomProductStock">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="{{ $labelClass }}" for="newCustomProductPrice">Costo unitario</label>
+                                <input class="{{ $inputClass }}" id="newCustomProductPrice" placeholder="$0.00"
+                                    type="text" wire:model="newCustomProductPrice">
+                            </div>
                         </div>
                     </div>
 
@@ -432,6 +507,15 @@
                                                         <p class="mt-1 text-xs text-primary-200">
                                                             {{ $item['descriptor'] }}</p>
                                                     @endif
+                                                    @if ($item['is_new'])
+                                                        <p class="mt-2 text-xs font-semibold text-secondary">
+                                                            Se dará de alta como producto nuevo del inventario al guardar.
+                                                        </p>
+                                                    @elseif ($item['requires_inventory_registration'])
+                                                        <p class="mt-2 text-xs font-semibold text-warning">
+                                                            No existe en inventario. Se registrará automáticamente al guardar.
+                                                        </p>
+                                                    @endif
                                                     <p class="mt-2 text-xs font-semibold text-primary-100">Stock
                                                         actual: {{ $item['stock'] }}</p>
                                                 </div>
@@ -452,9 +536,30 @@
                                                         type="number"
                                                         wire:model.live="customProducts.{{ $item['index'] }}.quantity">
                                                 </div>
-                                                <p class="text-xs text-primary-200">
-                                                    Esta cantidad se guardará directamente en los materiales del evento.
-                                                </p>
+                                                @if ($item['requires_inventory_registration'])
+                                                    <div class="grid gap-3 sm:grid-cols-2">
+                                                        <div class="space-y-2">
+                                                            <label class="{{ $labelClass }}"
+                                                                for="custom_product_stock_{{ $item['index'] }}">Stock inventario</label>
+                                                            <input class="{{ $inputClass }}"
+                                                                id="custom_product_stock_{{ $item['index'] }}" min="0"
+                                                                type="number"
+                                                                wire:model.live="customProducts.{{ $item['index'] }}.inventory_quantity">
+                                                        </div>
+                                                        <div class="space-y-2">
+                                                            <label class="{{ $labelClass }}"
+                                                                for="custom_product_price_{{ $item['index'] }}">Costo unitario</label>
+                                                            <input class="{{ $inputClass }}"
+                                                                id="custom_product_price_{{ $item['index'] }}"
+                                                                placeholder="$0.00" type="text"
+                                                                wire:model.live="customProducts.{{ $item['index'] }}.price">
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <p class="text-xs text-primary-200">
+                                                        Esta cantidad se guardará directamente en los materiales del evento.
+                                                    </p>
+                                                @endif
                                             </div>
                                         </article>
                                     @endforeach

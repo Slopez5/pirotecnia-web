@@ -9,7 +9,7 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Inicio</a></li>
                         <li class="breadcrumb-item active">Empleados</li>
                     </ol>
                 </div>
@@ -19,7 +19,31 @@
 @endsection
 
 @section('main-content')
-    <div class="mt-16 w-full max-w-[1600px] space-y-8 p-8">
+    @php
+        $normalizeAmount = static function ($value) {
+            $normalized = preg_replace('/[^0-9\-\.,]/', '', trim((string) $value));
+
+            if ($normalized === null || $normalized === '' || $normalized === '-') {
+                return 0.0;
+            }
+
+            return (float) str_replace(',', '', $normalized);
+        };
+
+        $totalEmployees = $employees->count();
+        $employeesWithPhone = $employees->filter(fn($employee) => filled(trim((string) $employee->phone)))->count();
+        $employeesWithCompleteContact = $employees->filter(
+            fn($employee) => filled(trim((string) $employee->email)) && filled(trim((string) $employee->phone))
+        )->count();
+        $experienceLevelsCovered = $employees->pluck('experienceLevel.name')->filter()->unique()->count();
+        $salarySamples = $employees
+            ->map(fn($employee) => $normalizeAmount($employee->salary))
+            ->filter(fn($salary) => $salary > 0);
+        $averageSalary = $salarySamples->isNotEmpty() ? $salarySamples->avg() : 0;
+        $phoneCoverage = $totalEmployees > 0 ? round(($employeesWithPhone / $totalEmployees) * 100) : 0;
+    @endphp
+
+    <div class="mx-auto mt-16 w-full max-w-[1600px] space-y-8 px-4 py-6 sm:p-8">
         <section class="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.8fr)]">
             <div class="relative overflow-hidden rounded-3xl bg-primary-800 p-8 shadow-2xl shadow-primary-900/20">
                 <div class="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-secondary/10 blur-3xl"></div>
@@ -51,7 +75,7 @@
                 <div class="flex items-start justify-between gap-4">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-100">Resumen rapido</p>
-                        <p class="mt-3 text-3xl font-bold text-on-primary">No Enlazado</p>
+                        <p class="mt-3 text-3xl font-bold text-on-primary">{{ $totalEmployees }}</p>
                         <p class="mt-2 text-sm text-primary-100">colaboradores registrados en la plantilla actual.</p>
                     </div>
                     <span class="material-symbols-outlined text-4xl text-secondary">groups</span>
@@ -60,13 +84,13 @@
                     <div class="rounded-2xl bg-on-primary/10 p-4">
                         <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-100">Cobertura de
                             contacto</p>
-                        <p class="mt-2 text-lg font-semibold text-on-primary">No Enlazado con telefono
+                        <p class="mt-2 text-lg font-semibold text-on-primary">{{ $phoneCoverage }}% con telefono
                             registrado</p>
                     </div>
                     <div class="rounded-2xl bg-on-primary/10 p-4">
                         <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-100">Experiencia activa
                         </p>
-                        <p class="mt-2 text-lg font-semibold text-on-primary">No Enlazado niveles
+                        <p class="mt-2 text-lg font-semibold text-on-primary">{{ $experienceLevelsCovered }} niveles
                             cargados</p>
                     </div>
                 </div>
@@ -76,22 +100,24 @@
         <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             <article class="rounded-2xl bg-primary-800 p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-200">Plantilla total</p>
-                <p class="mt-4 text-3xl font-bold text-on-primary">No Enlazado</p>
+                <p class="mt-4 text-3xl font-bold text-on-primary">{{ $totalEmployees }}</p>
                 <p class="mt-2 text-sm text-primary-200">personal operativo y administrativo disponible.</p>
             </article>
             <article class="rounded-2xl bg-primary-800 p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-200">Con telefono</p>
-                <p class="mt-4 text-3xl font-bold text-on-primary">No Enlazado</p>
+                <p class="mt-4 text-3xl font-bold text-on-primary">{{ $employeesWithPhone }}</p>
                 <p class="mt-2 text-sm text-primary-200">contactos listos para seguimiento rapido.</p>
             </article>
             <article class="rounded-2xl bg-primary-800 p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-200">Niveles cubiertos</p>
-                <p class="mt-4 text-3xl font-bold text-on-primary">No Enlazado</p>
+                <p class="mt-4 text-3xl font-bold text-on-primary">{{ $experienceLevelsCovered }}</p>
                 <p class="mt-2 text-sm text-primary-200">rangos de experiencia registrados en el sistema.</p>
             </article>
             <article class="rounded-2xl bg-primary-800 p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-primary-200">Salario promedio</p>
-                <p class="mt-4 text-3xl font-bold text-on-primary">No Enlazado</p>
+                <p class="mt-4 text-3xl font-bold text-on-primary">
+                    {{ $averageSalary > 0 ? '$' . number_format($averageSalary, 2) : 'Sin dato' }}
+                </p>
                 <p class="mt-2 text-sm text-primary-200">calculado con empleados que tienen monto capturado.</p>
             </article>
         </section>
@@ -108,19 +134,19 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
                     <span class="rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-2 text-primary-100">
-                        No Enlazado en total
+                        {{ $totalEmployees }} en total
                     </span>
                     <span class="rounded-full border border-accent/30 bg-accent/10 px-3 py-2 text-accent">
-                        No Enlazado niveles de experiencia
+                        {{ $experienceLevelsCovered }} niveles de experiencia
                     </span>
                     <span class="rounded-full border border-secondary/30 bg-secondary/10 px-3 py-2 text-secondary">
-                        No Enlazado contactos completos
+                        {{ $employeesWithCompleteContact }} contactos completos
                     </span>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full text-left">
+                <table class="responsive-stack-table responsive-stack-table-dark min-w-full text-left">
                     <thead>
                         <tr class="border-b border-primary-700/60 bg-primary-700/40">
                             <th class="px-8 py-5 text-xs font-bold uppercase tracking-[0.24em] text-primary-200">Empleado
@@ -146,7 +172,7 @@
                                     : '?';
                             @endphp
                             <tr class="transition-colors hover:bg-primary-700/40">
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Empleado">
                                     <div class="flex items-center gap-4">
                                         <div
                                             class="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 text-lg font-bold text-secondary">
@@ -159,13 +185,13 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Contacto">
                                     <div class="space-y-1 text-sm">
                                         <p class="text-on-primary">{{ $employee->email }}</p>
                                         <p class="text-primary-200">{{ $employee->phone ?: 'Sin telefono registrado' }}</p>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Nivel">
                                     @if ($experienceLevel)
                                         <span
                                             class="inline-flex rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-accent">
@@ -178,17 +204,17 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Dirección">
                                     <p class="max-w-xs text-sm text-primary-100">
                                         {{ $employee->address ?: 'Sin direccion registrada' }}
                                     </p>
                                 </td>
-                                <td class="px-8 py-6 text-right">
+                                <td class="px-8 py-6 text-right" data-label="Salario">
                                     <p class="font-semibold text-on-primary">
                                         {{ (float) $employee->salary > 0 ? '$' . number_format((float) $employee->salary, 2) : 'Sin capturar' }}
                                     </p>
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Acciones">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('employees.show', $employee->id) }}"
                                             class="inline-flex items-center justify-center rounded-lg p-2 text-primary-200 transition-all hover:bg-primary/10 hover:text-primary"
@@ -244,8 +270,8 @@
             <div
                 class="flex flex-col gap-3 border-t border-primary-700/60 px-8 py-5 text-sm text-primary-200 sm:flex-row sm:items-center sm:justify-between">
                 <p>
-                    Mostrando <span class="font-semibold text-on-primary">No Enlazado</span>
-                    No Enlazado en esta vista.
+                    Mostrando <span class="font-semibold text-on-primary">{{ $totalEmployees }}</span>
+                    colaboradores en esta vista.
                 </p>
                 <a href="{{ route('employees.create') }}"
                     class="inline-flex items-center gap-2 font-semibold text-secondary transition-colors hover:text-secondary-300">

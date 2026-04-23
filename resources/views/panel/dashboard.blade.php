@@ -19,7 +19,7 @@
 @endsection
 
 @section('main-content')
-    <div class="mt-16 space-y-8 p-8">
+    <div class="mt-16 space-y-8 px-4 py-6 sm:p-8">
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(360px,0.95fr)]">
             <div class="rounded-3xl bg-primary-800 p-8 shadow-2xl shadow-primary-900/20">
                 <div class="flex flex-wrap items-center gap-3">

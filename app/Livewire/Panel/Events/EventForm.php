@@ -11,6 +11,7 @@ use App\Models\Package;
 use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -54,6 +55,20 @@ class EventForm extends Component
 
     public $customProducts = [];
 
+    public $newCustomProductName = '';
+
+    public $newCustomProductDescription = '';
+
+    public $newCustomProductUnit = 'pz';
+
+    public $newCustomProductRoleId = 1;
+
+    public $newCustomProductQuantity = 1;
+
+    public $newCustomProductStock = '';
+
+    public $newCustomProductPrice = '';
+
     public $discountString = '';
 
     public $discount = 0;
@@ -91,7 +106,16 @@ class EventForm extends Component
         $this->showAlert = false;
         $this->enableSave = true;
         $this->errorMessage = '';
-        $this->resetValidation(['package_id', 'customProducts', 'price', 'contract_description']);
+        $this->resetValidation([
+            'package_id',
+            'customProducts',
+            'price',
+            'contract_description',
+            'newCustomProductName',
+            'newCustomProductUnit',
+            'newCustomProductStock',
+            'newCustomProductPrice',
+        ]);
         $this->refreshPackageProducts();
     }
 
@@ -158,6 +182,7 @@ class EventForm extends Component
             'customCatalogProducts' => $this->customCatalogProducts(),
             'customSelectionItems' => $this->customSelectionItems(),
             'customSelectedIndex' => $this->selectedCustomProducts()
+                ->filter(fn ($row) => (int) ($row['product_id'] ?? 0) > 0)
                 ->mapWithKeys(fn ($row) => [$row['product_id'] => $row['quantity']])
                 ->all(),
         ]);
@@ -234,6 +259,50 @@ class EventForm extends Component
         $this->customProducts = array_values($this->customProducts);
     }
 
+    public function addNewCustomProduct(): void
+    {
+        $this->resetValidation([
+            'newCustomProductName',
+            'newCustomProductUnit',
+            'newCustomProductStock',
+            'newCustomProductPrice',
+            'customProducts',
+        ]);
+
+        $name = trim((string) $this->newCustomProductName);
+        $unit = trim((string) $this->newCustomProductUnit);
+        $quantity = max((int) $this->newCustomProductQuantity, 1);
+        $inventoryQuantity = max($this->parseNumberInput($this->newCustomProductStock), (float) $quantity);
+
+        if ($name === '') {
+            $this->addError('newCustomProductName', 'Captura el nombre del producto nuevo.');
+
+            return;
+        }
+
+        if ($unit === '') {
+            $this->addError('newCustomProductUnit', 'Captura la unidad del producto nuevo.');
+
+            return;
+        }
+
+        $this->customProducts[] = [
+            'product_id' => null,
+            'product_role_id' => $this->normalizeProductRoleId($this->newCustomProductRoleId),
+            'name' => $name,
+            'description' => trim((string) $this->newCustomProductDescription) ?: $name,
+            'unit' => $unit,
+            'quantity' => $quantity,
+            'inventory_quantity' => $inventoryQuantity,
+            'price' => $this->parseNumberInput($this->newCustomProductPrice),
+        ];
+
+        $this->resetNewCustomProductInputs();
+        $this->showAlert = false;
+        $this->enableSave = true;
+        $this->errorMessage = '';
+    }
+
     private function loadEventInputs(): void
     {
         $this->date = $this->event->date;
@@ -278,8 +347,70 @@ class EventForm extends Component
             return true;
         }
 
+        if ($this->packageMode === 'custom') {
+            $existingProducts = Product::with('inventories')
+                ->whereIn(
+                    'id',
+                    $plannedProducts
+                        ->pluck('product_id')
+                        ->filter(fn ($productId) => (int) $productId > 0)
+                        ->map(fn ($productId) => (int) $productId)
+                        ->values()
+                        ->all()
+                )
+                ->get()
+                ->keyBy('id');
+
+            $lowInventoryNames = $plannedProducts
+                ->filter(function ($item) use ($existingProducts) {
+                    $productId = (int) ($item['product_id'] ?? 0);
+
+                    if ($productId > 0) {
+                        $product = $existingProducts->get($productId);
+
+                        if ($product && $product->inventories->isNotEmpty()) {
+                            return (float) ($product->inventories->first()?->pivot?->quantity ?? 0) <= Inventory::MIN_STOCK;
+                        }
+                    }
+
+                    return (float) ($item['inventory_quantity'] ?? 0) <= Inventory::MIN_STOCK;
+                })
+                ->map(function ($item) use ($existingProducts) {
+                    $productId = (int) ($item['product_id'] ?? 0);
+
+                    if ($productId > 0) {
+                        return $existingProducts->get($productId)?->name;
+                    }
+
+                    return $item['name'] ?? null;
+                })
+                ->filter()
+                ->values();
+
+            if ($lowInventoryNames->isEmpty()) {
+                $this->errorMessage = '';
+
+                return true;
+            }
+
+            $visibleNames = $lowInventoryNames->take(4)->implode(', ');
+            $remaining = $lowInventoryNames->count() - min($lowInventoryNames->count(), 4);
+            $suffix = $remaining > 0 ? ' y '.$remaining.' más' : '';
+
+            $this->errorMessage = 'Inventario bajo detectado en: '.$visibleNames.$suffix.'. Puedes revisar la selección o continuar de todos modos.';
+
+            return false;
+        }
+
+        $existingProductIds = $plannedProducts
+            ->pluck('product_id')
+            ->filter(fn ($productId) => (int) $productId > 0)
+            ->map(fn ($productId) => (int) $productId)
+            ->values()
+            ->all();
+
         $lowInventoryProducts = Product::with('inventories')
-            ->whereIn('id', $plannedProducts->pluck('product_id'))
+            ->whereIn('id', $existingProductIds)
             ->where(function ($query) {
                 $query->whereDoesntHave('inventories')
                     ->orWhereHas('inventories', function ($inventoryQuery) {
@@ -289,14 +420,25 @@ class EventForm extends Component
             })
             ->get();
 
-        if ($lowInventoryProducts->isEmpty()) {
+        $draftLowInventoryProducts = $plannedProducts
+            ->filter(fn ($item) => (int) ($item['product_id'] ?? 0) === 0)
+            ->filter(fn ($item) => (float) ($item['inventory_quantity'] ?? 0) <= Inventory::MIN_STOCK)
+            ->pluck('name');
+
+        if ($lowInventoryProducts->isEmpty() && $draftLowInventoryProducts->isEmpty()) {
             $this->errorMessage = '';
 
             return true;
         }
 
-        $visibleNames = $lowInventoryProducts->pluck('name')->take(4)->implode(', ');
-        $remaining = $lowInventoryProducts->count() - min($lowInventoryProducts->count(), 4);
+        $lowInventoryNames = $lowInventoryProducts
+            ->pluck('name')
+            ->merge($draftLowInventoryProducts)
+            ->filter()
+            ->values();
+
+        $visibleNames = $lowInventoryNames->take(4)->implode(', ');
+        $remaining = $lowInventoryNames->count() - min($lowInventoryNames->count(), 4);
         $suffix = $remaining > 0 ? ' y '.$remaining.' más' : '';
 
         $this->errorMessage = 'Inventario bajo detectado en: '.$visibleNames.$suffix.'. Puedes revisar la selección o continuar de todos modos.';
@@ -426,6 +568,8 @@ class EventForm extends Component
 
     private function saveProductsInEvent(Event $event): Event
     {
+        $this->ensureCustomProductsInInventory();
+
         $payload = $this->plannedEventProducts()
             ->mapWithKeys(fn ($item) => [
                 $item['product_id'] => [
@@ -508,7 +652,16 @@ class EventForm extends Component
 
     private function validateEventComposition(): bool
     {
-        $this->resetValidation(['package_id', 'customProducts', 'price', 'contract_description']);
+        $this->resetValidation([
+            'package_id',
+            'customProducts',
+            'price',
+            'contract_description',
+            'newCustomProductName',
+            'newCustomProductUnit',
+            'newCustomProductStock',
+            'newCustomProductPrice',
+        ]);
 
         if ($this->packageMode === 'registered') {
             if (! empty($this->selectedPackageIds())) {
@@ -572,28 +725,98 @@ class EventForm extends Component
         }
 
         $rows = collect($this->customProducts)
-            ->map(function ($row) {
+            ->values()
+            ->map(function ($row, $index) {
+                $productId = (int) ($row['product_id'] ?? 0);
+                $quantity = max((int) ($row['quantity'] ?? 0), 0);
+
+                if ($productId > 0) {
+                    return [
+                        'group_key' => 'product-'.$productId,
+                        'product_id' => $productId,
+                        'quantity' => $quantity,
+                        'inventory_quantity_input' => $this->parseNumberInput($row['inventory_quantity'] ?? 0),
+                        'price_input' => $this->parseNumberInput($row['price'] ?? 0),
+                        'is_new' => false,
+                    ];
+                }
+
+                $name = trim((string) ($row['name'] ?? ''));
+                $unit = trim((string) ($row['unit'] ?? ''));
+
                 return [
-                    'product_id' => (int) ($row['product_id'] ?? 0),
-                    'quantity' => max((int) ($row['quantity'] ?? 0), 0),
+                    'group_key' => 'draft-'.md5(Str::lower($name).'|'.Str::lower($unit).'|'.$index),
+                    'product_id' => 0,
+                    'quantity' => $quantity,
+                    'is_new' => true,
+                    'product_role_id' => $this->normalizeProductRoleId($row['product_role_id'] ?? 1),
+                    'name' => $name,
+                    'description' => trim((string) ($row['description'] ?? '')) ?: $name,
+                    'unit' => $unit !== '' ? $unit : 'pz',
+                    'inventory_quantity' => max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity),
+                    'price' => $this->parseNumberInput($row['price'] ?? 0),
                 ];
             })
-            ->filter(fn ($row) => $row['product_id'] > 0 && $row['quantity'] > 0);
+            ->filter(function ($row) {
+                if (($row['is_new'] ?? false) === true) {
+                    return filled($row['name'] ?? null) && (int) ($row['quantity'] ?? 0) > 0;
+                }
 
-        $prices = Product::with('inventories')
-            ->whereIn('id', $rows->pluck('product_id')->all())
+                return (int) ($row['product_id'] ?? 0) > 0 && (int) ($row['quantity'] ?? 0) > 0;
+            });
+
+        $inventorySnapshots = Product::with('inventories')
+            ->whereIn('id', $rows->pluck('product_id')->filter(fn ($productId) => (int) $productId > 0)->all())
             ->get()
             ->mapWithKeys(fn ($product) => [
-                $product->id => (float) ($product->inventories->first()?->pivot?->price ?? 0),
+                $product->id => [
+                    'price' => (float) ($product->inventories->first()?->pivot?->price ?? 0),
+                    'quantity' => (float) ($product->inventories->first()?->pivot?->quantity ?? 0),
+                    'exists' => $product->inventories->isNotEmpty(),
+                ],
             ]);
 
         return $rows
-            ->groupBy('product_id')
-            ->map(fn ($groupedRows, $productId) => [
-                'product_id' => (int) $productId,
-                'quantity' => $groupedRows->sum('quantity'),
-                'price' => (float) ($prices->get((int) $productId) ?? 0),
-            ])
+            ->groupBy('group_key')
+            ->map(function ($groupedRows) use ($inventorySnapshots) {
+                $first = $groupedRows->first();
+
+                if (($first['is_new'] ?? false) === true) {
+                    $first['quantity'] = $groupedRows->sum('quantity');
+                    $first['inventory_quantity'] = max(
+                        (float) ($first['inventory_quantity'] ?? 0),
+                        (float) $first['quantity']
+                    );
+
+                    return $first;
+                }
+
+                $productId = (int) ($first['product_id'] ?? 0);
+                $inventoryPayload = $inventorySnapshots->get($productId, ['price' => 0, 'quantity' => 0, 'exists' => false]);
+                $hasInventory = (bool) ($inventoryPayload['exists'] ?? false);
+                $quantity = $groupedRows->sum('quantity');
+                $inventoryQuantityInput = (float) $groupedRows
+                    ->map(fn ($row) => (float) ($row['inventory_quantity_input'] ?? 0))
+                    ->max();
+                $priceInput = (float) ($groupedRows
+                    ->map(fn ($row) => (float) ($row['price_input'] ?? 0))
+                    ->filter(fn ($price) => $price > 0)
+                    ->last() ?? 0);
+
+                return [
+                    'product_id' => $productId,
+                    'quantity' => $quantity,
+                    'price' => $hasInventory
+                        ? (float) ($inventoryPayload['price'] ?? 0)
+                        : $priceInput,
+                    'inventory_quantity' => $hasInventory
+                        ? (float) ($inventoryPayload['quantity'] ?? 0)
+                        : max($inventoryQuantityInput, (float) $quantity),
+                    'is_new' => false,
+                    'name' => null,
+                    'requires_inventory_registration' => ! $hasInventory,
+                ];
+            })
             ->values();
     }
 
@@ -623,17 +846,43 @@ class EventForm extends Component
                 $quantity = max((int) ($row['quantity'] ?? 1), 1);
                 $product = $products->get($productId);
 
-                if (! $product) {
+                if ($product) {
+                    $inventoryPivot = $product->inventories->first()?->pivot;
+                    $requiresInventoryRegistration = $product->inventories->isEmpty();
+
+                    return [
+                        'index' => $index,
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'descriptor' => $this->productDescriptor($product),
+                        'quantity' => $quantity,
+                        'stock' => $requiresInventoryRegistration
+                            ? max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity)
+                            : (float) ($inventoryPivot?->quantity ?? 0),
+                        'price' => $requiresInventoryRegistration
+                            ? $this->parseNumberInput($row['price'] ?? 0)
+                            : (float) ($inventoryPivot?->price ?? 0),
+                        'is_new' => false,
+                        'requires_inventory_registration' => $requiresInventoryRegistration,
+                    ];
+                }
+
+                $name = trim((string) ($row['name'] ?? ''));
+
+                if ($name === '') {
                     return null;
                 }
 
                 return [
                     'index' => $index,
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'descriptor' => $this->productDescriptor($product),
+                    'id' => null,
+                    'name' => $name,
+                    'descriptor' => $this->draftProductDescriptor($row),
                     'quantity' => $quantity,
-                    'stock' => (int) ($product->inventories->first()->pivot->quantity ?? 0),
+                    'stock' => max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity),
+                    'price' => $this->parseNumberInput($row['price'] ?? 0),
+                    'is_new' => true,
+                    'requires_inventory_registration' => true,
                 ];
             })
             ->filter()
@@ -721,11 +970,84 @@ class EventForm extends Component
         ])->filter()->implode(' · ');
     }
 
+    private function draftProductDescriptor(array $row): string
+    {
+        $roleLabel = $this->normalizeProductRoleId($row['product_role_id'] ?? 1) === 2 ? 'Material' : 'Producto';
+
+        return collect([
+            $roleLabel.' nuevo',
+            filled($row['unit'] ?? null) ? (string) $row['unit'] : null,
+        ])->filter()->implode(' · ');
+    }
+
     private function sanitizeContractDescription(): ?string
     {
         $description = trim(preg_replace('/\s+/', ' ', (string) $this->contract_description) ?? '');
 
         return $description !== '' ? $description : null;
+    }
+
+    private function ensureCustomProductsInInventory(): void
+    {
+        if ($this->packageMode !== 'custom') {
+            return;
+        }
+
+        $inventory = $this->resolvePrimaryInventory();
+
+        $this->customProducts = collect($this->customProducts)
+            ->values()
+            ->map(function ($row) use ($inventory) {
+                $productId = (int) ($row['product_id'] ?? 0);
+                $quantity = max((int) ($row['quantity'] ?? 0), 1);
+
+                if ($productId > 0) {
+                    if (! $inventory->products()->where('products.id', $productId)->exists()) {
+                        $inventory->products()->attach($productId, [
+                            'quantity' => max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity),
+                            'price' => $this->parseNumberInput($row['price'] ?? 0),
+                            'check_employee' => false,
+                            'check_almacen' => false,
+                        ]);
+                    }
+
+                    return $row;
+                }
+
+                $name = trim((string) ($row['name'] ?? ''));
+
+                if ($name === '') {
+                    return $row;
+                }
+
+                $product = Product::create([
+                    'product_role_id' => $this->normalizeProductRoleId($row['product_role_id'] ?? 1),
+                    'name' => $name,
+                    'description' => trim((string) ($row['description'] ?? '')) ?: $name,
+                    'unit' => trim((string) ($row['unit'] ?? '')) ?: 'pz',
+                    'duration' => null,
+                    'shots' => null,
+                    'caliber' => null,
+                    'shape' => null,
+                ]);
+
+                $inventoryQuantity = max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity);
+                $price = $this->parseNumberInput($row['price'] ?? 0);
+
+                $inventory->products()->attach($product->id, [
+                    'quantity' => $inventoryQuantity,
+                    'price' => $price,
+                    'check_employee' => false,
+                    'check_almacen' => false,
+                ]);
+
+                $row['product_id'] = $product->id;
+                $row['price'] = $price;
+                $row['inventory_quantity'] = $inventoryQuantity;
+
+                return $row;
+            })
+            ->all();
     }
 
     private function syncEventEquipments(Event $event): void
@@ -808,5 +1130,50 @@ class EventForm extends Component
         $product = Product::with('inventories')->find($productId);
 
         return (float) ($product?->inventories->first()?->pivot?->price ?? 0);
+    }
+
+    private function resetNewCustomProductInputs(): void
+    {
+        $this->newCustomProductName = '';
+        $this->newCustomProductDescription = '';
+        $this->newCustomProductUnit = 'pz';
+        $this->newCustomProductRoleId = 1;
+        $this->newCustomProductQuantity = 1;
+        $this->newCustomProductStock = '';
+        $this->newCustomProductPrice = '';
+    }
+
+    private function normalizeProductRoleId($value): int
+    {
+        return in_array((int) $value, [1, 2], true) ? (int) $value : 1;
+    }
+
+    private function parseNumberInput(mixed $value): float
+    {
+        $clean = preg_replace('/[^0-9\-\.,]/', '', trim((string) $value));
+
+        if ($clean === null || $clean === '' || $clean === '-') {
+            return 0.0;
+        }
+
+        return (float) str_replace(',', '', $clean);
+    }
+
+    private function resolvePrimaryInventory(): Inventory
+    {
+        $inventory = Inventory::find(1);
+
+        if ($inventory) {
+            return $inventory;
+        }
+
+        $inventory = new Inventory;
+        $inventory->forceFill([
+            'id' => 1,
+            'name' => 'Polvorin 1',
+            'location' => 'Rancho el Tequeque',
+        ])->save();
+
+        return $inventory->fresh();
     }
 }

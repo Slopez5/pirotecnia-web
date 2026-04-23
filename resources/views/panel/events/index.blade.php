@@ -53,7 +53,7 @@
             $events->first();
     @endphp
 
-    <div class="mt-16 w-full max-w-[1600px] space-y-8 p-8">
+    <div class="mx-auto mt-16 w-full max-w-[1600px] space-y-8 px-4 py-6 sm:p-8">
         <section class="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.82fr)]">
             <div class="relative overflow-hidden rounded-3xl bg-primary-800 p-8 shadow-2xl shadow-primary-900/20">
                 <div class="absolute -left-12 top-10 h-40 w-40 rounded-full bg-accent/10 blur-3xl"></div>
@@ -196,7 +196,7 @@
             @endif
 
             <div class="overflow-x-auto">
-                <table class="min-w-full text-left">
+                <table class="responsive-stack-table responsive-stack-table-dark min-w-full text-left">
                     <thead>
                         <tr class="border-b border-primary-700/60 bg-primary-700/40">
                             <th class="px-8 py-5 text-xs font-bold uppercase tracking-[0.24em] text-primary-200">Cliente</th>
@@ -235,13 +235,13 @@
                                 }
                             @endphp
                             <tr class="transition-colors hover:bg-primary-700/40">
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Cliente">
                                     <div class="space-y-1">
                                         <p class="font-semibold text-on-primary">{{ $event->client_name ?: 'Cliente sin nombre' }}</p>
                                         <p class="text-sm text-primary-200">{{ $event->event_address ?: 'Sin dirección del evento' }}</p>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Fecha">
                                     <div class="space-y-1">
                                         <p class="font-semibold text-on-primary">
                                             {{ $eventDate->locale('es')->isoFormat('D MMM YYYY') }}
@@ -249,7 +249,7 @@
                                         <p class="text-sm text-primary-200">{{ $eventDate->format('H:i') }} hrs</p>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Tipo y paquete">
                                     <div class="space-y-2">
                                         <span
                                             class="inline-flex rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-primary-100">
@@ -260,7 +260,7 @@
                                         </p>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Responsable">
                                     @if ($responsible)
                                         <div class="space-y-1">
                                             <p class="font-semibold text-on-primary">{{ $responsible->name }}</p>
@@ -273,17 +273,17 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Estatus">
                                     <span
                                         class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] {{ $statusBadge }}">
                                         <span class="h-2 w-2 rounded-full {{ $statusDot }}"></span>
                                         {{ $statusLabel }}
                                     </span>
                                 </td>
-                                <td class="px-8 py-6 text-right">
+                                <td class="px-8 py-6 text-right" data-label="Monto">
                                     <p class="font-semibold text-on-primary">${{ number_format($eventTotal, 2) }}</p>
                                 </td>
-                                <td class="px-8 py-6">
+                                <td class="px-8 py-6" data-label="Acciones">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('events.show', $event->id) }}"
                                             class="inline-flex items-center justify-center rounded-lg p-2 text-primary-200 transition-all hover:bg-primary/10 hover:text-primary"

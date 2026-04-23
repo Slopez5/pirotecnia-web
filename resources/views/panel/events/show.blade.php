@@ -72,7 +72,7 @@
         }
     @endphp
 
-    <div class="mt-16 w-full max-w-[1600px] space-y-8 p-8">
+    <div class="mx-auto mt-16 w-full max-w-[1600px] space-y-8 px-4 py-6 sm:p-8">
         <section class="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.85fr)]">
             <div class="relative overflow-hidden rounded-3xl bg-primary-800 p-8 shadow-2xl shadow-primary-900/20">
                 <div class="absolute -left-10 top-10 h-40 w-40 rounded-full bg-accent/10 blur-3xl"></div>
@@ -315,7 +315,7 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-left">
+                        <table class="responsive-stack-table responsive-stack-table-dark min-w-full text-left">
                             <thead>
                                 <tr class="border-b border-primary-700/60 bg-primary-700/40">
                                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-[0.22em] text-primary-200">
@@ -351,20 +351,20 @@
                                                 : 'Sin observaciones registradas.');
                                     @endphp
                                     <tr class="transition-colors hover:bg-primary-700/35">
-                                        <td class="px-6 py-5">
+                                        <td class="px-6 py-5" data-label="Producto">
                                             <p class="font-semibold text-on-primary">{{ $product->name }}</p>
                                         </td>
-                                        <td class="px-6 py-5">
+                                        <td class="px-6 py-5" data-label="Categoría">
                                             <span
                                                 class="inline-flex rounded-full border border-primary-600/60 bg-primary-700/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-primary-100">
                                                 {{ $roleLabels[$product->product_role_id] ?? 'Producto' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-5 text-center text-sm font-semibold text-on-primary">
+                                        <td class="px-6 py-5 text-center text-sm font-semibold text-on-primary" data-label="Programado">
                                             {{ $quantity }} {{ $product->unit ?: 'pz' }}
                                         </td>
-                                        <td class="px-6 py-5 text-center text-sm font-semibold text-secondary">--</td>
-                                        <td class="px-6 py-5 text-sm text-primary-200">{{ $observations }}</td>
+                                        <td class="px-6 py-5 text-center text-sm font-semibold text-secondary" data-label="Usado">--</td>
+                                        <td class="px-6 py-5 text-sm text-primary-200" data-label="Observaciones">{{ $observations }}</td>
                                     </tr>
                                 @empty
                                     <tr>

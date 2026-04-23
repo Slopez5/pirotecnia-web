@@ -17,6 +17,7 @@ use App\Http\Controllers\Panel\PurchaseController;
 use App\Http\Controllers\Panel\SaleController;
 use App\Http\Controllers\Panel\SearchController;
 use App\Http\Controllers\Panel\UserController;
+use App\Presentation\Http\Controllers\Web\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'landing-page');
@@ -55,6 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/panel/inventories', [InventoryController::class, 'index'])->name('inventories.index');
     Route::get('/panel/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('/panel/sales', [SaleController::class, 'index'])->name('sales.index');
+    Route::get('/settings', [SettingsController::class, 'indexSettings'])->name('settings.index');
     Route::get('/settings/menu', [MenuController::class, 'index'])->name('settings.menu.index');
     Route::get('/settings/packages', [PackageController::class, 'index'])->name('settings.packages.index');
     Route::get('/settings/products', [ProductController::class, 'index'])->name('settings.products.index');

@@ -73,7 +73,7 @@
         ];
     @endphp
 
-    <div class="mt-16 w-full max-w-[1680px] space-y-8 p-8">
+    <div class="mx-auto mt-16 w-full max-w-[1680px] space-y-8 px-4 py-6 sm:p-8">
         <section class="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.85fr)]">
             <div class="relative overflow-hidden rounded-3xl bg-primary-800 p-8 shadow-2xl shadow-primary-900/20">
                 <div class="absolute -left-10 top-10 h-44 w-44 rounded-full bg-accent/10 blur-3xl"></div>
@@ -253,7 +253,7 @@
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-left">
+                        <table class="responsive-stack-table responsive-stack-table-dark min-w-full text-left">
                             <thead class="bg-primary-700/70">
                                 <tr>
                                     <th class="px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">
@@ -283,42 +283,42 @@
                             <tbody class="divide-y divide-primary-700/50">
                                 @foreach ($productRows as $row)
                                     <tr class="transition-colors hover:bg-primary-700/35">
-                                        <td class="px-6 py-5 text-sm font-bold text-secondary">{{ $row['sku'] }}</td>
-                                        <td class="px-6 py-5">
+                                        <td class="px-6 py-5 text-sm font-bold text-secondary" data-label="Clave">{{ $row['sku'] }}</td>
+                                        <td class="px-6 py-5" data-label="Producto">
                                             <div class="flex flex-col">
                                                 <span class="font-semibold text-on-primary">{{ $row['name'] }}</span>
                                                 <span class="mt-1 text-xs text-primary-200">{{ $row['detail'] }}</span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-5">
+                                        <td class="px-6 py-5" data-label="Categoría">
                                             <span
                                                 class="inline-flex rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] {{ $toneClasses[$row['category_tone']] }}">
                                                 {{ $row['category_label'] }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-5 text-center">
+                                        <td class="px-6 py-5 text-center" data-label="Stock">
                                             <p class="text-lg font-bold text-on-primary">{{ $formatQuantity($row['quantity']) }}</p>
                                             <p class="text-xs text-primary-200">{{ $row['unit'] }}</p>
                                         </td>
-                                        <td class="px-6 py-5 text-center">
+                                        <td class="px-6 py-5 text-center" data-label="Apartado">
                                             <p class="text-lg font-bold text-warning">{{ $formatQuantity($row['reserved']) }}</p>
                                             <p class="text-xs text-primary-200">eventos</p>
                                         </td>
-                                        <td class="px-6 py-5 text-center">
+                                        <td class="px-6 py-5 text-center" data-label="Disponible">
                                             <p class="text-lg font-bold text-on-primary">{{ $formatQuantity($row['available']) }}</p>
                                             <p class="text-xs text-primary-200">utilizable</p>
                                         </td>
-                                        <td class="px-6 py-5 text-right font-semibold text-on-primary">
+                                        <td class="px-6 py-5 text-right font-semibold text-on-primary" data-label="Precio base">
                                             {{ $formatCurrency($row['price']) }}
                                         </td>
-                                        <td class="px-6 py-5 text-center">
+                                        <td class="px-6 py-5 text-center" data-label="Estado">
                                             <span
                                                 class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] {{ $toneClasses[$row['status_tone']] }}">
                                                 <span class="material-symbols-outlined text-[16px]">{{ $row['status_icon'] }}</span>
                                                 {{ $row['status_label'] }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-5 text-right">
+                                        <td class="px-6 py-5 text-right" data-label="Acción">
                                             <a class="inline-flex items-center gap-2 rounded-xl bg-on-primary/10 px-3 py-2 text-xs font-semibold text-on-primary transition hover:bg-on-primary/20"
                                                 href="{{ route('products.show', $row['id']) }}">
                                                 Ver ficha

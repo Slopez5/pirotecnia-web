@@ -1,7 +1,7 @@
 @extends('templates.adminlte')
 
 @section('main-content')
-    <div class="mt-16 w-full max-w-[1680px] space-y-8 p-8">
+    <div class="mx-auto mt-16 w-full max-w-[1680px] space-y-8 px-4 py-6 sm:p-8">
         <section class="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_360px]">
             <div class="relative overflow-hidden rounded-3xl bg-primary-800 p-8 shadow-2xl shadow-primary-900/20">
                 <div class="absolute -left-12 top-8 h-40 w-40 rounded-full bg-accent/10 blur-3xl"></div>
