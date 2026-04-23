@@ -13,12 +13,21 @@ class Package extends Model
     use HasFactory;
 
     protected $fillable = [
+        'event_type_id',
         'name',
         'description',
         'price',
         'duration',
         'video_url',
         'experience_level_id',
+        'status',
+        'valid_from',
+        'valid_until',
+    ];
+
+    protected $casts = [
+        'valid_from' => 'date',
+        'valid_until' => 'date',
     ];
 
     protected static function boot()
@@ -66,5 +75,10 @@ class Package extends Model
     public function experienceLevel(): BelongsTo
     {
         return $this->belongsTo(ExperienceLevel::class, 'experience_level_id');
+    }
+
+    public function eventType(): BelongsTo
+    {
+        return $this->belongsTo(EventType::class, 'event_type_id');
     }
 }

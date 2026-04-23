@@ -55,9 +55,11 @@ class PackageForm extends Component
     {
         $this->validate([
             'name' => 'required',
+            'experience_id' => 'nullable|exists:experience_levels,id',
             'price' => 'required',
             'duration' => 'required',
             'description' => 'required',
+            'video_url' => 'nullable|url',
         ]);
 
         $amount = $this->price;
@@ -86,6 +88,7 @@ class PackageForm extends Component
             'price' => $amountDouble,
             'duration' => $this->duration,
             'description' => $this->description,
+            'video_url' => $this->video_url,
         ]);
         $experience = ExperienceLevel::find($this->experience_id);
         $this->package->experienceLevel()->associate($experience);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -13,6 +14,10 @@ class AuthController extends Controller
 
     public function login()
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -23,11 +28,15 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->route('dashboard');
+        if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('dashboard'));
         }
 
-        return back()->with('status', 'Invalid login details');
+        throw ValidationException::withMessages([
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
+        ]);
     }
 
     public function register()

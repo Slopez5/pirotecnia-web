@@ -96,6 +96,15 @@ class MaterialInPackageForm extends Component
 
     public function save()
     {
+        $this->validate([
+            'material_id' => 'required|exists:products,id',
+            'quantity' => 'required|numeric|min:1',
+        ]);
+
+        if (! $this->package) {
+            return;
+        }
+
         // if exists update, else create
         if ($this->package->materials->contains($this->material_id)) {
             $newQuantity = $this->package->materials->find($this->material_id)->pivot->quantity + $this->quantity;
@@ -117,7 +126,7 @@ class MaterialInPackageForm extends Component
     #[On('packageCreated')]
     public function packageCreated($package)
     {
-        $this->package = Package::find($package['id']);
+        $this->package = Package::findOrFail($package['id']);
         $this->package->load('materials');
     }
 

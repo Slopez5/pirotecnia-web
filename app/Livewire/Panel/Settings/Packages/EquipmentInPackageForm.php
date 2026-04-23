@@ -46,6 +46,15 @@ class EquipmentInPackageForm extends Component
 
     public function save()
     {
+        $this->validate([
+            'equipment_id' => 'required|exists:equipments,id',
+            'quantity' => 'required|numeric|min:1',
+        ]);
+
+        if (! $this->package) {
+            return;
+        }
+
         // if exists update, else create
         if ($this->package->equipments->contains($this->equipment_id)) {
             $newQuantity = $this->package->equipments->find($this->equipment_id)->pivot->quantity + $this->quantity;
@@ -67,8 +76,8 @@ class EquipmentInPackageForm extends Component
     #[On('packageCreated')]
     public function packageCreated($package)
     {
-        $this->package = Package::find($package['id']);
-        $this->package->load('materials');
+        $this->package = Package::findOrFail($package['id']);
+        $this->package->load('equipments');
     }
 
     public function removeequipment($equipment_id)
@@ -80,7 +89,10 @@ class EquipmentInPackageForm extends Component
 
     public function finish()
     {
-        // Redirect to index
-        return redirect()->route('settings.packages.index');
+        if (! $this->package) {
+            return redirect()->route('settings.packages.index');
+        }
+
+        return redirect()->route('packages.show', ['id' => $this->package->id]);
     }
 }

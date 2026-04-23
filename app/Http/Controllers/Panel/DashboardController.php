@@ -19,7 +19,7 @@ class DashboardController extends Controller
         [$startDate, $endDate] = $this->resolveDateRange($request, $now);
         [$previousStartDate, $previousEndDate] = $this->resolvePreviousRange($startDate, $endDate);
 
-        $events = Event::with(['packages', 'typeEvent', 'employees', 'products'])
+        $events = Event::with(['packages', 'typeEvent', 'employees.experienceLevel', 'products'])
             ->orderBy('event_date')
             ->get();
 
@@ -41,6 +41,17 @@ class DashboardController extends Controller
         $monthlyRevenueSeries = $this->buildRangeRevenueSeries($rangeEvents, $startDate, $endDate, $now, $rangeGranularity);
         $eventTypeSegments = $this->buildEventTypeSegments($rangeEvents);
         $upcomingEvents = $this->buildRangeEvents($rangeEvents, $now);
+        $employeeCoverageRows = $this->buildEmployeeCoverage($rangeEvents, $now);
+        $employeeCoverageCollection = collect($employeeCoverageRows);
+        $employeeCoverageAssignments = (int) $employeeCoverageCollection->sum('eventCount');
+        $coveredEmployeesCount = (int) $employeeCoverageCollection->count();
+        $averageCoveragePerEmployee = $coveredEmployeesCount > 0
+            ? $employeeCoverageAssignments / $coveredEmployeesCount
+            : 0;
+        $topCoverageEmployee = $employeeCoverageCollection->first();
+        $eventsWithoutEmployeesCount = $rangeEvents
+            ->filter(fn(Event $event) => $event->employees->isEmpty())
+            ->count();
 
         $lowStockItems = $this->buildLowStockItems($inventory, $rangeEvents);
         $lowStockCount = count($lowStockItems);
@@ -68,6 +79,15 @@ class DashboardController extends Controller
             'monthlyRevenueSeries' => $monthlyRevenueSeries,
             'eventTypeSegments' => $eventTypeSegments,
             'upcomingEvents' => $upcomingEvents,
+            'employeeCoverageRows' => $employeeCoverageRows,
+            'coveredEmployeesCount' => $coveredEmployeesCount,
+            'employeeCoverageAssignments' => (string) $employeeCoverageAssignments,
+            'averageCoveragePerEmployee' => $this->formatQuantity($averageCoveragePerEmployee),
+            'eventsWithoutEmployeesCount' => $eventsWithoutEmployeesCount,
+            'topCoverageEmployeeName' => $topCoverageEmployee['name'] ?? 'Sin asignaciones',
+            'topCoverageEmployeeCount' => isset($topCoverageEmployee['eventCount'])
+                ? (string) $topCoverageEmployee['eventCount']
+                : '0',
             'lowStockItems' => $lowStockItems,
             'criticalLowStockCount' => $criticalLowStockCount,
             'chartGranularityLabel' => $this->resolveGranularityLabel($rangeGranularity),
@@ -389,6 +409,7 @@ class DashboardController extends Controller
     private function buildRangeEvents(Collection $rangeEvents, Carbon $referenceDate): array
     {
         return $rangeEvents
+            ->filter(fn(Event $event) => $this->eventDate($event)->gte($referenceDate->copy()->startOfDay()))
             ->sortBy(fn(Event $event) => $this->eventDate($event)->timestamp)
             ->take(5)
             ->map(function (Event $event) use ($referenceDate) {
@@ -415,6 +436,62 @@ class DashboardController extends Controller
                     'price' => $this->formatMoney($this->calculateEventTotal($event)),
                 ];
             })
+            ->all();
+    }
+
+    private function buildEmployeeCoverage(Collection $rangeEvents, Carbon $referenceDate): array
+    {
+        return $rangeEvents
+            ->flatMap(function (Event $event) {
+                return $event->employees->map(function ($employee) use ($event) {
+                    return [
+                        'employee' => $employee,
+                        'event' => $event,
+                    ];
+                });
+            })
+            ->groupBy(fn(array $assignment) => $assignment['employee']->id)
+            ->map(function (Collection $assignments) use ($referenceDate) {
+                $employee = $assignments->first()['employee'];
+                $events = $assignments
+                    ->pluck('event')
+                    ->unique('id')
+                    ->sortBy(fn(Event $event) => $this->eventDate($event)->timestamp)
+                    ->values();
+
+                $completedCount = $events
+                    ->filter(fn(Event $event) => $this->eventDate($event)->lt($referenceDate->copy()->startOfDay()))
+                    ->count();
+
+                $upcomingCount = $events
+                    ->filter(fn(Event $event) => $this->eventDate($event)->gte($referenceDate->copy()->startOfDay()))
+                    ->count();
+
+                $nextEvent = $events->first(
+                    fn(Event $event) => $this->eventDate($event)->gte($referenceDate->copy()->startOfDay())
+                );
+
+                $lastEvent = $events
+                    ->filter(fn(Event $event) => $this->eventDate($event)->lt($referenceDate->copy()->startOfDay()))
+                    ->last();
+
+                return [
+                    'id' => $employee->id,
+                    'name' => $employee->name ?: 'Empleado sin nombre',
+                    'experienceLevel' => $employee->experienceLevel?->name ?: 'Sin nivel',
+                    'eventCount' => $events->count(),
+                    'completedCount' => $completedCount,
+                    'upcomingCount' => $upcomingCount,
+                    'referenceLabel' => $nextEvent
+                        ? 'Proximo: ' . $this->eventDate($nextEvent)->locale('es')->isoFormat('D MMM')
+                        : ($lastEvent
+                            ? 'Ultimo: ' . $this->eventDate($lastEvent)->locale('es')->isoFormat('D MMM')
+                            : 'Sin fecha de referencia'),
+                ];
+            })
+            ->sortByDesc('eventCount')
+            ->values()
+            ->take(8)
             ->all();
     }
 

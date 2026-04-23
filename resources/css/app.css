@@ -225,6 +225,9 @@
         border-bottom-width: 1px;
         border-bottom-style: solid;
         text-align: left !important;
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: anywhere;
     }
 
     .responsive-stack-table tbody > tr > td::before {
@@ -249,6 +252,9 @@
 
     .responsive-stack-table tbody > tr > td > * {
         min-width: 0;
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: anywhere;
     }
 
     .responsive-stack-table-dark tbody > tr {

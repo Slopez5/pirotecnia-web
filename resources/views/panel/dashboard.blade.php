@@ -159,13 +159,178 @@
             </div>
 
             <div class="col-span-12 overflow-hidden rounded-3xl bg-primary-800 lg:col-span-8">
+                <div class="flex flex-col gap-4 border-b border-primary-700/60 p-8 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-on-primary">Cobertura de empleados</h3>
+                        <p class="mt-1 text-sm text-primary-200">
+                            Eventos cubiertos por colaborador dentro de {{ $rangeLabel }}.
+                        </p>
+                    </div>
+                    <a class="inline-flex items-center gap-2 text-xs font-semibold text-primary hover:underline"
+                        href="{{ route('employees.index') }}">
+                        <span class="material-symbols-outlined text-base">groups</span>
+                        Ver plantilla
+                    </a>
+                </div>
+
+                <div class="p-4 sm:p-6">
+                    @if (count($employeeCoverageRows) > 0)
+                        @php
+                            $coverageLeaders = collect($employeeCoverageRows)->take(3)->values();
+                        @endphp
+
+                        <div class="mb-6 grid gap-4 xl:grid-cols-3">
+                            @foreach ($coverageLeaders as $leaderIndex => $leader)
+                                @php
+                                    $position = $leaderIndex + 1;
+                                    $toneClasses = match ($position) {
+                                        1 => 'border-secondary/40 bg-secondary/10',
+                                        2 => 'border-accent/40 bg-accent/10',
+                                        default => 'border-warning/40 bg-warning/10',
+                                    };
+                                    $badgeClasses = match ($position) {
+                                        1 => 'bg-secondary text-on-secondary',
+                                        2 => 'bg-accent text-on-accent',
+                                        default => 'bg-warning text-on-warning',
+                                    };
+                                @endphp
+
+                                <article class="rounded-2xl border {{ $toneClasses }} p-5">
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div>
+                                            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">
+                                                {{ $position === 1 ? 'Lider de cobertura' : 'Top ' . $position }}
+                                            </p>
+                                            <p class="mt-3 text-lg font-bold text-on-primary">{{ $leader['name'] }}</p>
+                                            <p class="mt-1 text-xs text-primary-200">{{ $leader['experienceLevel'] }}</p>
+                                        </div>
+                                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-black {{ $badgeClasses }}">
+                                            #{{ $position }}
+                                        </span>
+                                    </div>
+
+                                    <div class="mt-5 flex items-end justify-between gap-4">
+                                        <div>
+                                            <p class="text-xs uppercase tracking-[0.18em] text-primary-200">Eventos cubiertos</p>
+                                            <p class="mt-2 text-3xl font-black text-on-primary">{{ $leader['eventCount'] }}</p>
+                                        </div>
+                                        <p class="text-right text-xs leading-5 text-primary-200">{{ $leader['referenceLabel'] }}</p>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="responsive-stack-table responsive-stack-table-dark min-w-[760px] w-full text-left">
+                                <thead>
+                                    <tr class="border-b border-primary-700/60 bg-primary-900/40 text-[11px] uppercase tracking-[0.22em] text-primary-200">
+                                        <th class="px-4 py-4 font-bold">Empleado</th>
+                                        <th class="px-4 py-4 font-bold text-center">Eventos</th>
+                                        <th class="px-4 py-4 font-bold text-center">Pendientes</th>
+                                        <th class="px-4 py-4 font-bold text-center">Finalizados</th>
+                                        <th class="px-4 py-4 font-bold text-right">Referencia</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($employeeCoverageRows as $employeeCoverage)
+                                        <tr class="border-b border-primary-700/40 text-sm text-primary-100">
+                                            <td class="px-4 py-5">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-secondary/15 text-secondary">
+                                                        <span class="text-sm font-black uppercase">
+                                                            {{ \Illuminate\Support\Str::of($employeeCoverage['name'])->trim()->substr(0, 2) }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="min-w-0">
+                                                        <p class="truncate font-semibold text-on-primary">{{ $employeeCoverage['name'] }}</p>
+                                                        <p class="mt-1 text-xs text-primary-200">{{ $employeeCoverage['experienceLevel'] }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-5 text-center">
+                                                <span class="font-bold text-on-primary">{{ $employeeCoverage['eventCount'] }}</span>
+                                            </td>
+                                            <td class="px-4 py-5 text-center">
+                                                <span class="inline-flex rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-xs font-bold text-secondary">
+                                                    {{ $employeeCoverage['upcomingCount'] }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-5 text-center">
+                                                <span class="inline-flex rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-bold text-accent">
+                                                    {{ $employeeCoverage['completedCount'] }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-5 text-right text-xs text-primary-200">
+                                                {{ $employeeCoverage['referenceLabel'] }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="rounded-2xl border border-dashed border-primary-700/60 bg-primary-900/30 px-6 py-10 text-center">
+                            <span class="material-symbols-outlined text-4xl text-primary-300">groups</span>
+                            <p class="mt-4 text-lg font-bold text-on-primary">Sin cobertura registrada en el rango</p>
+                            <p class="mx-auto mt-2 max-w-2xl text-sm leading-6 text-primary-200">
+                                Los eventos encontrados en este periodo todavía no tienen empleados asignados o no hubo
+                                eventos dentro del filtro aplicado.
+                            </p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="col-span-12 h-full rounded-3xl bg-primary-800 p-8 lg:col-span-4">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-on-primary">Resumen operativo</h3>
+                        <p class="mt-1 text-sm text-primary-200">Cobertura humana dentro del rango activo.</p>
+                    </div>
+                    <span class="material-symbols-outlined text-3xl text-secondary">supervisor_account</span>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                    <article class="rounded-2xl border border-primary-700/60 bg-primary-900/40 p-5">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">Colaboradores programados</p>
+                        <p class="mt-3 text-3xl font-bold text-on-primary">{{ $coveredEmployeesCount }}</p>
+                        <p class="mt-2 text-xs text-primary-200">Empleados con al menos un evento dentro del rango.</p>
+                    </article>
+
+                    <article class="rounded-2xl border border-primary-700/60 bg-primary-900/40 p-5">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">Coberturas asignadas</p>
+                        <p class="mt-3 text-3xl font-bold text-secondary">{{ $employeeCoverageAssignments }}</p>
+                        <p class="mt-2 text-xs text-primary-200">Suma total de asignaciones empleado-evento.</p>
+                    </article>
+
+                    <article class="rounded-2xl border border-primary-700/60 bg-primary-900/40 p-5">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">Promedio por empleado</p>
+                        <p class="mt-3 text-3xl font-bold text-accent">{{ $averageCoveragePerEmployee }}</p>
+                        <p class="mt-2 text-xs text-primary-200">Eventos cubiertos en promedio por colaborador.</p>
+                    </article>
+                </div>
+
+                <div class="mt-4 rounded-2xl border border-primary-700/60 bg-primary-900/30 p-5">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-200">Eventos sin equipo humano</p>
+                    <p class="mt-3 text-lg font-bold {{ $eventsWithoutEmployeesCount > 0 ? 'text-warning' : 'text-secondary' }}">
+                        {{ $eventsWithoutEmployeesCount }}
+                    </p>
+                    <p class="mt-2 text-sm text-primary-100">
+                        {{ $eventsWithoutEmployeesCount > 0
+                            ? 'Todavia requieren asignacion de personal dentro del rango.'
+                            : 'Todos los eventos del rango ya tienen personal asignado.' }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-span-12 overflow-hidden rounded-3xl bg-primary-800 lg:col-span-8">
                 <div class="p-8 pb-4">
-                    <h3 class="text-xl font-bold text-on-primary">Eventos del rango</h3>
-                    <p class="mt-1 text-sm text-primary-200">Primeros eventos encontrados dentro del filtro actual.</p>
+                    <h3 class="text-xl font-bold text-on-primary">Eventos pendientes del rango</h3>
+                    <p class="mt-1 text-sm text-primary-200">Primeros 5 eventos pendientes dentro del filtro actual.</p>
                 </div>
                 <div class="overflow-x-auto px-2">
                     <livewire:dashboard.event-list :events="$upcomingEvents"
-                        emptyMessage="No hay eventos dentro del rango seleccionado." />
+                        emptyMessage="No hay eventos pendientes dentro del rango seleccionado." />
                 </div>
             </div>
 

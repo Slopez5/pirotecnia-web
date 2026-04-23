@@ -1,93 +1,157 @@
-<div>
-    <form wire:submit.prevent="save">
+@php
+    $labelClass = 'text-[11px] font-semibold uppercase tracking-[0.24em] text-primary-200';
+    $inputClass =
+        'w-full rounded-2xl border border-primary-600/40 bg-primary-900/70 px-4 py-3 text-sm text-on-primary placeholder:text-primary-300 transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20';
+    $errorClass = 'text-xs font-semibold text-secondary';
+@endphp
 
-        <div class="form-group">
-            <label for="material_id">Material</label>
-            <select class="form-control" id="material_id" wire:model="material_id">
-                <option value="">Seleccione un material</option>
-                @foreach ($materials as $material)
-                    <option value="{{ $material->id }}">{{ $material->name }}
-                        {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }}
-                        {{ $material->shape }}</option>
-                @endforeach
-            </select>
-            @error('material_id')
-                <span class="error">{{ $message }}</span>
-            @enderror
+<div class="space-y-6">
+    @if (!$package)
+        <div class="rounded-3xl border border-primary-700/60 bg-primary-900/30 p-6">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-secondary">Paso pendiente</p>
+            <h4 class="mt-3 text-xl font-bold text-on-primary">Guarda primero el paquete</h4>
+            <p class="mt-3 max-w-2xl text-sm leading-7 text-primary-200">
+                Esta sección se habilita cuando el paquete ya existe en base de datos. En cuanto guardes la ficha
+                principal podrás seguir aquí mismo con materiales y productos.
+            </p>
         </div>
-        {{-- Quantity with default 1 --}}
-        <div class="form-group">
-            <label for="quantity">Cantidad</label>
-            <input type="number" class="form-control" id="quantity" wire:model="quantity" value="1">
-            @error('quantity')
-                <span class="error">{{ $message }}</span>
-            @enderror
-        </div>
-        <div class="row justify-content-between">
-            <div class="col">
-                <button type="submit" class="btn btn-primary">Guardar</button>
-            </div>
-            <div class="col text-end">
-                <button type="button" class="btn btn-success" wire:click="nextTab">Siguiente</button>
-            </div>
-        </div>
-    </form>
-
-    {{-- spacer --}}
-    <div class="mb-3"></div>
-
-    {{-- Table with materials in Package the table has max height --}}
-    <div class="table-responsive">
-        @isset($materialsInPackage)
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Material</th>
-                        <th>Cantidad</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($materialsInPackage as $material)
-                        <tr>
-                            <td>{{ $material->name }}
+    @else
+        <form class="space-y-6" wire:submit.prevent="save">
+            <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_200px]">
+                <div class="space-y-2">
+                    <label class="{{ $labelClass }}" for="material_id">Material o producto</label>
+                    <select class="{{ $inputClass }} appearance-none" id="material_id" wire:model="material_id">
+                        <option value="">Seleccione un material</option>
+                        @foreach ($materials as $material)
+                            <option value="{{ $material->id }}">
+                                {{ $material->name }}
                                 {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }}
-                                {{ $material->shape }}</td>
-                            <td>{{ $material->pivot->quantity }}</td>
-                            <td>
-                                {{-- icon trash --}}
-                                <button class="btn btn-danger" wire:click="removeMaterial({{ $material->id }})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                {{-- Fotter pagination --}}
-                <tfoot>
-                    <tr>
-                        <td colspan="3">
-                            {{ $materialsInPackage->links('vendor.pagination.bootstrap-4') }}
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        @endisset
-    </div>
+                                {{ $material->shape }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('material_id')
+                        <p class="{{ $errorClass }}">{{ $message }}</p>
+                    @enderror
+                </div>
 
+                <div class="space-y-2">
+                    <label class="{{ $labelClass }}" for="quantity">Cantidad</label>
+                    <input class="{{ $inputClass }}" id="quantity" min="1" type="number" wire:model="quantity">
+                    @error('quantity')
+                        <p class="{{ $errorClass }}">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
 
+            <div
+                class="flex flex-col gap-4 rounded-2xl border border-primary-700/60 bg-primary-900/40 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <p class="max-w-xl text-sm text-primary-200">
+                    Agrega uno o varios materiales al paquete actual. Puedes seguir al siguiente paso cuando tengas la
+                    composición base registrada.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <button
+                        class="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-on-secondary transition-colors hover:bg-secondary-600"
+                        type="submit">
+                        <span class="material-symbols-outlined text-base">add_circle</span>
+                        Guardar material
+                    </button>
+                    <button
+                        class="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-600"
+                        type="button" wire:click="nextTab">
+                        <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        Siguiente
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <section class="overflow-hidden rounded-3xl bg-primary-800 shadow-2xl shadow-primary-900/10">
+            <div class="flex flex-col gap-3 border-b border-primary-700/60 px-6 py-6 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.28em] text-secondary">Composición actual</p>
+                    <h4 class="mt-3 text-xl font-bold text-on-primary">Materiales vinculados</h4>
+                </div>
+                <div class="rounded-full border border-primary-700/60 bg-primary-900/30 px-4 py-2 text-sm text-primary-200">
+                    {{ $materialsInPackage ? number_format($materialsInPackage->total()) : 0 }} registros
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                @isset($materialsInPackage)
+                    <table class="responsive-stack-table responsive-stack-table-dark min-w-full text-left">
+                        <thead>
+                            <tr class="border-b border-primary-700/60 bg-primary-900/40">
+                                <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-primary-200">
+                                    Material
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.22em] text-primary-200">
+                                    Cantidad
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.22em] text-primary-200">
+                                    Unidad
+                                </th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.22em] text-primary-200">
+                                    Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-primary-700/40">
+                            @forelse ($materialsInPackage as $material)
+                                <tr class="transition-colors hover:bg-primary-700/20">
+                                    <td class="px-6 py-5" data-label="Material">
+                                        <p class="font-semibold text-on-primary">
+                                            {{ $material->name }}
+                                            {{ $material->caliber != '' ? $material->caliber . "''" : '' }}{{ $material->caliber != '' && $material->shots != '' ? 'x' : '' }}{{ $material->shots != '' ? "$material->shots" : '' }}
+                                            {{ $material->shape }}
+                                        </p>
+                                        <p class="mt-1 text-xs text-primary-200">
+                                            {{ $material->description ?: 'Sin descripción adicional.' }}
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-5 text-center text-sm font-semibold text-on-primary" data-label="Cantidad">
+                                        {{ $material->pivot->quantity }}
+                                    </td>
+                                    <td class="px-6 py-5 text-center text-sm text-primary-200" data-label="Unidad">
+                                        {{ $material->unit ?: 'Pza' }}
+                                    </td>
+                                    <td class="px-6 py-5 text-right" data-label="Acciones">
+                                        <button
+                                            class="inline-flex items-center justify-center rounded-xl bg-error/10 p-2.5 text-error transition-colors hover:bg-error/20"
+                                            type="button" wire:click="removeMaterial({{ $material->id }})">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td class="px-6 py-8 text-sm text-primary-200" colspan="4">
+                                        Aún no hay materiales agregados a este paquete.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    @if ($materialsInPackage->hasPages())
+                        <div class="border-t border-primary-700/60 px-6 py-4">
+                            {{ $materialsInPackage->links() }}
+                        </div>
+                    @endif
+                @endisset
+            </div>
+        </section>
+    @endif
 </div>
 
 @script
     <script>
-        // Load the range slider when the component is mounted
-        
         Livewire.on('selectCake', (request) => {
             setTimeout(() => {
                 loadRangeSlider(request.minPrice, request.maxPrice);
             }, 0);
         });
-
 
         function loadRangeSlider(minPrice, maxPrice) {
             console.log(minPrice, maxPrice);
@@ -104,17 +168,19 @@
             });
         }
 
-
-
         Livewire.on('confirmDeleteMaterial', (request) => {
+            const styles = getComputedStyle(document.documentElement);
+            const secondary = styles.getPropertyValue('--color-secondary').trim() || '#E40D81';
+            const error = styles.getPropertyValue('--color-error').trim() || '#BA1A1A';
+
             Swal.fire({
                 title: '¿Deseas eliminar ' + request.name + '?',
-                text: "¡No podrás revertir esto!",
+                text: 'No podrás revertir esto.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '¡Sí, bórralo!'
+                confirmButtonColor: secondary,
+                cancelButtonColor: error,
+                confirmButtonText: 'Sí, eliminar'
             }).then((result) => {
                 if (result.isConfirmed) {
                     Livewire.dispatch('deleteMaterial', {

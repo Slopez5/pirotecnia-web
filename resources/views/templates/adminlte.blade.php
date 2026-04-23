@@ -105,6 +105,15 @@
                     <p class="truncate text-xs text-primary-200">Sede Central</p>
                 </div>
             </div>
+
+            <a class="mt-4 flex items-center justify-between rounded-xl border border-primary-600/50 bg-primary-800/60 px-4 py-3 text-sm font-semibold text-primary-200 transition-colors hover:bg-error/10 hover:text-error"
+                href="{{ route('logout') }}">
+                <span class="flex items-center gap-3">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Cerrar sesión</span>
+                </span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
         </div>
     </aside>
 
@@ -158,7 +167,11 @@
     </header>
 
     <main class="min-h-screen lg:pl-64">
-        @yield('main-content')
+        @hasSection('main-content')
+            @yield('main-content')
+        @else
+            @yield('content')
+        @endif
     </main>
 
     <script>
@@ -205,6 +218,20 @@
                             }
                         });
                     });
+                });
+            };
+
+            let responsiveSyncScheduled = false;
+            const scheduleResponsiveTableSync = () => {
+                if (responsiveSyncScheduled) {
+                    return;
+                }
+
+                responsiveSyncScheduled = true;
+
+                window.requestAnimationFrame(() => {
+                    responsiveSyncScheduled = false;
+                    syncResponsiveTables();
                 });
             };
 
@@ -276,9 +303,19 @@
                     });
                 }
             });
+
+            const tableObserver = new MutationObserver(() => {
+                scheduleResponsiveTableSync();
+            });
+
+            tableObserver.observe(document.body, {
+                childList: true,
+                subtree: true,
+            });
         });
     </script>
 
+    @yield('extra-script')
     @livewireScriptConfig
 </body>
 
