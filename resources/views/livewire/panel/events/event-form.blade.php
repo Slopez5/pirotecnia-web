@@ -98,6 +98,9 @@
                 <div class="space-y-2">
                     <label class="{{ $labelClass }}" for="event_date">Fecha del evento</label>
                     <input class="{{ $inputClass }}" id="event_date" type="date" wire:model="event_date">
+                    <p class="text-xs text-primary-200">
+                        Si capturas una fecha anterior a hoy, el sistema te pedirá confirmación antes de guardar.
+                    </p>
                     @error('event_date')
                         <p class="{{ $errorClass }}">{{ $message }}</p>
                     @enderror
@@ -229,7 +232,8 @@
                         <h4 class="mt-2 text-xl font-bold text-on-primary">Configuración comercial</h4>
                     </div>
                     <p class="max-w-xl text-sm text-primary-200">
-                        Asocia uno o varios paquetes. Si falta alguno, usa la opción de alta rápida desde el selector.
+                        Asocia uno o varios paquetes. Puedes repetir el mismo paquete y el sistema lo sumará como
+                        cantidad. Si falta alguno, usa la opción de alta rápida desde el selector.
                     </p>
                 </div>
 
@@ -392,9 +396,15 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label class="{{ $labelClass }}" for="newCustomProductPrice">Costo unitario</label>
+                                <label class="{{ $labelClass }}" for="newCustomProductPrice">Costo inventario</label>
                                 <input class="{{ $inputClass }}" id="newCustomProductPrice" placeholder="$0.00"
                                     type="text" wire:model="newCustomProductPrice">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="{{ $labelClass }}" for="newCustomProductEventPrice">Precio al cliente</label>
+                                <input class="{{ $inputClass }}" id="newCustomProductEventPrice" placeholder="$0.00"
+                                    type="text" wire:model="newCustomProductEventPrice">
                             </div>
                         </div>
                     </div>
@@ -518,6 +528,9 @@
                                                     @endif
                                                     <p class="mt-2 text-xs font-semibold text-primary-100">Stock
                                                         actual: {{ $item['stock'] }}</p>
+                                                    <p class="mt-1 text-xs text-primary-200">
+                                                        El costo de inventario no se usará como precio de venta del evento.
+                                                    </p>
                                                 </div>
                                                 <button
                                                     class="inline-flex items-center gap-2 rounded-xl bg-error/10 px-3 py-2 text-xs font-semibold text-error transition-colors hover:bg-error/20"
@@ -527,7 +540,7 @@
                                                     Quitar
                                                 </button>
                                             </div>
-                                            <div class="mt-4 grid gap-3 sm:grid-cols-[140px_auto] sm:items-end">
+                                            <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                                                 <div class="space-y-2">
                                                     <label class="{{ $labelClass }}"
                                                         for="custom_product_qty_{{ $item['index'] }}">Cantidad</label>
@@ -537,29 +550,35 @@
                                                         wire:model.live="customProducts.{{ $item['index'] }}.quantity">
                                                 </div>
                                                 @if ($item['requires_inventory_registration'])
-                                                    <div class="grid gap-3 sm:grid-cols-2">
-                                                        <div class="space-y-2">
-                                                            <label class="{{ $labelClass }}"
-                                                                for="custom_product_stock_{{ $item['index'] }}">Stock inventario</label>
-                                                            <input class="{{ $inputClass }}"
-                                                                id="custom_product_stock_{{ $item['index'] }}" min="0"
-                                                                type="number"
-                                                                wire:model.live="customProducts.{{ $item['index'] }}.inventory_quantity">
-                                                        </div>
-                                                        <div class="space-y-2">
-                                                            <label class="{{ $labelClass }}"
-                                                                for="custom_product_price_{{ $item['index'] }}">Costo unitario</label>
-                                                            <input class="{{ $inputClass }}"
-                                                                id="custom_product_price_{{ $item['index'] }}"
-                                                                placeholder="$0.00" type="text"
-                                                                wire:model.live="customProducts.{{ $item['index'] }}.price">
-                                                        </div>
+                                                    <div class="space-y-2">
+                                                        <label class="{{ $labelClass }}"
+                                                            for="custom_product_stock_{{ $item['index'] }}">Stock inventario</label>
+                                                        <input class="{{ $inputClass }}"
+                                                            id="custom_product_stock_{{ $item['index'] }}" min="0"
+                                                            type="number"
+                                                            wire:model.live="customProducts.{{ $item['index'] }}.inventory_quantity">
+                                                    </div>
+                                                    <div class="space-y-2">
+                                                        <label class="{{ $labelClass }}"
+                                                            for="custom_product_inventory_price_{{ $item['index'] }}">Costo inventario</label>
+                                                        <input class="{{ $inputClass }}"
+                                                            id="custom_product_inventory_price_{{ $item['index'] }}"
+                                                            placeholder="$0.00" type="text"
+                                                            wire:model.live="customProducts.{{ $item['index'] }}.inventory_price">
                                                     </div>
                                                 @else
-                                                    <p class="text-xs text-primary-200">
-                                                        Esta cantidad se guardará directamente en los materiales del evento.
-                                                    </p>
+                                                    <div class="rounded-2xl border border-primary-700/60 bg-primary-900/30 p-3 text-xs text-primary-200 md:col-span-1 xl:col-span-2">
+                                                        Esta cantidad se guardará directamente en los materiales del evento y el stock reservado se calculará con la existencia actual.
+                                                    </div>
                                                 @endif
+                                                <div class="space-y-2">
+                                                    <label class="{{ $labelClass }}"
+                                                        for="custom_product_price_{{ $item['index'] }}">Precio al cliente</label>
+                                                    <input class="{{ $inputClass }}"
+                                                        id="custom_product_price_{{ $item['index'] }}"
+                                                        placeholder="$0.00" type="text"
+                                                        wire:model.live="customProducts.{{ $item['index'] }}.price">
+                                                </div>
                                             </div>
                                         </article>
                                     @endforeach
@@ -836,6 +855,32 @@
                 </div>
             </div>
         @endif
+
+        <x-modal id="past-event-date" title="Fecha anterior a hoy">
+            <x-slot:body class="space-y-4">
+                <div class="rounded-2xl border border-warning/30 bg-warning/10 p-4">
+                    <p class="text-sm font-semibold text-warning">Revisión requerida</p>
+                    <p class="mt-2 text-sm leading-6 text-primary-100">
+                        La fecha del evento es anterior a hoy. Si continúas, el registro se guardará como evento histórico.
+                    </p>
+                </div>
+                <p class="text-sm text-primary-200">
+                    Confirma solo si realmente necesitas capturar un evento pasado o corregir historial operativo.
+                </p>
+            </x-slot:body>
+            <x-slot:footer class="flex flex-wrap justify-end gap-3">
+                <button
+                    class="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-600"
+                    type="button" wire:click="closePastDateModal">
+                    Revisar fecha
+                </button>
+                <button
+                    class="inline-flex items-center gap-2 rounded-xl bg-warning px-4 py-3 text-sm font-bold text-on-warning transition-colors hover:bg-warning-400"
+                    type="button" wire:click="confirmPastDateAndSave">
+                    Continuar de todos modos
+                </button>
+            </x-slot:footer>
+        </x-modal>
 
         <div
             class="flex flex-col gap-4 rounded-3xl border border-primary-700/60 bg-primary-800/80 p-5 backdrop-blur lg:flex-row lg:items-center lg:justify-between">

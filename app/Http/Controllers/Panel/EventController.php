@@ -121,7 +121,7 @@ class EventController extends Controller
 
     private function generateContrato($data)
     {
-        $package_names = implode(', ', $data->packages->pluck('name')->toArray());
+        $package_names = $this->formatEventPackageLabel($data->packages);
         if ($package_names === '' && $data->products->isNotEmpty()) {
             $package_names = 'Paquete personalizado';
         }
@@ -129,7 +129,7 @@ class EventController extends Controller
         $price = 0;
         if ($data->price == 0) {
             foreach ($data->packages as $package) {
-                $price += $package->price;
+                $price += $this->resolvePackageSnapshotPrice($package) * $this->resolvePackageQuantity($package);
             }
         } else {
             $price = $data->price;
@@ -161,11 +161,19 @@ class EventController extends Controller
 
     private function buildContractItems(object $event, float $basePrice): array
     {
+        if ($this->shouldHideContractItemBreakdown($event)) {
+            return [[
+                'descripcion' => $this->resolveContractItemDescription($event),
+                'cantidad' => '',
+                'precio' => 0,
+            ]];
+        }
+
         if ($event->packages->isNotEmpty()) {
             return $event->packages->map(fn ($package) => [
                 'descripcion' => $package->name,
-                'cantidad' => 1,
-                'precio' => (float) $package->price,
+                'cantidad' => $this->resolvePackageQuantity($package),
+                'precio' => $this->resolvePackageSnapshotPrice($package),
             ])->toArray();
         }
 
@@ -186,6 +194,35 @@ class EventController extends Controller
         ])->toArray();
     }
 
+    private function shouldHideContractItemBreakdown(object $event): bool
+    {
+        $hasManualPrice = $this->normalizeAmount($event->price ?? 0) > 0;
+        $isCustomEvent = $event->packages->isEmpty() && $event->products->isNotEmpty();
+
+        return $hasManualPrice || $isCustomEvent;
+    }
+
+    private function resolveContractItemDescription(object $event): string
+    {
+        $contractDescription = trim((string) ($event->contract_description ?? ''));
+
+        if ($contractDescription !== '') {
+            return $contractDescription;
+        }
+
+        if ($event->packages->isNotEmpty()) {
+            return $this->formatEventPackageLabel($event->packages);
+        }
+
+        $packageLabel = trim((string) ($event->package ?? ''));
+
+        if ($packageLabel !== '' && $packageLabel !== 'Sin paquete asignado') {
+            return $packageLabel;
+        }
+
+        return 'Paquete personalizado';
+    }
+
     private function buildEventDetail(Event $event): Event
     {
         $event->setRelation('equipments', $this->mergeEventEquipments($event));
@@ -196,7 +233,7 @@ class EventController extends Controller
         $advance = $this->normalizeAmount($event->advance);
         $total = max($subtotal - $discountAmount + $travelExpenses, 0);
         $eventDate = Carbon::parse($event->event_date, 'America/Mexico_City');
-        $packageLabel = $event->packages->pluck('name')->filter()->implode(', ');
+        $packageLabel = $this->formatEventPackageLabel($event->packages);
 
         if ($packageLabel === '' && $event->products->isNotEmpty()) {
             $packageLabel = 'Paquete personalizado';
@@ -316,5 +353,41 @@ class EventController extends Controller
         }
 
         return (float) str_replace(',', '', $normalized);
+    }
+
+    private function formatEventPackageLabel(Collection $packages): string
+    {
+        return $packages
+            ->map(function ($package) {
+                $quantity = $this->resolvePackageQuantity($package);
+
+                return $quantity > 1 ? $package->name.' x'.$quantity : $package->name;
+            })
+            ->filter()
+            ->implode(', ');
+    }
+
+    private function resolvePackageQuantity(object $package): int
+    {
+        $pivotQuantity = (int) ($package->pivot->quantity ?? 0);
+
+        if ($pivotQuantity > 0) {
+            return $pivotQuantity;
+        }
+
+        $entityQuantity = (int) ($package->quantity ?? 0);
+
+        return $entityQuantity > 0 ? $entityQuantity : 1;
+    }
+
+    private function resolvePackageSnapshotPrice(object $package): float
+    {
+        $pivotPrice = $this->normalizeAmount($package->pivot->price ?? 0);
+
+        if ($pivotPrice > 0) {
+            return $pivotPrice;
+        }
+
+        return $this->normalizeAmount($package->price ?? 0);
     }
 }

@@ -1,17 +1,20 @@
 @extends('templates.adminlte')
 
 @section('content-header')
+    @php
+        $isEditing = isset($employee);
+    @endphp
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Crear empleado</h1>
+                    <h1 class="m-0">{{ $isEditing ? 'Editar empleado' : 'Crear empleado' }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Inicio</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('employees.index') }}">Empleados</a></li>
-                        <li class="breadcrumb-item active">Crear</li>
+                        <li class="breadcrumb-item active">{{ $isEditing ? 'Editar' : 'Crear' }}</li>
                     </ol>
                 </div>
             </div>
@@ -21,6 +24,7 @@
 
 @section('main-content')
     @php
+        $isEditing = isset($employee);
         $inputClass =
             'w-full rounded-2xl border border-primary-600/40 bg-primary-900/70 px-4 py-3 text-sm text-on-primary placeholder:text-primary-300 transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20';
         $textareaClass = $inputClass . ' min-h-28';
@@ -28,6 +32,7 @@
         $errorClass = 'text-xs font-semibold text-secondary';
         $sectionClass = 'rounded-3xl border border-primary-700/60 bg-primary-900/40 p-6 shadow-soft';
         $levelsCount = $experienceLevels->count();
+        $formAction = $isEditing ? route('employees.update', $employee->id) : route('employees.store');
     @endphp
 
     <div class="mx-auto mt-16 w-full max-w-[1600px] space-y-8 px-4 py-6 sm:p-8">
@@ -36,11 +41,16 @@
                 <div class="absolute -left-10 top-10 h-40 w-40 rounded-full bg-secondary/10 blur-3xl"></div>
                 <div class="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-accent/10 blur-3xl"></div>
                 <div class="relative">
-                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-secondary">Alta operativa</p>
-                    <h2 class="mt-4 text-4xl font-bold tracking-tight text-on-primary">Registrar nuevo empleado</h2>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-secondary">
+                        {{ $isEditing ? 'Actualización operativa' : 'Alta operativa' }}
+                    </p>
+                    <h2 class="mt-4 text-4xl font-bold tracking-tight text-on-primary">
+                        {{ $isEditing ? 'Actualizar empleado' : 'Registrar nuevo empleado' }}
+                    </h2>
                     <p class="mt-3 max-w-2xl text-sm leading-7 text-primary-200">
-                        Captura los datos base del colaborador para integrarlo al directorio operativo con contacto,
-                        nivel de experiencia, salario y evidencia fotográfica.
+                        {{ $isEditing
+                            ? 'Modifica los datos operativos del colaborador desde la misma pantalla de alta, sin cambiar el flujo visual del módulo.'
+                            : 'Captura los datos base del colaborador para integrarlo al directorio operativo con contacto, nivel de experiencia, salario y evidencia fotográfica.' }}
                     </p>
                     <div class="mt-8 flex flex-wrap gap-3">
                         <a href="{{ route('employees.index') }}"
@@ -54,9 +64,13 @@
 
             <aside class="rounded-3xl bg-gradient-to-br from-primary to-primary-700 p-8 shadow-2xl shadow-primary-900/30">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-secondary">Checklist de captura</p>
-                <h3 class="mt-3 text-3xl font-bold text-on-primary">Alta mínima requerida</h3>
+                <h3 class="mt-3 text-3xl font-bold text-on-primary">
+                    {{ $isEditing ? 'Edición operativa' : 'Alta mínima requerida' }}
+                </h3>
                 <p class="mt-2 text-sm text-primary-100">
-                    El backend necesita nombre, correo, teléfono y nivel de experiencia para permitir el registro.
+                    {{ $isEditing
+                        ? 'La actualización usa los mismos datos base del alta: nombre, correo, teléfono y nivel de experiencia.'
+                        : 'El backend necesita nombre, correo, teléfono y nivel de experiencia para permitir el registro.' }}
                 </p>
 
                 <div class="mt-8 space-y-3">
@@ -87,8 +101,11 @@
             </section>
         @endif
 
-        <form action="{{ route('employees.store') }}" class="space-y-6" enctype="multipart/form-data" method="POST">
+        <form action="{{ $formAction }}" class="space-y-6" enctype="multipart/form-data" method="POST">
             @csrf
+            @if ($isEditing)
+                @method('PUT')
+            @endif
 
             <section class="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
                 <div class="{{ $sectionClass }}">
@@ -107,7 +124,8 @@
                         <div class="space-y-2 md:col-span-2">
                             <label class="{{ $labelClass }}" for="name">Nombre completo</label>
                             <input class="{{ $inputClass }}" id="name" name="name"
-                                placeholder="Ej. Juan Pérez López" type="text" value="{{ old('name') }}">
+                                placeholder="Ej. Juan Pérez López" type="text"
+                                value="{{ old('name', $employee->name ?? '') }}">
                             @error('name')
                                 <p class="{{ $errorClass }}">{{ $message }}</p>
                             @enderror
@@ -116,7 +134,8 @@
                         <div class="space-y-2">
                             <label class="{{ $labelClass }}" for="email">Correo electrónico</label>
                             <input class="{{ $inputClass }}" id="email" name="email"
-                                placeholder="empleado@empresa.com" type="email" value="{{ old('email') }}">
+                                placeholder="empleado@empresa.com" type="email"
+                                value="{{ old('email', $employee->email ?? '') }}">
                             @error('email')
                                 <p class="{{ $errorClass }}">{{ $message }}</p>
                             @enderror
@@ -125,7 +144,7 @@
                         <div class="space-y-2">
                             <label class="{{ $labelClass }}" for="phone">Teléfono</label>
                             <input class="{{ $inputClass }}" id="phone" name="phone" placeholder="55 0000 0000"
-                                type="text" value="{{ old('phone') }}">
+                                type="text" value="{{ old('phone', $employee->phone ?? '') }}">
                             @error('phone')
                                 <p class="{{ $errorClass }}">{{ $message }}</p>
                             @enderror
@@ -134,7 +153,7 @@
                         <div class="space-y-2 md:col-span-2">
                             <label class="{{ $labelClass }}" for="address">Dirección</label>
                             <textarea class="{{ $textareaClass }}" id="address" name="address"
-                                placeholder="Calle, número, colonia y referencias">{{ old('address') }}</textarea>
+                                placeholder="Calle, número, colonia y referencias">{{ old('address', $employee->address ?? '') }}</textarea>
                             @error('address')
                                 <p class="{{ $errorClass }}">{{ $message }}</p>
                             @enderror
@@ -160,7 +179,7 @@
                                 <option value="">Selecciona un nivel</option>
                                 @foreach ($experienceLevels as $experienceLevel)
                                     <option value="{{ $experienceLevel->id }}"
-                                        @selected((string) old('experience_level') === (string) $experienceLevel->id)>
+                                        @selected((string) old('experience_level', $employee->experience_level_id ?? '') === (string) $experienceLevel->id)>
                                         {{ $experienceLevel->name }}
                                     </option>
                                 @endforeach
@@ -173,7 +192,7 @@
                         <div class="space-y-2">
                             <label class="{{ $labelClass }}" for="salary">Salario</label>
                             <input class="{{ $inputClass }}" id="salary" name="salary" placeholder="$0.00"
-                                type="text" value="{{ old('salary') }}">
+                                type="text" value="{{ old('salary', $employee->salary ?? '') }}">
                             @error('salary')
                                 <p class="{{ $errorClass }}">{{ $message }}</p>
                             @enderror
@@ -183,7 +202,12 @@
                             <label class="{{ $labelClass }}" for="photo">Foto de perfil</label>
                             <input class="{{ $inputClass }} file:mr-4 file:rounded-xl file:border-0 file:bg-secondary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-on-secondary hover:file:bg-secondary-600"
                                 accept="image/*" id="photo" name="photo" type="file">
-                            <p class="text-xs text-primary-200">PNG, JPG o WEBP. Se almacenará dentro del expediente del empleado.</p>
+                            <p class="text-xs text-primary-200">
+                                PNG, JPG o WEBP. {{ $isEditing ? 'Si cargas una nueva imagen, reemplazará la referencia actual del expediente.' : 'Se almacenará dentro del expediente del empleado.' }}
+                            </p>
+                            @if ($isEditing && !empty($employee->photo))
+                                <p class="text-xs font-semibold text-accent">Foto actual registrada: {{ $employee->photo }}</p>
+                            @endif
                             @error('photo')
                                 <p class="{{ $errorClass }}">{{ $message }}</p>
                             @enderror
@@ -194,9 +218,11 @@
 
             <section class="flex flex-col gap-3 rounded-3xl border border-primary-700/60 bg-primary-800 p-6 shadow-soft sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <p class="text-sm font-semibold text-on-primary">Registro listo para enviarse</p>
+                    <p class="text-sm font-semibold text-on-primary">
+                        {{ $isEditing ? 'Actualización lista para enviarse' : 'Registro listo para enviarse' }}
+                    </p>
                     <p class="mt-1 text-sm text-primary-200">
-                        Al guardar, el empleado quedará disponible en el directorio del panel.
+                        {{ $isEditing ? 'Al guardar, los cambios quedarán reflejados en el directorio del panel.' : 'Al guardar, el empleado quedará disponible en el directorio del panel.' }}
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-3">
@@ -208,8 +234,8 @@
                     <button
                         class="inline-flex items-center gap-2 rounded-xl bg-secondary px-5 py-3 text-sm font-bold text-on-secondary shadow-lg shadow-secondary/20 transition-all hover:bg-secondary-600 active:scale-95"
                         type="submit">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_add</span>
-                        Guardar empleado
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">{{ $isEditing ? 'save' : 'person_add' }}</span>
+                        {{ $isEditing ? 'Actualizar empleado' : 'Guardar empleado' }}
                     </button>
                 </div>
             </section>

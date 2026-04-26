@@ -69,6 +69,8 @@ class EventForm extends Component
 
     public $newCustomProductPrice = '';
 
+    public $newCustomProductEventPrice = '';
+
     public $discountString = '';
 
     public $discount = 0;
@@ -93,6 +95,10 @@ class EventForm extends Component
 
     public $errorMessage = '';
 
+    public $showPastDateModal = false;
+
+    public $hasConfirmedPastDate = false;
+
     public $countPackageInputs = 1;
 
     public $countEmployeeInputs = 1;
@@ -115,8 +121,15 @@ class EventForm extends Component
             'newCustomProductUnit',
             'newCustomProductStock',
             'newCustomProductPrice',
+            'newCustomProductEventPrice',
         ]);
         $this->refreshPackageProducts();
+    }
+
+    public function updatedEventDate(): void
+    {
+        $this->hasConfirmedPastDate = false;
+        $this->showPastDateModal = false;
     }
 
     public function updatedPackageId($packageId, $key = null): void
@@ -243,6 +256,7 @@ class EventForm extends Component
             $this->customProducts[] = [
                 'product_id' => $productId,
                 'quantity' => $quantity,
+                'price' => '',
             ];
         }
 
@@ -266,6 +280,7 @@ class EventForm extends Component
             'newCustomProductUnit',
             'newCustomProductStock',
             'newCustomProductPrice',
+            'newCustomProductEventPrice',
             'customProducts',
         ]);
 
@@ -294,7 +309,8 @@ class EventForm extends Component
             'unit' => $unit,
             'quantity' => $quantity,
             'inventory_quantity' => $inventoryQuantity,
-            'price' => $this->parseNumberInput($this->newCustomProductPrice),
+            'inventory_price' => $this->parseNumberInput($this->newCustomProductPrice),
+            'price' => $this->parseNumberInput($this->newCustomProductEventPrice),
         ];
 
         $this->resetNewCustomProductInputs();
@@ -313,9 +329,16 @@ class EventForm extends Component
         $this->event_date = substr($this->event->event_date, 0, 10);
         $this->event_time = substr($this->event->event_date, 11, 5);
         $this->event_type_id = $this->event->event_type_id;
-        $this->package_id = $this->event->packages->pluck('id')->toArray();
+        $this->package_id = $this->event->packages
+            ->flatMap(function ($package) {
+                $quantity = max((int) ($package->pivot->quantity ?? 1), 1);
+
+                return array_fill(0, $quantity, $package->id);
+            })
+            ->values()
+            ->toArray();
         $this->employee_id = $this->event->employees->pluck('id')->toArray();
-        $this->countPackageInputs = max($this->event->packages->count(), 1);
+        $this->countPackageInputs = max(count($this->package_id), 1);
         $this->countEmployeeInputs = max($this->event->employees->count(), 1);
         $this->discount = $this->event->discount;
         $this->discountString = $this->event->discount * 100 . '%';
@@ -331,6 +354,7 @@ class EventForm extends Component
                 ->map(fn ($product) => [
                     'product_id' => $product->id,
                     'quantity' => (int) ($product->pivot->quantity ?? 1),
+                    'price' => (float) ($product->pivot->price ?? 0),
                 ])
                 ->values()
                 ->toArray();
@@ -531,12 +555,16 @@ class EventForm extends Component
             return;
         }
 
-        $packages = Package::whereIn('id', $selectedPackageIds)
+        $packageQuantities = collect($selectedPackageIds)
+            ->countBy()
+            ->map(fn ($quantity) => max((int) $quantity, 1));
+
+        $packages = Package::whereIn('id', $packageQuantities->keys()->all())
             ->get()
             ->keyBy('id');
 
-        $payload = collect($selectedPackageIds)
-            ->mapWithKeys(function (int $packageId) use ($packages) {
+        $payload = $packageQuantities
+            ->mapWithKeys(function (int $quantity, int $packageId) use ($packages) {
                 $package = $packages->get($packageId);
 
                 if (! $package) {
@@ -545,7 +573,7 @@ class EventForm extends Component
 
                 return [
                     $packageId => [
-                        'quantity' => 1,
+                        'quantity' => $quantity,
                         'price' => (float) $package->price,
                     ],
                 ];
@@ -589,6 +617,10 @@ class EventForm extends Component
     public function save()
     {
         $this->processDiscount();
+
+        if ($this->shouldBlockForPastEventDate()) {
+            return null;
+        }
 
         if (! $this->validateEventComposition()) {
             return;
@@ -634,6 +666,10 @@ class EventForm extends Component
     {
         $this->processDiscount();
 
+        if ($this->shouldBlockForPastEventDate()) {
+            return null;
+        }
+
         if (! $this->validateEventComposition()) {
             $this->showAlert = false;
             $this->enableSave = true;
@@ -650,6 +686,21 @@ class EventForm extends Component
         return redirect()->route('events.show', $event->id);
     }
 
+    public function closePastDateModal(): void
+    {
+        $this->showPastDateModal = false;
+        $this->dispatch('closeModal', ['id' => 'past-event-date']);
+    }
+
+    public function confirmPastDateAndSave()
+    {
+        $this->hasConfirmedPastDate = true;
+        $this->showPastDateModal = false;
+        $this->dispatch('closeModal', ['id' => 'past-event-date']);
+
+        return $this->save();
+    }
+
     private function validateEventComposition(): bool
     {
         $this->resetValidation([
@@ -661,6 +712,7 @@ class EventForm extends Component
             'newCustomProductUnit',
             'newCustomProductStock',
             'newCustomProductPrice',
+            'newCustomProductEventPrice',
         ]);
 
         if ($this->packageMode === 'registered') {
@@ -675,6 +727,37 @@ class EventForm extends Component
 
         if ($this->selectedCustomProducts()->isEmpty()) {
             $this->addError('customProducts', 'Agrega al menos un material o producto al paquete personalizado.');
+
+            return false;
+        }
+
+        $missingCommercialPrice = $this->customSelectionItems()
+            ->filter(fn ($item) => $this->parseNumberInput($item['price'] ?? 0) <= 0)
+            ->pluck('name')
+            ->filter()
+            ->values();
+
+        if ($missingCommercialPrice->isNotEmpty()) {
+            $this->addError(
+                'customProducts',
+                'Captura el precio al cliente de: '.$missingCommercialPrice->take(3)->implode(', ').($missingCommercialPrice->count() > 3 ? ' y más.' : '.')
+            );
+
+            return false;
+        }
+
+        $missingInventoryCost = $this->customSelectionItems()
+            ->filter(fn ($item) => ($item['requires_inventory_registration'] ?? false) === true)
+            ->filter(fn ($item) => $this->parseNumberInput($item['inventory_price'] ?? 0) <= 0)
+            ->pluck('name')
+            ->filter()
+            ->values();
+
+        if ($missingInventoryCost->isNotEmpty()) {
+            $this->addError(
+                'customProducts',
+                'Captura el costo de inventario de: '.$missingInventoryCost->take(3)->implode(', ').($missingInventoryCost->count() > 3 ? ' y más.' : '.')
+            );
 
             return false;
         }
@@ -703,9 +786,15 @@ class EventForm extends Component
         return collect($this->package_id)
             ->filter(fn ($id) => filled($id) && (int) $id > 0)
             ->map(fn ($id) => (int) $id)
-            ->unique()
             ->values()
             ->all();
+    }
+
+    private function selectedPackageQuantities(): Collection
+    {
+        return collect($this->selectedPackageIds())
+            ->countBy()
+            ->map(fn ($quantity) => max((int) $quantity, 1));
     }
 
     private function selectedEmployeeIds(): array
@@ -736,6 +825,7 @@ class EventForm extends Component
                         'product_id' => $productId,
                         'quantity' => $quantity,
                         'inventory_quantity_input' => $this->parseNumberInput($row['inventory_quantity'] ?? 0),
+                        'inventory_price_input' => $this->parseNumberInput($row['inventory_price'] ?? 0),
                         'price_input' => $this->parseNumberInput($row['price'] ?? 0),
                         'is_new' => false,
                     ];
@@ -754,6 +844,7 @@ class EventForm extends Component
                     'description' => trim((string) ($row['description'] ?? '')) ?: $name,
                     'unit' => $unit !== '' ? $unit : 'pz',
                     'inventory_quantity' => max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity),
+                    'inventory_price' => $this->parseNumberInput($row['inventory_price'] ?? 0),
                     'price' => $this->parseNumberInput($row['price'] ?? 0),
                 ];
             })
@@ -770,9 +861,10 @@ class EventForm extends Component
             ->get()
             ->mapWithKeys(fn ($product) => [
                 $product->id => [
-                    'price' => (float) ($product->inventories->first()?->pivot?->price ?? 0),
+                    'inventory_price' => (float) ($product->inventories->first()?->pivot?->price ?? 0),
                     'quantity' => (float) ($product->inventories->first()?->pivot?->quantity ?? 0),
                     'exists' => $product->inventories->isNotEmpty(),
+                    'name' => $product->name,
                 ],
             ]);
 
@@ -792,12 +884,16 @@ class EventForm extends Component
                 }
 
                 $productId = (int) ($first['product_id'] ?? 0);
-                $inventoryPayload = $inventorySnapshots->get($productId, ['price' => 0, 'quantity' => 0, 'exists' => false]);
+                $inventoryPayload = $inventorySnapshots->get($productId, ['inventory_price' => 0, 'quantity' => 0, 'exists' => false]);
                 $hasInventory = (bool) ($inventoryPayload['exists'] ?? false);
                 $quantity = $groupedRows->sum('quantity');
                 $inventoryQuantityInput = (float) $groupedRows
                     ->map(fn ($row) => (float) ($row['inventory_quantity_input'] ?? 0))
                     ->max();
+                $inventoryPriceInput = (float) ($groupedRows
+                    ->map(fn ($row) => (float) ($row['inventory_price_input'] ?? 0))
+                    ->filter(fn ($price) => $price > 0)
+                    ->last() ?? 0);
                 $priceInput = (float) ($groupedRows
                     ->map(fn ($row) => (float) ($row['price_input'] ?? 0))
                     ->filter(fn ($price) => $price > 0)
@@ -806,14 +902,15 @@ class EventForm extends Component
                 return [
                     'product_id' => $productId,
                     'quantity' => $quantity,
-                    'price' => $hasInventory
-                        ? (float) ($inventoryPayload['price'] ?? 0)
-                        : $priceInput,
+                    'price' => $priceInput,
                     'inventory_quantity' => $hasInventory
                         ? (float) ($inventoryPayload['quantity'] ?? 0)
                         : max($inventoryQuantityInput, (float) $quantity),
+                    'inventory_price' => $hasInventory
+                        ? (float) ($inventoryPayload['inventory_price'] ?? 0)
+                        : $inventoryPriceInput,
                     'is_new' => false,
-                    'name' => null,
+                    'name' => $inventoryPayload['name'] ?? null,
                     'requires_inventory_registration' => ! $hasInventory,
                 ];
             })
@@ -859,9 +956,10 @@ class EventForm extends Component
                         'stock' => $requiresInventoryRegistration
                             ? max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity)
                             : (float) ($inventoryPivot?->quantity ?? 0),
-                        'price' => $requiresInventoryRegistration
-                            ? $this->parseNumberInput($row['price'] ?? 0)
+                        'inventory_price' => $requiresInventoryRegistration
+                            ? $this->parseNumberInput($row['inventory_price'] ?? 0)
                             : (float) ($inventoryPivot?->price ?? 0),
+                        'price' => $this->parseNumberInput($row['price'] ?? 0),
                         'is_new' => false,
                         'requires_inventory_registration' => $requiresInventoryRegistration,
                     ];
@@ -880,6 +978,7 @@ class EventForm extends Component
                     'descriptor' => $this->draftProductDescriptor($row),
                     'quantity' => $quantity,
                     'stock' => max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity),
+                    'inventory_price' => $this->parseNumberInput($row['inventory_price'] ?? 0),
                     'price' => $this->parseNumberInput($row['price'] ?? 0),
                     'is_new' => true,
                     'requires_inventory_registration' => true,
@@ -895,22 +994,24 @@ class EventForm extends Component
             return $this->selectedCustomProducts();
         }
 
-        $selectedPackageIds = $this->selectedPackageIds();
+        $selectedPackageQuantities = $this->selectedPackageQuantities();
 
-        if (empty($selectedPackageIds)) {
+        if ($selectedPackageQuantities->isEmpty()) {
             return collect();
         }
 
         $packages = Package::with(['materials', 'materials.products.inventories', 'materials.inventories'])
-            ->whereIn('id', $selectedPackageIds)
+            ->whereIn('id', $selectedPackageQuantities->keys()->all())
             ->get();
 
         $fixedProducts = $packages
-            ->flatMap(function ($package) {
+            ->flatMap(function ($package) use ($selectedPackageQuantities) {
+                $packageQuantity = max((int) ($selectedPackageQuantities->get($package->id) ?? 1), 1);
+
                 return $package->materials
                     ->map(fn ($material) => [
                         'product_id' => $material->id,
-                        'quantity' => (int) ($material->pivot->quantity ?? 1),
+                        'quantity' => max((int) ($material->pivot->quantity ?? 1), 1) * $packageQuantity,
                         'price' => $this->resolveProductSnapshotPrice($material),
                     ]);
             });
@@ -942,20 +1043,34 @@ class EventForm extends Component
             return;
         }
 
-        $selectedPackageIds = $this->selectedPackageIds();
+        $selectedPackageQuantities = $this->selectedPackageQuantities();
 
-        if (empty($selectedPackageIds)) {
+        if ($selectedPackageQuantities->isEmpty()) {
             $this->products = [];
 
             return;
         }
 
         $packages = Package::with(['materials', 'materials.products', 'materials.products.inventories', 'materials.inventories'])
-            ->whereIn('id', $selectedPackageIds)
+            ->whereIn('id', $selectedPackageQuantities->keys()->all())
             ->get();
 
         $this->products = $packages
-            ->flatMap(fn ($package) => $package->materials->where('product_role_id', 2)->values())
+            ->flatMap(function ($package) use ($selectedPackageQuantities) {
+                $packageQuantity = max((int) ($selectedPackageQuantities->get($package->id) ?? 1), 1);
+
+                return $package->materials
+                    ->where('product_role_id', 2)
+                    ->values()
+                    ->map(function ($material) use ($packageQuantity) {
+                        $displayMaterial = clone $material;
+                        $pivot = clone $material->pivot;
+                        $pivot->quantity = max((int) ($pivot->quantity ?? 1), 1) * $packageQuantity;
+                        $displayMaterial->setRelation('pivot', $pivot);
+
+                        return $displayMaterial;
+                    });
+            })
             ->values()
             ->all();
     }
@@ -1005,7 +1120,7 @@ class EventForm extends Component
                     if (! $inventory->products()->where('products.id', $productId)->exists()) {
                         $inventory->products()->attach($productId, [
                             'quantity' => max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity),
-                            'price' => $this->parseNumberInput($row['price'] ?? 0),
+                            'price' => $this->parseNumberInput($row['inventory_price'] ?? 0),
                             'check_employee' => false,
                             'check_almacen' => false,
                         ]);
@@ -1032,17 +1147,17 @@ class EventForm extends Component
                 ]);
 
                 $inventoryQuantity = max($this->parseNumberInput($row['inventory_quantity'] ?? 0), (float) $quantity);
-                $price = $this->parseNumberInput($row['price'] ?? 0);
+                $inventoryPrice = $this->parseNumberInput($row['inventory_price'] ?? 0);
 
                 $inventory->products()->attach($product->id, [
                     'quantity' => $inventoryQuantity,
-                    'price' => $price,
+                    'price' => $inventoryPrice,
                     'check_employee' => false,
                     'check_almacen' => false,
                 ]);
 
                 $row['product_id'] = $product->id;
-                $row['price'] = $price;
+                $row['inventory_price'] = $inventoryPrice;
                 $row['inventory_quantity'] = $inventoryQuantity;
 
                 return $row;
@@ -1071,19 +1186,23 @@ class EventForm extends Component
             return collect();
         }
 
-        $selectedPackageIds = $this->selectedPackageIds();
+        $selectedPackageQuantities = $this->selectedPackageQuantities();
 
-        if (empty($selectedPackageIds)) {
+        if ($selectedPackageQuantities->isEmpty()) {
             return collect();
         }
 
         return Package::with('equipments')
-            ->whereIn('id', $selectedPackageIds)
+            ->whereIn('id', $selectedPackageQuantities->keys()->all())
             ->get()
-            ->flatMap(fn ($package) => $package->equipments->map(fn ($equipment) => [
-                'equipment_id' => (int) $equipment->id,
-                'quantity' => max((int) ($equipment->pivot->quantity ?? 1), 1),
-            ]))
+            ->flatMap(function ($package) use ($selectedPackageQuantities) {
+                $packageQuantity = max((int) ($selectedPackageQuantities->get($package->id) ?? 1), 1);
+
+                return $package->equipments->map(fn ($equipment) => [
+                    'equipment_id' => (int) $equipment->id,
+                    'quantity' => max((int) ($equipment->pivot->quantity ?? 1), 1) * $packageQuantity,
+                ]);
+            })
             ->groupBy('equipment_id')
             ->map(fn ($rows, $equipmentId) => [
                 'equipment_id' => (int) $equipmentId,
@@ -1141,6 +1260,7 @@ class EventForm extends Component
         $this->newCustomProductQuantity = 1;
         $this->newCustomProductStock = '';
         $this->newCustomProductPrice = '';
+        $this->newCustomProductEventPrice = '';
     }
 
     private function normalizeProductRoleId($value): int
@@ -1175,5 +1295,32 @@ class EventForm extends Component
         ])->save();
 
         return $inventory->fresh();
+    }
+
+    private function shouldBlockForPastEventDate(): bool
+    {
+        if ($this->hasConfirmedPastDate || ! $this->eventDateIsBeforeToday()) {
+            return false;
+        }
+
+        $this->showPastDateModal = true;
+        $this->dispatch('openModal', ['id' => 'past-event-date']);
+
+        return true;
+    }
+
+    private function eventDateIsBeforeToday(): bool
+    {
+        if (! filled($this->event_date)) {
+            return false;
+        }
+
+        try {
+            return Carbon::createFromFormat('Y-m-d', (string) $this->event_date, 'America/Mexico_City')
+                ->startOfDay()
+                ->lt(Carbon::now('America/Mexico_City')->startOfDay());
+        } catch (\Throwable $exception) {
+            return false;
+        }
     }
 }

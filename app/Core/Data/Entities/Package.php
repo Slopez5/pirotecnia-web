@@ -14,6 +14,8 @@ class Package
 
     public $price;
 
+    public $quantity;
+
     public $duration;
 
     public $video_url;
@@ -47,6 +49,7 @@ class Package
             'name' => $package->name,
             'description' => $package->description,
             'price' => $snapshotPrice > 0 ? $snapshotPrice : $package->price,
+            'quantity' => max((int) ($package->pivot->quantity ?? 1), 1),
             'duration' => $package->duration,
             'video_url' => $package->video_url,
             'equipments' => $package->equipments->map(fn ($equipment) => Equipment::fromEquipment($equipment)),

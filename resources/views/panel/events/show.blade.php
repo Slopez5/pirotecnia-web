@@ -30,10 +30,11 @@
             3 => 'Producto paquete',
         ];
         $packageDuration = $event->packages->pluck('duration')->filter()->implode(' · ');
+        $packageUnits = (int) $event->packages->sum(fn($package) => max((int) ($package->pivot->quantity ?? 1), 1));
         $packageMeta = $event->is_custom_event
             ? 'Paquete personalizado'
-            : ($event->packages->count() > 1
-                ? $event->packages->count() . ' paquetes registrados'
+            : ($packageUnits > 1
+                ? $packageUnits . ' paquetes registrados'
                 : 'Paquete registrado');
         $packageSummary =
             $packageDuration !== ''

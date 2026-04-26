@@ -3,6 +3,7 @@
 namespace Tests\Feature\Events;
 
 use App\Core\Data\Entities\Event as EventEntity;
+use App\Core\UseCases\Events\GetEvent;
 use App\Livewire\Panel\Events\EventForm;
 use App\Models\Equipment;
 use App\Models\Event;
@@ -10,6 +11,7 @@ use App\Models\EventType;
 use App\Models\Inventory;
 use App\Models\Package;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
@@ -158,6 +160,82 @@ class CreateEventSnapshotTest extends TestCase
         ]);
     }
 
+    public function test_it_allows_using_the_same_registered_package_multiple_times(): void
+    {
+        Queue::fake();
+
+        $this->seedCatalog();
+
+        $eventType = $this->createEventType('Festival');
+        $inventory = $this->createInventory();
+        $product = Product::create([
+            'product_role_id' => 1,
+            'name' => 'Bateria Cometa',
+            'description' => 'Disparo multiple',
+            'unit' => 'pz',
+            'duration' => '45s',
+            'shots' => '16',
+            'caliber' => '2',
+            'shape' => 'Cake',
+        ]);
+        $equipment = $this->createEquipment('Modulo de disparo');
+        $package = Package::create([
+            'name' => 'Paquete Doble',
+            'description' => 'Paquete reutilizable',
+            'price' => 3200,
+            'duration' => '8 min',
+            'video_url' => null,
+            'experience_level_id' => null,
+        ]);
+
+        $this->attachInventoryStock($inventory, $product, 80, 140);
+        $package->materials()->attach($product->id, ['quantity' => 3, 'price' => 260]);
+        $package->equipments()->attach($equipment->id, ['quantity' => 2]);
+
+        $component = Livewire::test(EventForm::class)
+            ->set('date', '2026-05-01')
+            ->set('phone', '3120001122')
+            ->set('client_name', 'Operadora Ferial')
+            ->set('client_address', 'Centro ferial')
+            ->set('event_address', 'Foro principal')
+            ->set('event_date', '2026-05-25')
+            ->set('event_time', '22:00')
+            ->set('event_type_id', $eventType->id)
+            ->set('packageMode', 'registered')
+            ->set('package_id', [$package->id, $package->id])
+            ->call('save');
+
+        $event = Event::query()->latest('id')->firstOrFail();
+        $component->assertRedirect(route('events.show', $event->id));
+
+        $this->assertDatabaseHas('event_package', [
+            'event_id' => $event->id,
+            'package_id' => $package->id,
+            'quantity' => 2,
+            'price' => 3200,
+        ]);
+
+        $this->assertDatabaseHas('productables', [
+            'product_id' => $product->id,
+            'productable_type' => Event::class,
+            'productable_id' => $event->id,
+            'quantity' => 6,
+            'price' => 260,
+        ]);
+
+        $this->assertDatabaseHas('equipment_event', [
+            'event_id' => $event->id,
+            'equipment_id' => $equipment->id,
+            'quantity' => 4,
+        ]);
+
+        $contractEvent = app(GetEvent::class)->execute($event->id);
+
+        $this->assertNotNull($contractEvent);
+        $this->assertSame(2, (int) $contractEvent->packages->first()->quantity);
+        $this->assertSame(3200.0, (float) $contractEvent->packages->first()->price);
+    }
+
     public function test_it_creates_custom_events_with_snapshotted_products_and_reserved_inventory(): void
     {
         Queue::fake();
@@ -201,8 +279,8 @@ class CreateEventSnapshotTest extends TestCase
             ->set('event_type_id', $eventType->id)
             ->set('packageMode', 'custom')
             ->set('customProducts', [
-                ['product_id' => $product->id, 'quantity' => 3],
-                ['product_id' => $material->id, 'quantity' => 2],
+                ['product_id' => $product->id, 'quantity' => 3, 'price' => 275],
+                ['product_id' => $material->id, 'quantity' => 2, 'price' => 95],
             ])
             ->set('price', '4200')
             ->set('contract_description', 'Show personalizado con apertura brillante, bloque central sincronizado y cierre dorado.')
@@ -236,7 +314,7 @@ class CreateEventSnapshotTest extends TestCase
             'productable_type' => Event::class,
             'productable_id' => $event->id,
             'quantity' => 3,
-            'price' => 180,
+            'price' => 275,
             'check_almacen' => 0,
             'check_employee' => 0,
         ]);
@@ -246,7 +324,7 @@ class CreateEventSnapshotTest extends TestCase
             'productable_type' => Event::class,
             'productable_id' => $event->id,
             'quantity' => 2,
-            'price' => 60,
+            'price' => 95,
             'check_almacen' => 0,
             'check_employee' => 0,
         ]);
@@ -269,8 +347,18 @@ class CreateEventSnapshotTest extends TestCase
             'Show personalizado con apertura brillante, bloque central sincronizado y cierre dorado.',
             $snapshot->contract_description
         );
-        $this->assertSame(180.0, (float) $snapshot->products->firstWhere('id', $product->id)->price);
-        $this->assertSame(60.0, (float) $snapshot->products->firstWhere('id', $material->id)->price);
+        $this->assertSame(275.0, (float) $snapshot->products->firstWhere('id', $product->id)->price);
+        $this->assertSame(95.0, (float) $snapshot->products->firstWhere('id', $material->id)->price);
+
+        $contractItems = $this->buildContractItemsForEvent($event);
+
+        $this->assertCount(1, $contractItems);
+        $this->assertSame(
+            'Show personalizado con apertura brillante, bloque central sincronizado y cierre dorado.',
+            $contractItems[0]['descripcion']
+        );
+        $this->assertSame('', $contractItems[0]['cantidad']);
+        $this->assertSame(0, $contractItems[0]['precio']);
 
         Inventory::updateQuantityProducts($event->fresh(['products', 'equipments']));
 
@@ -322,6 +410,7 @@ class CreateEventSnapshotTest extends TestCase
             ->set('newCustomProductQuantity', 3)
             ->set('newCustomProductStock', 15)
             ->set('newCustomProductPrice', '210')
+            ->set('newCustomProductEventPrice', '360')
             ->call('addNewCustomProduct')
             ->set('date', '2026-07-01')
             ->set('phone', '3121112233')
@@ -363,7 +452,7 @@ class CreateEventSnapshotTest extends TestCase
             'productable_type' => Event::class,
             'productable_id' => $event->id,
             'quantity' => 3,
-            'price' => 210,
+            'price' => 360,
             'check_almacen' => 0,
             'check_employee' => 0,
         ]);
@@ -384,6 +473,105 @@ class CreateEventSnapshotTest extends TestCase
             'productable_id' => $event->id,
             'check_almacen' => 1,
         ]);
+    }
+
+    public function test_it_requires_confirmation_before_saving_past_events(): void
+    {
+        Queue::fake();
+        Carbon::setTestNow('2026-04-25 12:00:00');
+
+        $this->seedCatalog();
+
+        $eventType = $this->createEventType('Historico');
+        $package = Package::create([
+            'name' => 'Paquete Archivo',
+            'description' => 'Registro historico',
+            'price' => 1800,
+            'duration' => '6 min',
+            'video_url' => null,
+            'experience_level_id' => null,
+        ]);
+
+        Livewire::test(EventForm::class)
+            ->set('date', '2026-04-25')
+            ->set('phone', '3129990011')
+            ->set('client_name', 'Cliente Historico')
+            ->set('client_address', 'Colonia Archivo')
+            ->set('event_address', 'Archivo Central')
+            ->set('event_date', '2026-04-20')
+            ->set('event_time', '18:00')
+            ->set('event_type_id', $eventType->id)
+            ->set('packageMode', 'registered')
+            ->set('package_id', [$package->id])
+            ->call('save')
+            ->assertSet('showPastDateModal', true);
+
+        $this->assertDatabaseCount('events', 0);
+
+        $component = Livewire::test(EventForm::class)
+            ->set('date', '2026-04-25')
+            ->set('phone', '3129990011')
+            ->set('client_name', 'Cliente Historico')
+            ->set('client_address', 'Colonia Archivo')
+            ->set('event_address', 'Archivo Central')
+            ->set('event_date', '2026-04-20')
+            ->set('event_time', '18:00')
+            ->set('event_type_id', $eventType->id)
+            ->set('packageMode', 'registered')
+            ->set('package_id', [$package->id])
+            ->call('save')
+            ->call('confirmPastDateAndSave');
+
+        $event = Event::query()->latest('id')->firstOrFail();
+        $component->assertRedirect(route('events.show', $event->id));
+
+        Carbon::setTestNow();
+    }
+
+    public function test_it_hides_contract_breakdown_when_a_registered_event_uses_a_manual_price(): void
+    {
+        Queue::fake();
+
+        $this->seedCatalog();
+
+        $eventType = $this->createEventType('Corporativo');
+        $package = Package::create([
+            'name' => 'Paquete Ejecutivo',
+            'description' => 'Show corporativo',
+            'price' => 2800,
+            'duration' => '5 min',
+            'video_url' => null,
+            'experience_level_id' => null,
+        ]);
+
+        $component = Livewire::test(EventForm::class)
+            ->set('date', '2026-05-05')
+            ->set('phone', '3124455667')
+            ->set('client_name', 'Cliente Corporativo')
+            ->set('client_address', 'Parque Industrial')
+            ->set('event_address', 'Salones Ejecutivos')
+            ->set('event_date', '2026-05-30')
+            ->set('event_time', '20:00')
+            ->set('event_type_id', $eventType->id)
+            ->set('packageMode', 'registered')
+            ->set('package_id', [$package->id])
+            ->set('price', '6900')
+            ->call('save');
+
+        $event = Event::query()->latest('id')->firstOrFail();
+        $component->assertRedirect(route('events.show', $event->id));
+
+        $this->assertDatabaseHas('events', [
+            'id' => $event->id,
+            'price' => 6900,
+        ]);
+
+        $contractItems = $this->buildContractItemsForEvent($event);
+
+        $this->assertCount(1, $contractItems);
+        $this->assertSame('Paquete Ejecutivo', $contractItems[0]['descripcion']);
+        $this->assertSame('', $contractItems[0]['cantidad']);
+        $this->assertSame(0, $contractItems[0]['precio']);
     }
 
     private function seedCatalog(): void
@@ -436,5 +624,15 @@ class CreateEventSnapshotTest extends TestCase
             'quantity' => $quantity,
             'price' => $price,
         ]);
+    }
+
+    private function buildContractItemsForEvent(Event $event): array
+    {
+        $contractEvent = app(GetEvent::class)->execute($event->id);
+        $controller = app(\App\Http\Controllers\Panel\EventController::class);
+        $method = new \ReflectionMethod($controller, 'buildContractItems');
+        $method->setAccessible(true);
+
+        return $method->invoke($controller, $contractEvent, (float) ($contractEvent->price ?? 0));
     }
 }

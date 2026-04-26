@@ -212,7 +212,14 @@
                         @forelse ($events as $event)
                             @php
                                 $eventDate = \Carbon\Carbon::parse($event->event_date, 'America/Mexico_City');
-                                $packageNames = $event->packages->pluck('name')->filter()->implode(', ');
+                                $packageNames = $event->packages
+                                    ->map(function ($package) {
+                                        $quantity = max((int) ($package->pivot->quantity ?? 1), 1);
+
+                                        return $quantity > 1 ? $package->name . ' x' . $quantity : $package->name;
+                                    })
+                                    ->filter()
+                                    ->implode(', ');
                                 $responsible = $event->employees->first();
                                 $eventTotal = $resolveEventTotal($event);
 

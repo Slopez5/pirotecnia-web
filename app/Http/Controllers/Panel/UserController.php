@@ -134,24 +134,40 @@ class UserController extends Controller
 
     public function editEmployee($id)
     {
-        $employee = Employee::find($id);
+        $employee = Employee::findOrFail($id);
+        $experienceLevels = ExperienceLevel::orderBy('name')->get();
 
-        return view('panel.employees.edit', compact('employee'));
+        return view('panel.employees.create', compact('employee', 'experienceLevels'));
     }
 
     public function updateEmployee(Request $request, $id)
     {
+        $employee = Employee::findOrFail($id);
+
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed',
+            'email' => 'required|email|unique:employees,email,'.$employee->id,
+            'phone' => 'required',
+            'experience_level' => 'required|exists:experience_levels,id',
+            'salary' => 'nullable',
+            'photo' => 'nullable|image|max:2048',
         ]);
 
-        $employee = Employee::find($id);
         $employee->name = $request->name;
         $employee->email = $request->email;
-        $employee->password = bcrypt($request->password);
+        $employee->phone = $request->phone;
+        $employee->address = $request->address ?: '';
+        $employee->salary = $this->normalizeAmount((string) $request->salary);
+        $employee->experienceLevel()->associate($request->experience_level);
         $employee->save();
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $file->storeAs('public/employees/'.$employee->id, $fileName);
+            $employee->photo = $fileName;
+            $employee->save();
+        }
 
         return redirect()->route('employees.index');
     }
